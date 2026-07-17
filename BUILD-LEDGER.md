@@ -86,3 +86,7 @@ Fees to payer · cleared-funds only · flagship never boards · no auto-retry on
 - 🔴 PRIORITY #1 FOR ROB: GitHub account → remote push = permanent, reset-proof storage
 
 - ✅ Client tracking view (/portal/tracking, 4 milestones, RLS-walled) · ✅ Client Controls switchboard (/admin/clients/[id], every flip audited) · ✅ Demand letters: worker 23 drafts at +30d (skips plans/disputes), owner edit/approve/withdraw, email/certified/both
+
+- ✅ Dispute detail (/admin/disputes/[id]): client vs factory stories side-by-side (firewalled, owner-only view), ResolvePanel (cause+scope required, lot-wide blast chip, $0-replacement note), timeline
+- ✅ Client roster + health grades (/admin/clients): A–F computed from payment behavior, never typed; <3 invoices = collecting; ACH return caps at D; open overdue blocks A; basis string always shown
+- ✅ Factory detail + qualification flips (/admin/factories/[id]): 5-step onboarding checklist, board_eligible flip GUARDED by completed-run check, flagship_approved flip, active toggle — all audited

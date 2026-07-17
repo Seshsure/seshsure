@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase-server";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function DisputesDesk() {
         {(disputes ?? []).map(d => {
           const ackLate = d.ack_due_at && new Date(d.ack_due_at) < new Date() && d.status === "submitted";
           return (
-            <div key={d.id} className="px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
+            <Link key={d.id} href={`/admin/disputes/${d.id}`} className="block px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
               <div className="flex items-center justify-between">
                 <p className="font-mono text-[11px] font-bold" style={{ color: "#E8EAEC" }}>
                   {d.dispute_number}
@@ -33,7 +34,7 @@ export default async function DisputesDesk() {
                 {" · "}{(d.issue_types ?? []).join(", ")}
                 {d.days_since_delivery !== null ? ` · day ${d.days_since_delivery}` : ""}
               </p>
-            </div>
+            </Link>
           );
         })}
         {!disputes?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#5C666D" }}>No open disputes.</p>}

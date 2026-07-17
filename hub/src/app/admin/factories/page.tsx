@@ -1,5 +1,6 @@
 // Factory command: scorecards + concentration risk + onboarding states
 import { supabaseServer } from "@/lib/supabase-server";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default async function Factories() {
           const onTime = sc && sc.promised_runs >= 10 ? `${Math.round(100 * sc.on_time_runs / sc.promised_runs)}% ON-TIME (${sc.promised_runs})` : `COLLECTING — ${sc?.promised_runs ?? 0} RUNS`;
           const defects = sc?.fault_disputes ?? 0;
           return (
-            <div key={f.id} className="px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
+            <Link key={f.id} href={`/admin/factories/${f.id}`} className="block px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
               <div className="flex items-center justify-between">
                 <p className="text-[12.5px] font-bold" style={{ color: "#E8EAEC" }}>
                   {f.name}
@@ -60,7 +61,7 @@ export default async function Factories() {
                 {onTime} · {sc?.completed_runs ?? 0} RUNS COMPLETE · {defects} FAULT DISPUTE{defects === 1 ? "" : "S"}
                 {sc?.units_delivered ? ` · ${Number(sc.units_delivered).toLocaleString()} UNITS` : ""}
               </p>
-            </div>
+            </Link>
           );
         })}
       </div>

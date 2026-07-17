@@ -10,6 +10,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Link>
         <nav className="flex gap-3 font-mono text-[9px]" style={{ color: "#8B949C" }}>
           <Link href="/admin/goals">GOALS</Link>
+          <Link href="/admin/clients">CLIENTS</Link>
           <Link href="/admin/pipeline">PIPELINE</Link>
           <Link href="/admin/batches">BATCH</Link>
           <Link href="/admin/disputes">DISPUTES</Link>
