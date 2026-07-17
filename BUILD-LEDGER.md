@@ -84,3 +84,5 @@ Fees to payer · cleared-funds only · flagship never boards · no auto-retry on
 - ✅ Repo tarball exported to /mnt/user-data/outputs/seshsure-repo.tar.gz EVERY session — survives resets
 - ✅ Migration 0011 collision bug fixed during recovery (0003 already owns payment_plans/plan_installments; 0011 now ALTERs instead of duplicating — the lost version would have failed on a live database)
 - 🔴 PRIORITY #1 FOR ROB: GitHub account → remote push = permanent, reset-proof storage
+
+- ✅ Client tracking view (/portal/tracking, 4 milestones, RLS-walled) · ✅ Client Controls switchboard (/admin/clients/[id], every flip audited) · ✅ Demand letters: worker 23 drafts at +30d (skips plans/disputes), owner edit/approve/withdraw, email/certified/both

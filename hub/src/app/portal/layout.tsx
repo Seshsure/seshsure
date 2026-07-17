@@ -11,6 +11,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <nav className="flex gap-4 font-mono text-[10px]" style={{ color: "#6E756B" }}>
           <Link href="/portal/invoices">INVOICES</Link>
           <Link href="/portal/orders/new">ORDER</Link>
+          <Link href="/portal/tracking">TRACKING</Link>
           <Link href="/portal/money">MONEY</Link>
         </nav>
       </header>

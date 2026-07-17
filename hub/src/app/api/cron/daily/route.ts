@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { settleAndClear, applyClearedToInvoices, placeRuns, expireStaleDeposits, reminderLadder, accrueInterest } from "@/lib/workers";
 import { deliveryClock, reorderRadar, expireQuotes, complianceAlerts } from "@/lib/workers2";
 import { flushNotifications, dailyBrief } from "@/lib/workers3";
-import { runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements, planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits } from "@/lib/workers4";
+import { runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements, planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits, demandLetterDrafts } from "@/lib/workers4";
 
 export const maxDuration = 60;
 
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const jobs = [settleAndClear, applyClearedToInvoices, placeRuns, deliveryClock, expireStaleDeposits,
     reminderLadder, accrueInterest, reorderRadar, expireQuotes, complianceAlerts,
     runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements,
-    planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits,
+    planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits, demandLetterDrafts,
     flushNotifications, dailyBrief];
   const results: Record<string, string> = {};
   for (const job of jobs) {

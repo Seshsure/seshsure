@@ -1,0 +1,94 @@
+"use client";
+import { useState } from "react";
+
+type Controls = {
+  accepted_methods: string[]; auto_hold: boolean; hold_active: boolean; absorb_card_fee: boolean;
+  deposit_pct: number; credit_ceiling_cents: string | null; expected_reorder_weeks: number; watch_flag: boolean;
+};
+const ALL_METHODS = ["ach","wire","check","cash","card"];
+
+export function ControlsPanel({ clientId, initial }: { clientId: string; initial: Controls }) {
+  const [c, setC] = useState(initial);
+  const [msg, setMsg] = useState("");
+
+  async function save(patch: Partial<Controls>) {
+    setC({ ...c, ...patch }); setMsg("");
+    const r = await fetch("/api/client-controls", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ clientId, patch }) });
+    const j = await r.json();
+    setMsg(r.ok ? "✓ saved & logged" : j.error ?? "failed");
+  }
+
+  const Toggle = ({ label, sub, value, onFlip, danger }: { label: string; sub: string; value: boolean; onFlip: (v: boolean) => void; danger?: boolean }) => (
+    <button onClick={() => onFlip(!value)} className="w-full flex items-center px-3 py-3 border-b text-left" style={{ borderColor: "#262C31" }}>
+      <div className="flex-1">
+        <p className="text-[12px] font-semibold" style={{ color: "#E8EAEC" }}>{label}</p>
+        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#5C666D" }}>{sub}</p>
+      </div>
+      <div className="w-9 h-5 rounded-full p-0.5 transition-colors" style={{ background: value ? (danger ? "#E5484D" : "#2DD4BF") : "#262C31" }}>
+        <div className="w-4 h-4 rounded-full transition-transform" style={{ background: "#E8EAEC", transform: value ? "translateX(16px)" : "none" }} />
+      </div>
+    </button>
+  );
+
+  return (
+    <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
+      <div className="px-3 py-2 border-b flex justify-between" style={{ borderColor: "#262C31" }}>
+        <span className="font-mono text-[10px] font-bold" style={{ color: "#8B949C" }}>CLIENT CONTROLS — EVERY FLIP AUDITED</span>
+        {msg && <span className="font-mono text-[9px]" style={{ color: msg.startsWith("✓") ? "#2DD4BF" : "#E5484D" }}>{msg}</span>}
+      </div>
+
+      <div className="px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
+        <p className="font-mono text-[8px] font-bold mb-1.5" style={{ color: "#5C666D" }}>PAYMENT METHODS</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {ALL_METHODS.map(m => {
+            const on = c.accepted_methods.includes(m);
+            return (
+              <button key={m} onClick={() => {
+                const next = on ? c.accepted_methods.filter(x => x !== m) : [...c.accepted_methods, m];
+                if (next.length) save({ accepted_methods: next });
+              }} className="font-mono text-[9px] font-bold px-2.5 py-1.5 rounded border"
+                style={{ background: on ? "#2DD4BF" : "transparent", color: on ? "#0C0F11" : "#8B949C", borderColor: on ? "#2DD4BF" : "#262C31" }}>
+                {m.toUpperCase()}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <Toggle label="Hold — pause ordering NOW" sub="MANUAL FREEZE, INDEPENDENT OF THE AUTOMATIC LADDER" value={c.hold_active} onFlip={v => save({ hold_active: v })} danger />
+      <Toggle label="Auto-hold at final notice" sub="21-DAY LADDER STEP LOCKS ORDERING AUTOMATICALLY" value={c.auto_hold} onFlip={v => save({ auto_hold: v })} />
+      <Toggle label="Absorb card fees" sub="RELATIONSHIP COST — SHOWS IN PER-CLIENT MARGIN" value={c.absorb_card_fee} onFlip={v => save({ absorb_card_fee: v })} />
+      <Toggle label="Watch flag" sub="EXTRA EYES AFTER RETURNS / DISPUTES" value={c.watch_flag} onFlip={v => save({ watch_flag: v })} />
+
+      <div className="px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
+        <p className="font-mono text-[8px] font-bold mb-1.5" style={{ color: "#5C666D" }}>DEFAULT DEPOSIT</p>
+        <div className="flex gap-1.5">
+          {[0, 25, 50, 100].map(p => (
+            <button key={p} onClick={() => save({ deposit_pct: p })} className="flex-1 py-1.5 rounded font-mono text-[9px] font-bold border"
+              style={{ background: c.deposit_pct === p ? "#E8EAEC" : "transparent", color: c.deposit_pct === p ? "#0C0F11" : "#8B949C", borderColor: "#262C31" }}>
+              {p}%
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-3 py-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="font-mono text-[8px] font-bold mb-1" style={{ color: "#5C666D" }}>CREDIT CEILING ($, BLANK = NONE)</p>
+          <input defaultValue={c.credit_ceiling_cents ? String(Number(c.credit_ceiling_cents) / 100) : ""}
+            onBlur={e => { const v = e.target.value.replace(/[^\d]/g, ""); save({ credit_ceiling_cents: v ? String(Number(v) * 100) : null }); }}
+            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[11px] border outline-none"
+            style={{ background: "#0C0F11", borderColor: "#262C31", color: "#E8EAEC" }} />
+        </div>
+        <div>
+          <p className="font-mono text-[8px] font-bold mb-1" style={{ color: "#5C666D" }}>EXPECTED REORDER (WEEKS)</p>
+          <input defaultValue={c.expected_reorder_weeks}
+            onBlur={e => { const v = parseInt(e.target.value); if (v > 0) save({ expected_reorder_weeks: v }); }}
+            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[11px] border outline-none"
+            style={{ background: "#0C0F11", borderColor: "#262C31", color: "#E8EAEC" }} />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -237,3 +237,74 @@ export async function referralCredits(sb: SupabaseClient) {
     await log(sb, "worker.referral_credited", { referral: r.id, credit_cents: credit.toString() });
   }
 }
+
+/** 23 — Demand-letter drafter: 30d+ overdue, no plan, no dispute → draft queued for Rob's one tap.
+    NEVER auto-sends. The letter is Rob's signature; the machine only writes the first draft. */
+export async function demandLetterDrafts(sb: SupabaseClient) {
+  const cutoff = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const { data: overdue } = await sb.from("invoices")
+    .select("id, invoice_number, client_id, total_cents, paid_cents, due_date, dispute_paused")
+    .eq("status", "overdue").lte("due_date", cutoff).eq("dispute_paused", false);
+
+  const byClient = new Map<string, typeof overdue>();
+  for (const inv of overdue ?? []) {
+    if (!byClient.has(inv.client_id)) byClient.set(inv.client_id, []);
+    byClient.get(inv.client_id)!.push(inv);
+  }
+
+  for (const [clientId, invs] of byClient) {
+    // skip if active payment plan or an open draft already exists
+    const { data: plan } = await sb.from("payment_plans")
+      .select("id").eq("client_id", clientId).eq("status", "active").maybeSingle();
+    if (plan) continue;
+    const { data: existing } = await sb.from("demand_letters")
+      .select("id").eq("client_id", clientId).eq("status", "draft").maybeSingle();
+    if (existing) continue;
+
+    const { data: client } = await sb.from("clients")
+      .select("legal_name, dba").eq("id", clientId).single();
+    if (!client) continue;
+
+    const total = invs!.reduce((s, i) => s + BigInt(i.total_cents) - BigInt(i.paid_cents), 0n);
+    const invoiceList = invs!.map(i => `  • Invoice ${i.invoice_number} — ${formatUSD(BigInt(i.total_cents) - BigInt(i.paid_cents))} (due ${i.due_date})`).join("\n");
+    const dl = new Date(Date.now() + 10 * 864e5).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+    const draft = `FORMAL DEMAND FOR PAYMENT
+
+${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+
+To: ${client.legal_name}${client.dba ? ` d/b/a ${client.dba}` : ""}
+From: Vido Manufacturing and Distribution Corp d/b/a SeshSure
+      10940 S. Parker Rd, Suite 788, Parker, CO 80134
+
+Re: Outstanding balance of ${formatUSD(total)}
+
+This letter is formal demand for payment of the following past-due invoices:
+
+${invoiceList}
+
+TOTAL DUE: ${formatUSD(total)}, plus contractual interest at 1.5% per month continuing to accrue.
+
+Demand is hereby made for payment in full no later than ${dl}. Payment may be made through your SeshSure portal, by wire, or by certified funds mailed to the address above.
+
+If payment in full is not received by that date, we will pursue all remedies available under our agreement and Colorado law, including filing suit in Douglas County, Colorado — the venue you agreed to — and seeking the balance, accrued interest, court costs, and all other recoverable amounts. Your personal guarantee, where applicable, will be enforced.
+
+We would prefer to resolve this without litigation. If circumstances warrant a structured payment plan, contact us before the deadline above.
+
+This letter is written in furtherance of settlement. Nothing herein waives any right or remedy, all of which are expressly reserved.
+
+Vido Manufacturing and Distribution Corp d/b/a SeshSure`;
+
+    const { data: letter } = await sb.from("demand_letters").insert({
+      client_id: clientId, invoice_ids: invs!.map(i => i.id),
+      total_demanded_cents: total.toString(), draft_text: draft,
+    }).select("id").single();
+
+    await sb.from("tasks").insert({
+      title: `⚖️ Demand letter drafted: ${client.dba ?? client.legal_name} — ${formatUSD(total)} · review & send`,
+      kind: "demand_letter", related_id: letter?.id, client_id: clientId, auto_generated: true,
+      due_on: new Date().toISOString().slice(0, 10),
+    });
+    await log(sb, "worker.demand_drafted", { client: clientId, total_cents: total.toString() });
+  }
+}
