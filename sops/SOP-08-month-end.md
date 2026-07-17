@@ -1,0 +1,3 @@
+# SOP 08 — MONTH-END CLOSE
+**Trigger:** 1st of month (statements + interest workers ran automatically overnight).
+**Steps:** 1) /admin/goals — screenshot the four bars; that's the board deck. 2) Verify interest accrued only on non-frozen overdue invoices (activity log: worker.interest_accrued). 3) Review factory ledger — settle verified statement lines. 4) Reconcile cleared payments vs bank statement to the penny. 5) Export QuickBooks entries [pending QB integration]. 6) Review concentration + blended margin; if margin < 2.5¢, find the leak (freight? duties? underpriced client?) before it compounds.

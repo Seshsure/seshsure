@@ -90,3 +90,7 @@ Fees to payer · cleared-funds only · flagship never boards · no auto-retry on
 - ✅ Dispute detail (/admin/disputes/[id]): client vs factory stories side-by-side (firewalled, owner-only view), ResolvePanel (cause+scope required, lot-wide blast chip, $0-replacement note), timeline
 - ✅ Client roster + health grades (/admin/clients): A–F computed from payment behavior, never typed; <3 invoices = collecting; ACH return caps at D; open overdue blocks A; basis string always shown
 - ✅ Factory detail + qualification flips (/admin/factories/[id]): 5-step onboarding checklist, board_eligible flip GUARDED by completed-run check, flagship_approved flip, active toggle — all audited
+
+- ✅ Factory-side onboarding wizard (/factory/onboarding): terms e-sign w/ evidence + spec acknowledgment, gated sequencing
+- ✅ Legal drafts (attorney-review flagged): Terms of Use, Privacy Policy, Factory Services Agreement w/ strict customs-valuation clause (forecloses $0.01 goods/services undervaluation — 19 USC 1592; first-sale flagged as the lawful alternative)
+- ✅ SOP binder: index + SOPs 01 batch, 03 dispute, 04 ACH return (code-by-code), 05 demand letter, 08 month-end
