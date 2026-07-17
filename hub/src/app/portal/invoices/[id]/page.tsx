@@ -34,6 +34,11 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
           </div>
         ))}
       </div>
+      <a href={`/api/invoices/${inv.id}/pdf`} target="_blank"
+        className="block mt-3 py-2.5 rounded-lg border text-center font-mono text-[10px] font-bold"
+        style={{ borderColor: "#E4E1DA", color: "#6E756B", background: "#fff" }}>
+        ⬇ DOWNLOAD PDF
+      </a>
       {payable && <PayPanel invoiceId={inv.id} remainingCents={remaining.toString()} />}
     </div>
   );

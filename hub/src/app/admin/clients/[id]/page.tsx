@@ -26,6 +26,10 @@ export default async function ClientDetail({ params }: { params: { id: string } 
           EXPOSURE {formatUSD(exposure)}{overdue ? ` · ${overdue} OVERDUE` : ""}{client.hold_active ? " · 🔒 HOLD ACTIVE" : ""}{client.watch_flag ? " · 👁 WATCH" : ""}
         </p>
       </div>
+      <div className="flex gap-2 mt-3">
+        <a href={`/api/statements/pdf?clientId=${client.id}`} target="_blank" className="flex-1 py-2.5 rounded-lg border text-center font-mono text-[9px] font-bold" style={{ borderColor: "#262C31", color: "#8B949C" }}>⬇ STATEMENT PDF</a>
+        <a href={`/api/statements/pdf?clientId=${client.id}&forCourt=1`} target="_blank" className="flex-1 py-2.5 rounded-lg border text-center font-mono text-[9px] font-bold" style={{ borderColor: "#F5B84B44", color: "#F5B84B" }}>⚖ COURT-RECITAL VERSION</a>
+      </div>
       <ControlsPanel clientId={client.id} initial={{
         accepted_methods: client.accepted_methods ?? ["ach"],
         auto_hold: client.auto_hold ?? true,
