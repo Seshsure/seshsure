@@ -9,6 +9,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           SESHSURE<span style={{ color: "#2DD4BF" }}> COMMAND</span>
         </Link>
         <nav className="flex gap-3 font-mono text-[9px]" style={{ color: "#8B949C" }}>
+          <Link href="/admin/goals">GOALS</Link>
+          <Link href="/admin/pipeline">PIPELINE</Link>
           <Link href="/admin/batches">BATCH</Link>
           <Link href="/admin/disputes">DISPUTES</Link>
           <Link href="/admin/board">BOARD</Link>

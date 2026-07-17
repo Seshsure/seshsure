@@ -72,7 +72,7 @@ _Every discussed feature, its status, and where it lives. Updated each build pas
 📋 Legal slice: court-packet export, demand letters, payment plans, judgment tracker
 📋 Pipeline: prospects, samples, show mode, referrals
 📋 Client 360 · health grades UI · Client Controls panel UI (columns ✅)
-📋 Goals dashboard (10M/mo line, concentration risk) · month-end ritual · data room export
+✅ Goals dashboard (units/mo vs 10M, T12M revenue vs $10M, blended margin vs 2.5¢ w/ cost-basis honesty flag, concentration) (10M/mo line, concentration risk) · month-end ritual · data room export
 📋 AI panels (read-and-draft) · public site · SOP binder · Terms/Privacy drafts
 🔒 QB import (awaits CSVs) · deploy (awaits accounts) · logo-dependent design passes
 
