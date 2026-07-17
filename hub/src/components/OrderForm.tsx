@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { ArtUploader } from "./ArtUploader";
 
 type P = { id: string; sku: string; description: string };
 type A = { id: string; label: string };
@@ -10,6 +11,7 @@ export function OrderForm({ products, addresses }: { products: P[]; addresses: A
   const [po, setPo] = useState("");
   const [supply, setSupply] = useState("");
   const [notes, setNotes] = useState("");
+  const [artId, setArtId] = useState<string | null>(null);
   const [state, setState] = useState<"idle"|"busy"|"done"|"err">("idle");
   const [msg, setMsg] = useState("");
 
@@ -23,6 +25,7 @@ export function OrderForm({ products, addresses }: { products: P[]; addresses: A
         shipAddressId: addressId, poNumber: po,
         weeksOfSupply: supply ? parseInt(supply) : undefined,
         specialInstructions: notes || undefined,
+        artAssetId: artId ?? undefined,
       }) });
     const j = await r.json();
     if (!r.ok) { setState("err"); setMsg(typeof j.error === "string" ? j.error : "check the form"); return; }
@@ -77,6 +80,9 @@ export function OrderForm({ products, addresses }: { products: P[]; addresses: A
           <input value={supply} onChange={e => setSupply(e.target.value.replace(/\D/g,""))} placeholder="8" inputMode="numeric" className={inp} style={{ borderColor: "#E4E1DA" }} />
         </div>
       </div>
+      <ArtUploader onRegistered={setArtId} />
+      {artId && <p className="font-mono text-[8px] mt-1" style={{ color: "#0D9488" }}>✓ ART ATTACHED TO THIS ORDER</p>}
+
       <label className={lbl} style={{ color: "#6E756B" }}>SPECIAL INSTRUCTIONS</label>
       <input value={notes} onChange={e => setNotes(e.target.value)} className={inp} style={{ borderColor: "#E4E1DA" }} />
 

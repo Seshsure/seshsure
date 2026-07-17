@@ -94,3 +94,8 @@ Fees to payer · cleared-funds only · flagship never boards · no auto-retry on
 - ✅ Factory-side onboarding wizard (/factory/onboarding): terms e-sign w/ evidence + spec acknowledgment, gated sequencing
 - ✅ Legal drafts (attorney-review flagged): Terms of Use, Privacy Policy, Factory Services Agreement w/ strict customs-valuation clause (forecloses $0.01 goods/services undervaluation — 19 USC 1592; first-sale flagged as the lawful alternative)
 - ✅ SOP binder: index + SOPs 01 batch, 03 dispute, 04 ACH return (code-by-code), 05 demand letter, 08 month-end
+
+- ✅ Storage rails (migration 0015): private buckets art (50MB) + dispute-media (100MB), path-per-client RLS walls, factories read dispute evidence for their runs only, never client art
+- ✅ Signed direct-to-storage uploads (/api/uploads/sign + uploadDirect): server validates type/size/ownership, browser PUTs straight to storage — big videos never touch Vercel's 4.5MB cap
+- ✅ Branded-art flow: ArtUploader in order form → canvas wrap mockup (labeled DIGITAL PREVIEW, portal-internal only) + honest print-readiness verdict (vector passes; raster checked vs 5400×1800 @300DPI wrap target) → art_assets registered → attached to order
+- ✅ Dispute filing UI (/portal/disputes/new): full form, camera-capture photos REQUIRED (video alone rejected), video ≤100MB, production-stopped urgency toggle, media kinds recorded

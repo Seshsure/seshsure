@@ -17,6 +17,7 @@ const Body = z.object({
   desiredResolution: z.enum(["replacement","credit","refund","other"]).optional(),
   batchBehavior: z.string().max(1000).optional(),
   mediaPaths: z.array(z.string()).min(1, "photos are required — they protect you"),
+  mediaKinds: z.array(z.enum(["photo","video"])).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -68,8 +69,14 @@ export async function POST(req: NextRequest) {
   }).select("id").single();
   if (error || !dispute) return NextResponse.json({ error: error?.message }, { status: 500 });
 
-  for (const path of b.mediaPaths) {
-    await sb.from("dispute_media").insert({ dispute_id: dispute.id, path, uploaded_by: user.id });
+  const hasPhoto = !b.mediaKinds || b.mediaKinds.some(k => k === "photo");
+  if (!hasPhoto) return NextResponse.json({ error: "at least one PHOTO is required (video alone isn't enough)" }, { status: 400 });
+  for (const [i, path] of b.mediaPaths.entries()) {
+    if (!path.startsWith(`${prof.client_id}/`)) continue;   // path must live in the client's own folder
+    await sb.from("dispute_media").insert({
+      dispute_id: dispute.id, path, uploaded_by: user.id,
+      media_kind: b.mediaKinds?.[i] ?? "photo",
+    });
   }
   if (b.invoiceId) {
     await sb.from("invoices").update({ dispute_paused: true }).eq("id", b.invoiceId);

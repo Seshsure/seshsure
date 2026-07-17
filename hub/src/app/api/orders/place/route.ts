@@ -15,6 +15,7 @@ const Body = z.object({
   specialInstructions: z.string().max(2000).optional(),
   weeksOfSupply: z.number().int().positive().max(104).optional(),
   weeklyUsage: z.number().int().positive().optional(),
+  artAssetId: z.string().uuid().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
     brand_id: b.brandId ?? null, special_instructions: b.specialInstructions ?? null,
     weeks_of_supply: b.weeksOfSupply ?? null, weekly_usage: b.weeklyUsage ?? null,
     placed_by: user.id,
+    art_asset_id: b.artAssetId ?? null,
   }).select("id").single();
   if (error || !order) return NextResponse.json({ error: error?.message ?? "order failed" }, { status: 500 });
 
