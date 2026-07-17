@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SeshSure Hub — System Tour</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#07090B; color:#E8EAEC; font-family:-apple-system,'Segoe UI',Inter,sans-serif; }
+  .mono { font-family:ui-monospace,'SF Mono',Menlo,monospace; }
+  header { position:sticky; top:0; z-index:50; background:#07090Bee; backdrop-filter:blur(8px); border-bottom:1px solid #1B2126; padding:14px 16px; }
+  header h1 { font-size:15px; font-weight:800; letter-spacing:.5px; }
+  header h1 span { color:#2DD4BF; }
+  header p { font-size:9px; color:#5C666D; margin-top:2px; font-family:ui-monospace,monospace; }
+  nav { display:flex; gap:6px; overflow-x:auto; padding:10px 16px; position:sticky; top:57px; z-index:49; background:#07090Bee; backdrop-filter:blur(8px); border-bottom:1px solid #1B2126; -webkit-overflow-scrolling:touch; }
+  nav button { flex-shrink:0; font-family:ui-monospace,monospace; font-size:9px; font-weight:700; padding:7px 11px; border-radius:99px; border:1px solid #262C31; background:transparent; color:#8B949C; cursor:pointer; }
+  nav button.on { background:#2DD4BF; color:#0C0F11; border-color:#2DD4BF; }
+  .grp { display:none; padding:16px; max-width:520px; margin:0 auto; }
+  .grp.on { display:block; }
+  .screen { margin-bottom:26px; }
+  .screen > h2 { font-size:12px; font-weight:800; color:#E8EAEC; margin-bottom:2px; }
+  .screen > h2 .path { font-family:ui-monospace,monospace; font-size:8px; color:#2DD4BF; font-weight:700; margin-left:6px; }
+  .screen > p.cap { font-size:9.5px; color:#5C666D; margin-bottom:8px; line-height:1.5; }
+  .frame { border-radius:18px; border:1px solid #262C31; overflow:hidden; box-shadow:0 8px 40px #0008; }
+  .frame.dark { background:#0C0F11; }
+  .frame.light { background:#F4F2ED; color:#15181A; }
+  /* dark widgets */
+  .dbar { display:flex; justify-content:space-between; align-items:center; padding:11px 13px; border-bottom:1px solid #262C31; }
+  .dbar b { font-size:12px; } .dbar b span { color:#2DD4BF; }
+  .dbar .links { font-family:ui-monospace,monospace; font-size:7px; color:#8B949C; letter-spacing:.5px; }
+  .card { background:#14181B; border:1px solid #262C31; border-radius:9px; margin:10px 12px; overflow:hidden; }
+  .card .hd { padding:7px 11px; border-bottom:1px solid #262C31; font-family:ui-monospace,monospace; font-size:8px; font-weight:700; color:#8B949C; letter-spacing:.4px; display:flex; justify-content:space-between; }
+  .row { padding:8px 11px; border-bottom:1px solid #262C31; }
+  .row:last-child { border-bottom:none; }
+  .row .t { font-size:11px; } .row .s { font-family:ui-monospace,monospace; font-size:7px; color:#5C666D; margin-top:2px; }
+  .flexr { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .tiles { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:10px 12px 0; }
+  .tile { background:#14181B; border:1px solid #262C31; border-radius:8px; padding:8px; }
+  .tile .l { font-family:ui-monospace,monospace; font-size:6px; font-weight:700; color:#5C666D; }
+  .tile .v { font-family:ui-monospace,monospace; font-size:12px; font-weight:700; margin-top:3px; }
+  .badge { font-family:ui-monospace,monospace; font-size:6.5px; font-weight:700; padding:2px 5px; border-radius:4px; }
+  .btn { display:block; text-align:center; font-weight:800; font-size:11px; padding:10px; border-radius:8px; margin:10px 12px; }
+  .btn.teal { background:#2DD4BF; color:#0C0F11; }
+  .chips { display:flex; gap:4px; flex-wrap:wrap; padding:8px 11px; }
+  .chip { font-family:ui-monospace,monospace; font-size:7px; font-weight:700; padding:4px 7px; border-radius:5px; border:1px solid #262C31; color:#8B949C; }
+  .chip.on { background:#2DD4BF; color:#0C0F11; border-color:#2DD4BF; }
+  .chip.red { background:#E5484D; color:#0C0F11; border-color:#E5484D; }
+  .bar { height:7px; border-radius:99px; background:#0C0F11; margin-top:6px; overflow:hidden; }
+  .bar i { display:block; height:100%; border-radius:99px; }
+  .tgl { width:30px; height:17px; border-radius:99px; padding:2px; flex-shrink:0; }
+  .tgl i { display:block; width:13px; height:13px; border-radius:99px; background:#E8EAEC; }
+  .tgl.on { background:#2DD4BF; } .tgl.on i { margin-left:13px; } .tgl.off { background:#262C31; }
+  .tgl.red { background:#E5484D; } .tgl.red i { margin-left:13px; }
+  table.xls { width:100%; border-collapse:collapse; font-family:ui-monospace,monospace; font-size:7.5px; }
+  table.xls th { background:#0C0F11; color:#8B949C; font-size:6.5px; text-align:left; padding:5px 6px; border:1px solid #262C31; }
+  table.xls td { padding:5px 6px; border:1px solid #262C31; }
+  /* light widgets */
+  .lbar { display:flex; justify-content:space-between; align-items:center; padding:11px 13px; border-bottom:1px solid #E4E1DA; }
+  .lbar b { font-size:12px; color:#15181A; } .lbar b span { color:#0D9488; }
+  .lbar .links { font-family:ui-monospace,monospace; font-size:7px; color:#6E756B; letter-spacing:.5px; }
+  .lcard { background:#fff; border:1px solid #E4E1DA; border-radius:11px; margin:10px 12px; overflow:hidden; }
+  .lrow { padding:9px 12px; border-bottom:1px solid #E4E1DA; }
+  .lrow:last-child { border-bottom:none; }
+  .lrow .t { font-size:11px; color:#15181A; } .lrow .s { font-family:ui-monospace,monospace; font-size:7px; color:#6E756B; margin-top:2px; }
+  .lbtn { display:block; text-align:center; font-weight:800; font-size:11px; padding:10px; border-radius:8px; margin:10px 12px; background:#15181A; color:#fff; }
+  .lbtn.teal { background:#0D9488; }
+  .inp { margin:0 12px 8px; }
+  .inp label { font-family:ui-monospace,monospace; font-size:7px; font-weight:700; color:#6E756B; display:block; margin-bottom:3px; }
+  .inp div { border:1px solid #E4E1DA; border-radius:7px; padding:8px 10px; font-size:11px; color:#15181A; background:#fff; }
+  .dot { width:11px; height:11px; border-radius:99px; border:2px solid #D9D6CE; background:#fff; flex-shrink:0; }
+  .dot.done { border-color:#0D9488; background:#0D9488; }
+  .vline { width:2px; height:16px; background:#E4E1DA; margin-left:4.5px; }
+  .vline.done { background:#0D9488; }
+  .note { font-family:ui-monospace,monospace; font-size:7px; color:#5C666D; padding:6px 13px 12px; line-height:1.6; }
+  .lnote { font-family:ui-monospace,monospace; font-size:7px; color:#9B9F98; padding:6px 13px 12px; line-height:1.6; }
+  .sys h3 { font-size:11px; font-weight:800; color:#2DD4BF; margin:16px 0 6px; font-family:ui-monospace,monospace; letter-spacing:.5px; }
+  .sys li { font-size:10px; color:#B8BEC4; line-height:1.7; margin-left:16px; }
+  .sys .rule { font-family:ui-monospace,monospace; font-size:8.5px; color:#8B949C; line-height:1.9; }
+  .grade { width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-family:ui-monospace,monospace; font-weight:800; font-size:12px; flex-shrink:0; }
+</style></head><body>
+<header><h1>SESHSURE<span> HUB</span> — SYSTEM TOUR</h1><p>EVERYTHING BUILT · 56 ROUTES · 23 WORKERS · 14 MIGRATIONS / 432 STATEMENTS · SAMPLE DATA SHOWN</p></header>
+<nav>
+  <button class="on" data-g="admin">YOUR COMMAND</button>
+  <button data-g="money">MONEY & LEGAL</button>
+  <button data-g="client">CLIENT PORTAL</button>
+  <button data-g="factory">FACTORY PORTAL</button>
+  <button data-g="public">PUBLIC</button>
+  <button data-g="engine">THE ENGINE</button>
+</nav>
+<div class="grp on" id="g-admin">
+
+<div class="screen"><h2>Command<span class="path">/admin</span></h2>
+<p class="cap">Your morning screen. Three vitals, orders waiting on you, the task queue the 23 workers feed.</p>
+<div class="frame dark">
+<div class="dbar"><b>SESHSURE<span> COMMAND</span></b><span class="links">GOALS · CLIENTS · PIPELINE · BATCH · DISPUTES · BOARD</span></div>
+<div class="tiles">
+  <div class="tile"><div class="l">AR OUT</div><div class="v" style="color:#E5484D">$41,220.00</div></div>
+  <div class="tile"><div class="l">OVERDUE</div><div class="v" style="color:#E5484D">2</div></div>
+  <div class="tile"><div class="l">BATCH READY</div><div class="v" style="color:#2DD4BF">$18,500.00</div></div>
+</div>
+<div class="card" style="border-color:#2DD4BF44"><div class="hd" style="color:#2DD4BF">ORDERS AWAITING YOUR APPROVAL</div>
+  <div class="row flexr"><span class="t">Grizzly Peak · PO GP-2231</span><span class="mono" style="font-size:8px;color:#2DD4BF">REVIEW →</span></div>
+  <div class="row flexr"><span class="t">KO Distro · PO KO-118</span><span class="mono" style="font-size:8px;color:#2DD4BF">REVIEW →</span></div>
+</div>
+<div class="card"><div class="hd">YOUR QUEUE</div>
+  <div class="row"><div class="t">🔴 ACH RETURNED (R01) — $4,860.00 — your call on next step</div><div class="s" style="color:#E5484D">DUE TODAY</div></div>
+  <div class="row"><div class="t">⚖️ Demand letter drafted: Slow Burn Farms — $19,188 · review & send</div><div class="s">DUE TODAY</div></div>
+  <div class="row"><div class="t">🚨 FREIGHT DEMURRAGE RISK: 2 free days left at port</div><div class="s">DUE TODAY</div></div>
+  <div class="row"><div class="t">📞 Sample day-3: call Bloom — first impressions</div><div class="s">DUE JUL 18</div></div>
+</div></div></div>
+
+<div class="screen"><h2>Order approval — the cockpit<span class="path">/admin/orders/[id]</span></h2>
+<p class="cap">Margin math runs before Tap 1: flagship enforces the 15¢ PROFIT floor against landed cost (blocks with the exact numbers if violated), credit ceiling checks live exposure. Then the deposit dial and routing — assign a factory (rate + honest on-time score + load shown) or post to the Run Board. Flagship physically can't board.</p>
+<div class="frame dark">
+<div class="card"><div class="hd"><span>GRIZZLY PEAK · PO GP-2231</span><span class="badge" style="background:#2DD4BF22;color:#2DD4BF">FLAGSHIP</span></div>
+  <div class="row flexr"><div><div class="t">SeshSure Cone 109mm — branded</div><div class="s">500,000 CONES @ 50.00¢/CONE</div></div><b class="mono" style="font-size:12px">$250,000.00</b></div>
+  <div class="row flexr" style="background:#0C0F11"><b style="font-size:12px">Order total</b><b class="mono" style="font-size:13px;color:#2DD4BF">$250,000.00</b></div>
+</div>
+<div class="card"><div class="hd">DEPOSIT</div>
+  <div class="chips"><span class="chip">0% — START NOW</span><span class="chip">25%</span><span class="chip on">50%</span><span class="chip">100%</span></div>
+  <div class="hd" style="border-top:1px solid #262C31">ROUTING</div>
+  <div class="chips"><span class="chip on" style="background:#E8EAEC;border-color:#E8EAEC">ASSIGN FACTORY</span><span class="chip" style="opacity:.4">BOARD — BLOCKED (FLAGSHIP)</span></div>
+  <div class="row flexr"><div><div class="t">Factory A ✓ flagship-approved</div><div class="s">31.20¢/CONE · ON-TIME 94% (26 RUNS) · 2 OPEN RUNS</div></div><div class="dot done" style="border-color:#2DD4BF;background:#2DD4BF"></div></div>
+  <div class="row flexr" style="opacity:.4"><div><div class="t">Factory B — NOT FLAGSHIP-APPROVED</div><div class="s">28.90¢/CONE · COLLECTING (4 RUNS) · 1 OPEN RUN</div></div><div class="dot"></div></div>
+</div>
+<a class="btn teal">Approve order</a>
+<div class="note">IF PRICE − LANDED &lt; 15¢: "BLOCKED: profit 12.40¢/cone &lt; 15¢ floor (price 50.00¢ − landed 37.60¢)" · NO COST BASIS ON FILE ALSO BLOCKS</div>
+</div></div>
+
+<div class="screen"><h2>Clients — health grades<span class="path">/admin/clients</span></h2>
+<p class="cap">A–F computed from payment behavior, never typed. Under 3 paid invoices = "collecting", an ACH return caps at D, open overdue blocks A. The basis prints under every grade — a grade is an argument, not a vibe.</p>
+<div class="frame dark">
+<div class="card"><div class="hd">CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</div>
+  <div class="row flexr"><div class="grade" style="background:#2DD4BF18;color:#2DD4BF">A</div><div style="flex:1;margin:0 8px"><div class="t"><b>Grizzly Peak</b></div><div class="s">97% ON-TIME (34) · AVG 0D LATE</div></div><div style="text-align:right"><div class="mono" style="font-size:10px;font-weight:700">$250,000</div><div class="s">EXPOSURE</div></div></div>
+  <div class="row flexr"><div class="grade" style="background:#F5B84B18;color:#F5B84B">C</div><div style="flex:1;margin:0 8px"><div class="t"><b>KO Distro</b> <span class="mono" style="font-size:7px;color:#F5B84B">👁</span></div><div class="s">74% ON-TIME (19) · AVG 6D LATE · 1 RETURN → CAPPED</div></div><div style="text-align:right"><div class="mono" style="font-size:10px;font-weight:700;color:#E5484D">$12,320</div><div class="s">EXPOSURE</div></div></div>
+  <div class="row flexr"><div class="grade" style="background:#E5484D18;color:#E5484D">F</div><div style="flex:1;margin:0 8px"><div class="t"><b>Slow Burn Farms</b> <span class="mono" style="font-size:7px;color:#E5484D">🔒 HOLD</span></div><div class="s">31% ON-TIME (13) · AVG 41D LATE</div></div><div style="text-align:right"><div class="mono" style="font-size:10px;font-weight:700;color:#E5484D">$19,188</div><div class="s">EXPOSURE</div></div></div>
+  <div class="row flexr"><div class="grade" style="background:#5C666D18;color:#5C666D">—</div><div style="flex:1;margin:0 8px"><div class="t"><b>Bloom</b></div><div class="s">2 PAID INVOICES — COLLECTING</div></div><div style="text-align:right"><div class="mono" style="font-size:10px;font-weight:700">$8,400</div><div class="s">EXPOSURE</div></div></div>
+</div></div></div>
+
+<div class="screen"><h2>Client Controls — the switchboard<span class="path">/admin/clients/[id]</span></h2>
+<p class="cap">Every relationship dial on one screen, every flip audited with before/after. Demand-letter drafts for this client sit directly below.</p>
+<div class="frame dark">
+<div class="card"><div class="hd"><span>CLIENT CONTROLS — EVERY FLIP AUDITED</span><span style="color:#2DD4BF">✓ SAVED &amp; LOGGED</span></div>
+  <div class="row"><div class="s" style="margin-bottom:5px">PAYMENT METHODS</div><div style="display:flex;gap:4px"><span class="chip on">ACH</span><span class="chip on">WIRE</span><span class="chip on">CHECK</span><span class="chip">CASH</span><span class="chip on">CARD</span></div></div>
+  <div class="row flexr"><div><div class="t"><b>Hold — pause ordering NOW</b></div><div class="s">MANUAL FREEZE, INDEPENDENT OF THE LADDER</div></div><div class="tgl off"><i></i></div></div>
+  <div class="row flexr"><div><div class="t"><b>Auto-hold at final notice</b></div><div class="s">21-DAY LADDER STEP LOCKS ORDERING</div></div><div class="tgl on"><i></i></div></div>
+  <div class="row flexr"><div><div class="t"><b>Absorb card fees</b></div><div class="s">RELATIONSHIP COST — SHOWS IN PER-CLIENT MARGIN</div></div><div class="tgl off"><i></i></div></div>
+  <div class="row"><div class="s" style="margin-bottom:5px">DEFAULT DEPOSIT</div><div style="display:flex;gap:4px"><span class="chip">0%</span><span class="chip">25%</span><span class="chip on" style="background:#E8EAEC;border-color:#E8EAEC">50%</span><span class="chip">100%</span></div></div>
+</div>
+<div class="card" style="border-color:#F5B84B44"><div class="hd" style="color:#F5B84B">DEMAND LETTERS — DRAFTED BY MACHINE, SENT BY YOU</div>
+  <div class="row flexr"><span class="t">$19,188 · drafted 2026-07-16</span><span class="badge" style="background:#F5B84B22;color:#F5B84B">DRAFT</span></div>
+  <div class="chips"><span class="chip">EMAIL</span><span class="chip">CERTIFIED MAIL</span><span class="chip on" style="background:#E8EAEC;border-color:#E8EAEC">BOTH</span></div>
+  <a class="btn" style="background:#F5B84B;color:#0C0F11">Approve &amp; send</a>
+  <div class="note">FULL LETTER TEXT IS EDITABLE BEFORE SENDING · CERTIFIED: KEEP THE GREEN CARD — COURT EVIDENCE</div>
+</div></div></div>
+
+<div class="screen"><h2>Goals — the exit math<span class="path">/admin/goals</span></h2>
+<p class="cap">The four numbers an acquirer reads: volume, revenue, margin, resilience. Margin is volume-weighted price-minus-landed and flags honestly when cost basis is missing.</p>
+<div class="frame dark" style="padding-bottom:6px">
+<div class="card" style="padding:10px 12px"><div class="flexr"><span class="mono" style="font-size:8px;font-weight:700;color:#8B949C">UNITS THIS MONTH</span><span class="mono" style="font-size:12px;font-weight:700">1,830,000 <span style="font-size:8px;color:#5C666D">/ 10,000,000</span></span></div><div class="bar"><i style="width:18%;background:#2DD4BF"></i></div></div>
+<div class="card" style="padding:10px 12px"><div class="flexr"><span class="mono" style="font-size:8px;font-weight:700;color:#8B949C">TRAILING-12MO INVOICED</span><span class="mono" style="font-size:12px;font-weight:700">$1,214,300 <span style="font-size:8px;color:#5C666D">/ $10M</span></span></div><div class="bar"><i style="width:12%;background:#4B9BFF"></i></div></div>
+<div class="card" style="padding:10px 12px"><div class="flexr"><span class="mono" style="font-size:8px;font-weight:700;color:#8B949C">BLENDED MARGIN (90D)</span><span class="mono" style="font-size:12px;font-weight:700;color:#2DD4BF">2.84¢ <span style="font-size:8px;color:#5C666D">/ 2.50¢ TARGET</span></span></div><div class="bar"><i style="width:100%;background:#2DD4BF"></i></div><div class="s mono" style="font-size:6.5px;color:#F5B84B;margin-top:5px">⚠ SOME PRODUCTS LACK COST BASIS — MARGIN UNDERSTATED UNTIL RATE CARD COMPLETE</div></div>
+<div class="card" style="padding:10px 12px;border-color:#E5484D55"><div class="flexr"><span class="mono" style="font-size:8px;font-weight:700;color:#8B949C">TOP-FACTORY CONCENTRATION (90D)</span><span class="mono" style="font-size:12px;font-weight:700;color:#E5484D">96%</span></div><div class="bar"><i style="width:96%;background:#E5484D"></i></div><div class="s mono" style="font-size:6.5px;margin-top:5px">BUYERS DISCOUNT SINGLE-SOURCE SUPPLY CHAINS — RUN BOARD IS THE FIX</div></div>
+</div></div>
+
+<div class="screen"><h2>Pipeline<span class="path">/admin/pipeline</span></h2>
+<p class="cap">Stage strip, lead-source truth (the required field paying off), dormant clients with win-back running, samples with day-3/day-10 follow-up state.</p>
+<div class="frame dark">
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:10px 12px 0">
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#8B949C;font-size:11px">7</div><div class="l" style="font-size:5px">LEAD</div></div>
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#F5B84B;font-size:11px">2</div><div class="l" style="font-size:5px">PAPERWORK</div></div>
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#2DD4BF;font-size:11px">3</div><div class="l" style="font-size:5px">SAMPLE</div></div>
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#4B9BFF;font-size:11px">1</div><div class="l" style="font-size:5px">ONBOARD</div></div>
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#0D9488;font-size:11px">4</div><div class="l" style="font-size:5px">WON</div></div>
+  <div class="tile" style="text-align:center;padding:6px 2px"><div class="v" style="color:#5C666D;font-size:11px">2</div><div class="l" style="font-size:5px">LOST</div></div>
+</div>
+<div class="card" style="padding:8px 11px"><div class="s" style="margin-bottom:5px">WHERE LEADS COME FROM</div><div style="display:flex;gap:4px;flex-wrap:wrap"><span class="chip" style="background:#0C0F11;border:none">REFERRAL · 5</span><span class="chip" style="background:#0C0F11;border:none">SHOW:MJBIZCON · 4</span><span class="chip" style="background:#0C0F11;border:none">INSTAGRAM · 3</span><span class="chip" style="background:#0C0F11;border:none">LINKEDIN · 2</span></div></div>
+<div class="card"><div class="hd">SAMPLES OUT — DAY 3 + DAY 10 FOLLOW-UPS AUTO-QUEUE</div>
+  <div class="row flexr"><span class="t">Bloom <span class="mono" style="font-size:6.5px;color:#2DD4BF">BRANDED — HAND DELIVERY</span></span><span class="s">DAY 3 · ✓3 ·10</span></div>
+  <div class="row flexr"><span class="t">High Desert Roll Co</span><span class="s">DAY 11 · ✓3 ✓10</span></div>
+</div></div></div>
+
+</div>
+<div class="grp" id="g-money">
+
+<div class="screen"><h2>The daily batch tap<span class="path">/admin/batches</span></h2>
+<p class="cap">All authorized ACH debits pool here. Two-tap release, owner-only, with a race check — if the batch changes between look and tap, it 409s and makes you re-read. Release builds the bank-grade NACHA file for First Citizens.</p>
+<div class="frame dark">
+<div class="card"><div class="hd"><span>TODAY'S BATCH</span><span style="color:#2DD4BF">3 DEBITS</span></div>
+  <div class="row flexr"><span class="t">Grizzly Peak</span><b class="mono" style="font-size:11px">$12,500.00</b></div>
+  <div class="row flexr"><span class="t">KO Distro</span><b class="mono" style="font-size:11px">$4,860.00</b></div>
+  <div class="row flexr"><span class="t">Bloom</span><b class="mono" style="font-size:11px">$1,140.00</b></div>
+  <div class="row flexr" style="background:#0C0F11"><b style="font-size:12px">Total to release</b><b class="mono" style="font-size:14px;color:#2DD4BF">$18,500.00</b></div>
+</div>
+<a class="btn" style="background:#E8EAEC;color:#0C0F11">Release today's batch</a>
+<div class="note">TAP 2 CONFIRMS → NACHA FILE BUILT → PAYMENTS MARKED SUBMITTED → SETTLEMENT CLOCK (WORKER 1) TAKES OVER: +1BD SETTLED, +2BD CLEARED. CLEARED IS THE ONLY WORD PRODUCTION TRUSTS.</div>
+</div></div>
+
+<div class="screen"><h2>Disputes desk + detail<span class="path">/admin/disputes/[id]</span></h2>
+<p class="cap">Both stories side-by-side — a view only you have; the client↔factory firewall holds in their portals. Ruling requires root cause + scope. Lot-wide fires the blast-radius outreach task. Factory-fault replacement = $0 run, factory pays.</p>
+<div class="frame dark">
+<div class="card"><div class="hd"><span>SS-D-14 <span class="badge" style="background:#E5484D22;color:#E5484D">PRODUCTION STOPPED</span></span><span style="color:#F5B84B">UNDER REVIEW</span></div>
+<div class="row"><div class="s">KO DISTRO · R-2231 @ FACTORY A · LOT GL-20143-B · FILED DAY 4</div></div></div>
+<div style="display:flex;gap:6px;margin:0 12px">
+  <div class="card" style="margin:0;flex:1"><div class="hd" style="color:#4B9BFF">CLIENT'S STORY</div><div class="row"><div class="t" style="font-size:9.5px;line-height:1.5">"Roughly 15% of cases have ghosted print on the wrap. Pulled 3 cases at random, all affected."</div><div class="s">PRINT DEFECT · 75,000 UNITS · 12% INSPECTED · 4 PHOTOS</div></div></div>
+  <div class="card" style="margin:0;flex:1"><div class="hd" style="color:#F5B84B">FACTORY'S STORY</div><div class="row"><div class="t" style="font-size:9.5px;line-height:1.5">"Press warm-up sheets from setup may have been mixed into finished rolls. Checking lot QC records."</div><div class="s">RESPONDED 2026-07-15</div></div></div>
+</div>
+<div class="card"><div class="hd">YOUR RULING — ROOT CAUSE + SCOPE REQUIRED</div>
+  <div class="chips"><span class="chip on">FACTORY FAULT</span><span class="chip">FREIGHT DAMAGE</span><span class="chip">CLIENT-SIDE</span><span class="chip">NO FAULT</span><span class="chip">GOODWILL</span></div>
+  <div class="chips" style="border-top:1px solid #262C31"><span class="chip">THIS ORDER ONLY</span><span class="chip red">LOT-WIDE 💥</span></div>
+  <div class="chips" style="border-top:1px solid #262C31"><span class="chip on">REPLACEMENT</span><span class="chip">FULL CREDIT</span><span class="chip">PARTIAL</span><span class="chip">DENY</span></div>
+</div>
+<a class="btn teal">Rule &amp; close</a>
+<div class="note">ON RULE: CLIENT NOTIFIED · INVOICE UNPAUSES · $0 REPLACEMENT RUN CREATED · LOT-WIDE → "💥 2 OTHER CLIENTS TOUCHED THIS LOT — PROACTIVE OUTREACH?" TASK · SCORECARD COUNTS ONLY YOUR FACTORY-FAULT RULINGS</div>
+</div></div>
+
+<div class="screen"><h2>Run Board — sealed bids<span class="path">/admin/board</span></h2>
+<p class="cap">Factories bid blind — RLS shows each only its own bid. You see price WITH the honest scorecard beside it, so cheap-but-late never wins by accident. Award creates the run at bid price and stamps the routing.</p>
+<div class="frame dark">
+<div class="card"><div class="hd">RUN BOARD — SEALED BIDS · VALUE BESIDE PRICE</div>
+  <div class="row"><div class="t"><b>1,000,000 × 98mm commodity, white</b></div>
+    <div class="flexr" style="margin-top:6px;padding-left:8px"><div><div class="t" style="font-size:10px"><b>Factory A</b></div><div class="s">94% ON-TIME (26) · SHIP AUG 22</div></div><b class="mono" style="font-size:11px;color:#2DD4BF">2.95¢</b></div>
+    <div class="flexr" style="margin-top:5px;padding-left:8px"><div><div class="t" style="font-size:10px"><b>Factory B</b></div><div class="s">COLLECTING DATA (4 RUNS) · SHIP AUG 15</div></div><b class="mono" style="font-size:11px;color:#2DD4BF">2.71¢</b></div>
+  </div>
+</div>
+<div class="note">FLAGSHIP NEVER POSTS (TRIPLE-GATED: UI + POST 422 + ASSIGN 422) · CLIENT IDENTITY ANONYMIZED IN SPECS · AWARD AT BID PRICE FEEDS THE STATEMENT DISCREPANCY CHECK</div>
+</div></div>
+
+<div class="screen"><h2>Factory ledger — the live mirror<span class="path">/admin/factory-ledger</span></h2>
+<p class="cap">The factory types lines in their portal; you watch the same grid fill live, Excel-style. Rates that deviate from the agreed bid auto-flag with the dollar difference and raise a task. Settled lines lock.</p>
+<div class="frame dark" style="padding:10px 8px">
+<table class="xls">
+<tr><th>#</th><th>COMPANY</th><th>QTY</th><th>RATE</th><th>TOTAL</th><th>KIND</th><th>FLAG</th></tr>
+<tr><td style="color:#5C666D">1</td><td>GRIZZLY PEAK</td><td style="text-align:right">1,000,000</td><td style="text-align:right">2.95¢</td><td style="text-align:right"><b>$29,500.00</b></td><td style="color:#8B949C">GOODS</td><td></td></tr>
+<tr><td style="color:#5C666D">2</td><td>KO DISTRO</td><td style="text-align:right">500,000</td><td style="text-align:right">3.06¢</td><td style="text-align:right"><b>$15,300.00</b></td><td style="color:#8B949C">GOODS</td><td style="color:#F5B84B">⚠ +$525.00 VS BID</td></tr>
+<tr><td style="color:#5C666D">3</td><td>ART SETUP</td><td style="text-align:right">1</td><td style="text-align:right">—</td><td style="text-align:right"><b>$400.00</b></td><td style="color:#8B949C">SERVICES</td><td></td></tr>
+<tr><td colspan="4" style="background:#0C0F11;text-align:right;color:#8B949C"><b>SUM</b></td><td style="background:#0C0F11;text-align:right;color:#2DD4BF"><b>$45,200.00</b></td><td colspan="2" style="background:#0C0F11"></td></tr>
+</table>
+<div class="note">GOODS/SERVICES/FREIGHT SPLIT FEEDS TRUE-COGS · DISCREPANCY = AUTO-TASK, NOT SILENT DRIFT</div>
+</div></div>
+
+<div class="screen"><h2>Freight — the Desk<span class="path">/admin/freight</span></h2>
+<p class="cap">Every shipment goes to bid. Quotes sorted cheapest-first with transit days. Exceptions engine screams on no-scan &gt;5d, ETA slips, and the demurrage clock at ≤2 free days. Award pushes cost straight to landed COGS.</p>
+<div class="frame dark">
+<div class="card" style="border-color:#E5484D55"><div class="hd" style="color:#E5484D">EXCEPTIONS — NEED EYES</div>
+  <div class="row"><div class="t"><b>DEMURRAGE RISK</b></div><div class="s">2 FREE DAYS LEFT AT PORT</div></div>
+</div>
+<div class="card"><div class="hd">OPEN RFQS — THE DESK</div>
+  <div class="row"><div class="t"><b>SEA · 840 ctns · NHAVA SHEVA → DENVER</b></div>
+  <div class="flexr" style="margin-top:5px;padding-left:8px"><span class="t" style="font-size:10px">Forwarder One <span class="s" style="display:inline">32D TRANSIT</span></span><b class="mono" style="font-size:11px">$4,180.00</b></div>
+  <div class="flexr" style="margin-top:4px;padding-left:8px"><span class="t" style="font-size:10px">Forwarder Two <span class="s" style="display:inline">27D TRANSIT</span></span><b class="mono" style="font-size:11px">$4,920.00</b></div></div>
+</div>
+<div class="note">EASYPOST WEBHOOK (HMAC-VERIFIED) IS THE LIVE PATH · DELIVERED → BALANCE DUE DATE STAMPS WITHIN THE HOUR · CLIENTS SEE US-PORT-ONWARD ONLY, WALLED IN THE DATABASE</div>
+</div></div>
+
+<div class="screen"><h2>Legal artillery<span class="path">/api/legal/*</span></h2>
+<p class="cap">One-tap court packet: statement of account from CLEARED payments only with running balance, invoice-view evidence, ACH authorizations with IP/device, the reminder ladder history, signed agreements — the Douglas County filing kit, generation itself logged. Payment plans: certified-funds default, acceleration default, interest freezes on creation; worker 18 detects a missed installment by cleared date, defaults the plan, unfreezes interest, and tells you the full balance is due.</p>
+<div class="frame dark">
+<div class="card"><div class="hd">COURT PACKET — SLOW BURN FARMS LLC</div>
+  <div class="row"><div class="s" style="line-height:1.8">PLAINTIFF: VIDO MANUFACTURING AND DISTRIBUTION CORP D/B/A SESHSURE<br>VENUE: DOUGLAS COUNTY COUNTY COURT, COLORADO<br>OPEN BALANCE: $19,188.00 · INVOICES 1027, 1033<br>EVIDENCE: 14 INVOICE VIEWS · 2 ACH AUTHORIZATIONS (IP+UA) · 9 REMINDERS SENT · SIGNED AGREEMENT V3</div></div>
+</div>
+<div class="card"><div class="hd">PAYMENT PLAN — CASE 2026C122</div>
+  <div class="row flexr"><span class="t">#1 · $6,396 · AUG 20</span><span class="badge" style="background:#2DD4BF22;color:#2DD4BF">CLEARED</span></div>
+  <div class="row flexr"><span class="t">#2 · $6,396 · SEP 20</span><span class="badge" style="background:#F5B84B22;color:#F5B84B">PENDING</span></div>
+  <div class="row"><div class="s">CERTIFIED FUNDS ONLY ✓ · ACCELERATION ✓ · INTEREST FROZEN WHILE ACTIVE</div></div>
+</div>
+</div></div>
+
+</div>
+<div class="grp" id="g-client">
+
+<div class="screen"><h2>Login — 2FA<span class="path">/login</span></h2>
+<p class="cap">Password, then an email code — every session. Magic-link alternative. Invite-only; no self-serve signup exists anywhere.</p>
+<div class="frame dark" style="padding:26px 0;text-align:center">
+  <b style="font-size:18px">SESHSURE<span style="color:#2DD4BF"> HUB</span></b>
+  <div class="mono" style="font-size:7px;color:#5C666D;letter-spacing:2px;margin-top:4px">PUFF · PEEL · PASS ™</div>
+  <div class="card" style="text-align:left;max-width:280px;margin:16px auto 0">
+    <div class="row"><div class="s">6-DIGIT CODE FROM YOUR EMAIL</div>
+      <div class="mono" style="font-size:19px;letter-spacing:7px;text-align:center;padding:8px;background:#0C0F11;border:1px solid #262C31;border-radius:7px;margin-top:5px">4 8 2 • • •</div></div>
+    <a class="btn teal" style="margin:10px 11px">Verify &amp; enter</a>
+  </div>
+</div></div>
+
+<div class="screen"><h2>Portal home + invoices<span class="path">/portal</span></h2>
+<p class="cap">Warm paper-toned client world. Balance up front, one-tap into invoices; every invoice open writes a view-evidence record.</p>
+<div class="frame light">
+<div class="lbar"><b>SESHSURE<span> HUB</span></b><span class="links">INVOICES · ORDER · TRACKING · MONEY</span></div>
+<div style="display:flex;gap:8px;padding:10px 12px 0">
+  <div class="lcard" style="flex:1;margin:0;padding:10px"><div class="mono" style="font-size:6.5px;font-weight:700;color:#6E756B">OPEN BALANCE</div><div class="mono" style="font-size:15px;font-weight:800;color:#B4231F;margin-top:3px">$12,320.00</div><div class="mono" style="font-size:6.5px;color:#B4231F;margin-top:2px">1 OVERDUE</div></div>
+  <div style="flex:1;background:#15181A;border-radius:11px;display:flex;align-items:center;justify-content:center"><b style="color:#fff;font-size:12px">+ New order</b></div>
+</div>
+<div class="lcard">
+  <div class="lrow" style="display:flex;justify-content:space-between"><div><div class="t mono" style="font-weight:700">SS-1041</div><div class="s">BALANCE · DUE 2026-07-10</div></div><div style="text-align:right"><div class="mono" style="font-size:11px;font-weight:700;color:#15181A">$12,320.00</div><div class="mono" style="font-size:6.5px;font-weight:700;color:#B4231F">OVERDUE</div></div></div>
+  <div class="lrow" style="display:flex;justify-content:space-between"><div><div class="t mono" style="font-weight:700">SS-1038</div><div class="s">DEPOSIT · PAID JUL 02</div></div><div style="text-align:right"><div class="mono" style="font-size:11px;font-weight:700;color:#15181A">$14,750.00</div><div class="mono" style="font-size:6.5px;font-weight:700;color:#0D9488">PAID</div></div></div>
+</div></div></div>
+
+<div class="screen"><h2>Invoice + one-tap pay<span class="path">/portal/invoices/[id]</span></h2>
+<p class="cap">Full or partial (25% floor enforced server-side), scheduled up to the due date. Authorization records name, IP, device — the evidence that wins collection cases. No card fees on ACH.</p>
+<div class="frame light">
+<div class="lcard">
+  <div class="lrow" style="display:flex;justify-content:space-between"><div><div class="t mono" style="font-weight:700">SS-1041</div><div class="s">BALANCE · DUE 2026-07-10</div></div><b class="mono" style="font-size:15px">$12,320.00</b></div>
+  <div class="lrow" style="display:flex;justify-content:space-between"><span class="t">Balance — 98mm commodity × 500,000</span><span class="mono" style="font-size:10px">$12,320.00</span></div>
+</div>
+<div class="lcard">
+  <div class="inp" style="margin-top:10px"><label>PAY AMOUNT (USD)</label><div class="mono" style="font-size:16px">12,320.00</div></div>
+  <a class="lbtn teal">Pay by ACH</a>
+  <div class="lnote" style="text-align:center">BY TAPPING PAY YOU AUTHORIZE A ONE-TIME ACH DEBIT · NO CARD FEES ON ACH</div>
+</div></div></div>
+
+<div class="screen"><h2>Money — how you pay<span class="path">/portal/money</span></h2>
+<p class="cap">Method switching within what YOU enabled for them (Controls). Check shows remit-to; production credits only when funds clear — the cleared-funds law is method-agnostic.</p>
+<div class="frame light">
+<div class="lcard">
+  <div class="lrow"><div class="s" style="font-weight:700">HOW YOU PAY</div></div>
+  <div class="lrow" style="display:flex;align-items:center;background:#0D948808"><div class="dot done" style="margin-right:9px"></div><div><div class="t"><b>ACH — PAY IN PORTAL</b></div><div class="s">ONE TAP, NO FEES, FASTEST RECEIPT</div></div></div>
+  <div class="lrow" style="display:flex;align-items:center"><div class="dot" style="margin-right:9px"></div><div><div class="t"><b>WIRE</b></div><div class="s">SAME-DAY FOR LARGE AMOUNTS</div></div></div>
+  <div class="lrow" style="display:flex;align-items:center"><div class="dot" style="margin-right:9px"></div><div><div class="t"><b>CHECK</b></div><div class="s">PAYABLE TO VIDO MANUFACTURING AND DISTRIBUTION CORP · CLEARS BEFORE PRODUCTION CREDIT</div></div></div>
+  <div class="lrow"><div class="s">BANK: ••••4417 · VERIFIED ✓</div></div>
+</div></div></div>
+
+<div class="screen"><h2>Order placement<span class="path">/portal/orders/new</span></h2>
+<p class="cap">Server-side pricing only — the client never sends a price. PO required. Flagship redirects to the pre-order/partnership path. "Weeks this order lasts you" quietly feeds the reorder radar.</p>
+<div class="frame light">
+<div class="lcard" style="padding-bottom:4px">
+  <div class="inp" style="margin-top:10px"><label>PRODUCT</label><div>98mm commodity cone — white</div></div>
+  <div style="display:flex;gap:8px"><div class="inp" style="flex:1"><label>CONES</label><div class="mono">500,000</div></div><div class="inp" style="flex:1"><label>WEEKS THIS LASTS YOU</label><div class="mono">8</div></div></div>
+  <div class="inp"><label>YOUR PO NUMBER *</label><div class="mono">KO-119</div></div>
+  <div class="inp"><label>SHIP TO</label><div>Main warehouse — Denver</div></div>
+  <a class="lbtn">Submit order</a>
+  <div class="lnote" style="text-align:center">PRICING PER YOUR AGREEMENT · CONFIRMATION + TIMELINE FOLLOWS APPROVAL</div>
+</div></div></div>
+
+<div class="screen"><h2>Tracking — four milestones<span class="path">/portal/tracking</span></h2>
+<p class="cap">US port → customs → out for delivery → delivered. Everything upstream is structurally invisible — the wall is a database policy, not a UI choice.</p>
+<div class="frame light">
+<div class="lcard" style="padding:12px">
+  <div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:10px;font-weight:700;color:#15181A">SS-O-1027 · PO KO-118</span><span class="mono" style="font-size:7px;font-weight:700;color:#6E756B">SHIPPED</span></div>
+  <div style="margin-top:10px">
+    <div style="display:flex;align-items:center"><div class="dot done"></div><span style="font-size:10.5px;font-weight:700;margin-left:9px;color:#15181A">Arrived US port <span class="mono" style="font-size:6.5px;color:#6E756B">JUL 12</span></span></div><div class="vline done"></div>
+    <div style="display:flex;align-items:center"><div class="dot done"></div><span style="font-size:10.5px;font-weight:700;margin-left:9px;color:#15181A">Customs cleared <span class="mono" style="font-size:6.5px;color:#6E756B">JUL 14</span></span></div><div class="vline"></div>
+    <div style="display:flex;align-items:center"><div class="dot"></div><span style="font-size:10.5px;margin-left:9px;color:#9B9F98">Out for delivery</span></div><div class="vline"></div>
+    <div style="display:flex;align-items:center"><div class="dot"></div><span style="font-size:10.5px;margin-left:9px;color:#9B9F98">Delivered</span></div>
+  </div>
+  <div class="mono" style="font-size:8px;font-weight:700;color:#0D9488;margin-top:8px">ETA 2026-07-18</div>
+</div></div></div>
+
+<div class="screen"><h2>Dispute filing<span class="path">/portal (claims flow)</span></h2>
+<p class="cap">Photos required — they protect the client too. Outside-7-day filings flag for review, never hard-reject. Filing pauses collections on the invoice and starts your internal-only 24h/5d SLA clocks. Quarantine instruction on submit.</p>
+<div class="frame light">
+<div class="lcard" style="padding:12px;text-align:center">
+  <div style="font-size:13px;font-weight:800;color:#0D9488">✓ Dispute received — SS-D-14</div>
+  <div style="font-size:10px;color:#6E756B;margin-top:6px;line-height:1.6">QUARANTINE the affected product — don't use or discard it; we may need samples returned. You'll hear from us within one business day.</div>
+</div></div></div>
+
+</div>
+<div class="grp" id="g-factory">
+
+<div class="screen"><h2>Runs — confirm &amp; promise<span class="path">/factory/runs</span></h2>
+<p class="cap">48-hour confirmation clock visible on every placed run (watchdog nudges you at breach). Promise date required, no past dates. Post-confirmation date changes don't silently edit — they park as a revision and raise your acknowledgment task: the promise-slip discipline.</p>
+<div class="frame light">
+<div class="lcard">
+  <div class="lrow"><div style="display:flex;justify-content:space-between;align-items:center"><span class="mono" style="font-size:10px;font-weight:700;color:#15181A">R-2244</span><span class="badge" style="background:#0D948810;color:#B4231F">AWAITING CONFIRMATION · 51H</span></div>
+  <div class="s">1,000,000 cones · 98mm white · Grizzly Peak</div>
+  <div style="display:flex;gap:6px;margin-top:8px;align-items:flex-end"><div class="inp" style="flex:1;margin:0"><label>PROMISE SHIP DATE</label><div class="mono">2026-08-22</div></div><div style="background:#15181A;color:#fff;font-weight:800;font-size:10px;padding:9px 14px;border-radius:7px">Confirm run</div></div></div>
+  <div class="lrow"><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:10px;font-weight:700;color:#15181A">R-2238</span><span class="badge" style="background:#0D948810;color:#0D9488">IN PRODUCTION</span></div><div class="s">500,000 · PROMISE 2026-08-02</div></div>
+</div></div></div>
+
+<div class="screen"><h2>Board — sealed bidding<span class="path">/factory/board</span></h2>
+<p class="cap">Opens only after the qualification run (gate enforced server-side AND by your flip). They see specs and windows, never client identity, never rival bids.</p>
+<div class="frame light">
+<div class="lcard">
+  <div class="lrow"><div class="t"><b>1,000,000 × 98mm commodity, white</b></div><div class="s">WINDOW: FLEXIBLE · BIDS CLOSE JUL 22</div>
+  <div style="display:flex;gap:6px;margin-top:8px;align-items:flex-end">
+    <div class="inp" style="flex:1;margin:0"><label>¢/CONE</label><div class="mono">2.71</div></div>
+    <div class="inp" style="flex:1;margin:0"><label>SHIP BY</label><div class="mono">2026-08-15</div></div>
+    <div style="background:#15181A;color:#fff;font-weight:800;font-size:10px;padding:9px 13px;border-radius:7px">Bid</div>
+  </div></div>
+  <div class="lrow"><div class="mono" style="font-size:9px;font-weight:700;color:#0D9488">✓ YOUR BID: 2.71¢/CONE — SEALED</div></div>
+</div></div></div>
+
+<div class="screen"><h2>Claims — firewalled<span class="path">/factory/claims</span></h2>
+<p class="cap">They see the claim and evidence for THEIR runs only. Their response reaches you, never the client. The database enforces it, not politeness.</p>
+<div class="frame light">
+<div class="lcard">
+  <div class="lrow"><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:10px;font-weight:700;color:#15181A">SS-D-14</span><span class="mono" style="font-size:7px;font-weight:700;color:#B4231F">RESPONSE NEEDED</span></div>
+  <div class="s">PRINT DEFECT · LOT GL-20143-B · 75,000 UNITS</div>
+  <div class="inp" style="margin:8px 0 0"><div style="font-size:9.5px;color:#9B9F98">Your side: lot QC records, press settings, what you see in the photos…</div></div>
+  <div style="background:#15181A;color:#fff;font-weight:800;font-size:10px;padding:9px;border-radius:7px;text-align:center;margin-top:6px">Send response to SeshSure</div></div>
+</div>
+<div class="lnote">YOUR RESPONSE GOES TO SESHSURE — SESHSURE RULES AND HANDLES THE CUSTOMER</div>
+</div></div>
+
+<div class="screen"><h2>Partner setup + statement<span class="path">/factory/onboarding</span></h2>
+<p class="cap">Their side: e-sign (NDA + non-circumvention, evidence recorded), acknowledge specs per version. Terms and rates are set with you directly. Below: their statement-of-account line builder — what fills your live Excel mirror.</p>
+<div class="frame light">
+<div class="lcard" style="padding:11px">
+  <div class="mono" style="font-size:8px;font-weight:700;color:#6E756B">STEP 1 — AGREEMENTS</div>
+  <div class="mono" style="font-size:9px;font-weight:700;color:#0D9488;margin-top:5px">✓ SIGNED &amp; ON FILE — BY R. SHARMA, DIRECTOR</div>
+</div>
+<div class="lcard" style="padding:11px">
+  <div class="mono" style="font-size:8px;font-weight:700;color:#6E756B">STEP 2 — SPEC ACKNOWLEDGMENT</div>
+  <div style="font-size:10.5px;color:#15181A;margin-top:5px">☑ 98mm commodity spec <span class="mono" style="font-size:7px;color:#9B9F98">v4</span><br>☑ Wrap application spec <span class="mono" style="font-size:7px;color:#9B9F98">v2</span></div>
+</div>
+<div class="lcard" style="padding:11px">
+  <div class="mono" style="font-size:8px;font-weight:700;color:#6E756B">ADD STATEMENT LINE</div>
+  <div style="display:flex;gap:5px;margin-top:6px"><div class="inp" style="flex:2;margin:0"><label>COMPANY</label><div style="font-size:10px">Grizzly Peak</div></div><div class="inp" style="flex:1;margin:0"><label>QTY</label><div class="mono" style="font-size:10px">1,000,000</div></div><div class="inp" style="flex:1;margin:0"><label>RATE ¢</label><div class="mono" style="font-size:10px">2.95</div></div></div>
+</div></div></div>
+
+</div>
+<div class="grp" id="g-public">
+
+<div class="screen"><h2>Public intake<span class="path">/start</span></h2>
+<p class="cap">No login. Lead source required. Hidden honeypot silently swallows bots. Normal leads → your task same day.</p>
+<div class="frame light" style="padding:16px 0 4px">
+<div style="padding:0 16px"><b style="font-size:17px;color:#15181A">SESHSURE<span style="color:#0D9488">.</span></b>
+<div style="font-size:10px;color:#6E756B;margin-top:2px">Wholesale pre-roll cones. Tell us a little and a human replies within one business day.</div></div>
+<div class="lcard" style="padding-bottom:4px;margin-top:10px">
+  <div class="inp" style="margin-top:10px"><label>COMPANY *</label><div>High Desert Roll Co</div></div>
+  <div class="inp"><label>EMAIL *</label><div>buyer@highdesert.co</div></div>
+  <div class="inp"><label>HOW'D YOU HEAR ABOUT US? *</label><div>Referral — Grizzly Peak</div></div>
+  <div class="inp"><label>WHAT DO YOU ROLL? (OPTIONAL)</label><div>98mm, ~500K/month, white paper</div></div>
+  <a class="lbtn">Talk cones with us</a>
+</div></div></div>
+
+<div class="screen"><h2>Show mode<span class="path">/start?show=MJBizCon</span></h2>
+<p class="cap">Same page, QR-ready. Every booth scan lands tagged show:MJBizCon — no auto-emails (your rule), straight into the pipeline instead of a business-card pile. Print one QR per show: MJ Unpacked, Hall of Flowers, MJBizCon.</p>
+<div class="frame light" style="padding:20px;text-align:center">
+  <div style="width:86px;height:86px;margin:0 auto;background:repeating-conic-gradient(#15181A 0 25%,#F4F2ED 0 50%) 0 0/14px 14px;border-radius:8px"></div>
+  <div class="mono" style="font-size:8px;font-weight:700;color:#6E756B;margin-top:10px">SCAN → LANDS AS SHOW:MJBIZCON → PIPELINE</div>
+  <div style="font-size:15px;font-weight:800;color:#0D9488;margin-top:12px">✓ Count me in</div>
+  <div class="mono" style="font-size:7px;color:#9B9F98;margin-top:4px">ENJOY MJBIZCON — GRAB A SAMPLE AT THE BOOTH</div>
+</div></div>
+
+</div>
+<div class="grp sys" id="g-engine">
+
+<div class="screen"><h2>The machine under the screens</h2>
+<p class="cap">What runs whether or not anyone is looking.</p>
+
+<h3>23 WORKERS — HOURLY, EVERY ONE IDEMPOTENT</h3>
+<li>1 Settlement clock (ACH: +1BD settled, +2BD cleared — CLEARED is the only truth)</li>
+<li>2 Cleared-money applicator → invoice states</li>
+<li>3 Run placement (deposit-paid or your override; honors routing)</li>
+<li>4 Deposit expiry (14 days, order + invoice void)</li>
+<li>5 Reminder ladder (due → +3 → +7 → +14 → final-21 + auto-hold)</li>
+<li>6 Interest 1.5%/mo (skips plan-frozen invoices)</li>
+<li>7 Delivery clock (POD stamps balance due date)</li>
+<li>8 Reorder radar (amber ≤4wk / red ≤3wk runway → client nudge + your task)</li>
+<li>9 Quote expiry · 10 Compliance deadline alerts (90/60/30/7)</li>
+<li>11 Notification sender (Resend, collections-voice templates, CAN-SPAM, you BCC'd)</li>
+<li>12 Daily brief — your 8:00 AM MT email</li>
+<li>13 Run watchdog (48h unconfirmed) · 14 Document expiry (30d) · 15 Task escalation (2/5/10d)</li>
+<li>16 ACH returns processor (NO auto-retry — reopens invoice, flags client, asks you)</li>
+<li>17 Monthly statements · 18 Plan watchdog (miss → default → acceleration → unfreeze)</li>
+<li>19 Freight exceptions (no-scan / ETA slip / demurrage clock)</li>
+<li>20 Win-back (dormant at 2× expected reorder) · 21 Sample follow-ups (+3/+10)</li>
+<li>22 Referral credits ($1/1,000 on first CLEARED payment) · 23 Demand-letter drafter (never sends)</li>
+
+<h3>THE DATABASE — 14 MIGRATIONS · 432 STATEMENTS · 190+ RLS POLICIES</h3>
+<li>Identity, clients, catalog · commerce/production/freight · legal + comms · the RLS walls (177 stmts) · entity lanes · duties/taxes · true-COGS · payment methods · counters · card + CO 2% surcharge · disputes + multi-factory · freight desk · pipeline · demand letters</li>
+<p class="rule" style="margin-top:6px">Walls that live in the database, not the UI: factory↔client contact firewall · sealed bids (a factory reads only its own) · client freight visibility US-port-onward only · evidence tables append-only · owner-only money actions.</p>
+
+<h3>THE LOCKED RULES — ENCODED, NOT REMEMBERED</h3>
+<p class="rule">Cleared funds law, method-agnostic · fees ride on the payer (per-client absorb toggle) · CO 2% card cap · flagship NEVER boards + 15¢ PROFIT floor vs landed cost · server-side pricing only · PO required · no auto-retry on returns · outside-window disputes flag not reject · SLA clocks internal-only · blast radius lot-wide only · scores computed never typed, no score under 10 runs · promise-slip needs your acknowledgment · exactly one automated sample email · lead source required · demand letters drafted never auto-sent · every owner flip audited with before/after.</p>
+
+<h3>SECURITY POSTURE</h3>
+<li>Email-OTP 2FA every session · role middleware on every route · owner-only 403s on money endpoints · HMAC-verified webhooks (timing-safe) · honeypot on public intake · encrypted bank storage · BigInt integer math (no float ever touches money) · gap-free atomic invoice numbering · two-tap batch release with race check</li>
+
+<h3>WHAT'S MISSING — GATED ON YOU</h3>
+<li>🔴 <b>GitHub account (#1)</b> → push = reset-proof forever, then Supabase/Vercel/Resend/DNS per GO-LIVE.md (~$53/mo) → deploy</li>
+<li>Processor written answers + Authorize.net sandbox creds → card rail goes live</li>
+<li>First Citizens ACH origination agreement (Alicia Rogers) → ACH rail goes live</li>
+<li>QuickBooks 3 CSVs → import + penny reconciliation</li>
+<li>Logo files → invoice + court-packet PDF design pass</li>
+<li>Factory rate card → margin floor gets real cost basis</li>
+
+<h3>WHAT'S MISSING — BUILD REMAINING (NOT GATED)</h3>
+<li>Invoice/statement PDF engine (design finishes when logo lands)</li>
+<li>AI read-and-draft panels · public marketing site (visuals gated on real product footage per standing rule)</li>
+<li>Smaller: refund flow UI, cash/check camera receipts, multi-invoice pay, QR lot-label prefill, sample-return labels, defect analytics, standing orders, recurrence detection, 9am-local send-time queue, judgment tracker UI, prospect stage-move UI, forwarder reply form, Terms/Privacy as hub pages</li>
+</div>
+
+</div>
+<script>
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.grp').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.getElementById('g-'+b.dataset.g).classList.add('on');
+  window.scrollTo({top:0});
+}));
+</script>
+</body></html>
