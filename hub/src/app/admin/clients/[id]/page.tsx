@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import { ControlsPanel } from "@/components/ControlsPanel";
 import { DemandLetterPanel } from "@/components/DemandLetterPanel";
+import { AiDraftPanel } from "@/components/AiDraftPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
         expected_reorder_weeks: client.expected_reorder_weeks ?? 8,
         watch_flag: client.watch_flag ?? false,
       }} />
+      <AiDraftPanel tasks={["collections_note", "supplier_message"]} entityId={client.id} />
       {(letters?.length ?? 0) > 0 && <DemandLetterPanel letters={(letters ?? []).map(l => ({
         id: l.id, status: l.status, totalCents: String(l.total_demanded_cents), draftText: l.draft_text, createdAt: l.created_at,
       }))} />}

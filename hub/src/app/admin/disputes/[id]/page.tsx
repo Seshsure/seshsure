@@ -1,6 +1,7 @@
 // ————— DISPUTE DETAIL: both stories side-by-side, then your ruling —————
 import { supabaseServer } from "@/lib/supabase-server";
 import { ResolvePanel } from "@/components/ResolvePanel";
+import { AiDraftPanel } from "@/components/AiDraftPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,7 @@ export default async function DisputeDetail({ params }: { params: { id: string }
       </div>
 
       {open && <ResolvePanel disputeId={d.id} />}
+      <AiDraftPanel tasks={["dispute_client_reply", "dispute_factory_note"]} entityId={d.id} />
 
       {/* timeline */}
       <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
