@@ -99,3 +99,5 @@ Fees to payer · cleared-funds only · flagship never boards · no auto-retry on
 - ✅ Signed direct-to-storage uploads (/api/uploads/sign + uploadDirect): server validates type/size/ownership, browser PUTs straight to storage — big videos never touch Vercel's 4.5MB cap
 - ✅ Branded-art flow: ArtUploader in order form → canvas wrap mockup (labeled DIGITAL PREVIEW, portal-internal only) + honest print-readiness verdict (vector passes; raster checked vs 5400×1800 @300DPI wrap target) → art_assets registered → attached to order
 - ✅ Dispute filing UI (/portal/disputes/new): full form, camera-capture photos REQUIRED (video alone rejected), video ≤100MB, production-stopped urgency toggle, media kinds recorded
+
+- ✅ PDF engine (pdfkit, serverless-safe): invoice PDF (logo slot auto-embeds public/logo.png when it lands; typographic wordmark until then; PAID/PAST DUE badge, interest line, how-to-pay box w/ cleared-funds recital) + statement-of-account PDF (running balance, cleared payments only, ?forCourt=1 adds business-records recital). Routes RLS-scoped; download buttons on portal invoice + client admin page. Sample PDFs in outputs.
