@@ -6,6 +6,7 @@ import { DemandLetterPanel } from "@/components/DemandLetterPanel";
 import { AiDraftPanel } from "@/components/AiDraftPanel";
 import { InterestControl } from "@/components/InterestControl";
 import { InvitePanel } from "@/components/InvitePanel";
+import { FactoryCost } from "@/components/FactoryCost";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
   const sb = supabaseServer();
   const [{ data: client }, { data: invoices }, { data: contacts }, { data: clientPays }, { data: allAllocs }, { data: letters }] = await Promise.all([
     sb.from("clients").select("*").eq("id", params.id).single(),
-    sb.from("invoices").select("id, invoice_number, legacy_number, total_cents, paid_cents, due_date, interest_frozen, dunning_paused").eq("client_id", params.id).in("status", ["sent","viewed","partially_paid","overdue"]),
+    sb.from("invoices").select("id, invoice_number, legacy_number, total_cents, paid_cents, due_date, interest_frozen, dunning_paused, factory_cost_cents").eq("client_id", params.id).in("status", ["sent","viewed","partially_paid","overdue"]),
     sb.from("client_contacts").select("email").eq("client_id", params.id).limit(1),
     sb.from("payments").select("id, amount_cents").eq("client_id", params.id).eq("status", "cleared"),
     sb.from("payment_allocations").select("payment_id"),

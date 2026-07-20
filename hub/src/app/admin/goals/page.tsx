@@ -18,7 +18,7 @@ export default async function Goals() {
   const [{ data: monthOrders }, { data: yearInvoices }, { data: monthInvoices }, { data: monthCollected }, { data: recentItems }, { data: runs90 }] = await Promise.all([
     sb.from("orders").select("order_items(quantity)").gte("created_at", monthStart.toISOString()).not("status", "in", '("draft","expired","cancelled")'),
     sb.from("invoices").select("total_cents").gte("created_at", yearAgo).in("status", ["sent","viewed","partially_paid","paid","overdue"]),
-    sb.from("invoices").select("total_cents").gte("created_at", monthStart.toISOString()).in("status", ["sent","viewed","partially_paid","paid","overdue"]),
+    sb.from("invoices").select("total_cents, factory_cost_cents").gte("created_at", monthStart.toISOString()).in("status", ["sent","viewed","partially_paid","paid","overdue"]),
     sb.from("payments").select("amount_cents").eq("status", "cleared").gte("cleared_at", monthStart.toISOString()),
     sb.from("order_items").select("quantity, price_per_cone_microcents, product_id, orders!inner(created_at, status)").gte("orders.created_at", d90),
     sb.from("production_runs").select("factory_id, run_orders(orders(order_items(quantity)))").gte("created_at", d90),
@@ -32,6 +32,10 @@ export default async function Goals() {
 
   // ————— INCOME — the goal (invoiced + collected) —————
   const incomeMonth = (monthInvoices ?? []).reduce((s2, i) => s2 + BigInt(i.total_cents), 0n);
+  const withCost = (monthInvoices ?? []).filter(i => i.factory_cost_cents !== null);
+  const theirsMonth = withCost.reduce((s2, i) => s2 + BigInt(i.factory_cost_cents), 0n);
+  const oursMonth = withCost.reduce((s2, i) => s2 + BigInt(i.total_cents) - BigInt(i.factory_cost_cents), 0n);
+  const splitCoverage = (monthInvoices ?? []).length ? Math.round(100 * withCost.length / (monthInvoices ?? []).length) : 0;
   const collectedMonth = (monthCollected ?? []).reduce((s2, p) => s2 + BigInt(p.amount_cents), 0n);
   const MONTH_INCOME_GOAL = 83_333_333n; // $10M/yr ÷ 12 in cents
   const incomePct = Math.min(100, Number((incomeMonth * 100n) / MONTH_INCOME_GOAL));
@@ -92,6 +96,13 @@ export default async function Goals() {
         <div className="flex items-baseline justify-between mt-3">
           <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>COLLECTED THIS MONTH (CLEARED CASH)</span>
           <span className="font-mono text-[16px] font-bold" style={{ color: collectedMonth > 0n ? "#0D9488" : "#5C574A" }}>{formatUSD(collectedMonth)}</span>
+        </div>
+        <div className="flex items-baseline justify-between mt-3">
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>OF WHICH — FACTORY / OURS</span>
+          <span className="font-mono text-[13px] font-bold" style={{ color: "#181818" }}>
+            {withCost.length ? <>{formatUSD(theirsMonth)} <span style={{ color: "#5C574A" }}>THEIRS</span> · <span style={{ color: "#0D9488" }}>{formatUSD(oursMonth)} OURS</span></> : <span style={{ color: "#C77800" }}>SET FACTORY COSTS ON INVOICES</span>}
+            {withCost.length > 0 && splitCoverage < 100 && <span className="text-[10px]" style={{ color: "#C77800" }}> ({splitCoverage}% TAGGED)</span>}
+          </span>
         </div>
         <p className="font-mono text-[10px] mt-2" style={{ color: "#5C574A" }}>INVOICED IS THE SCOREBOARD · COLLECTED IS THE TRUTH · THE GAP IS THE COLLECTIONS JOB</p>
       </div>
