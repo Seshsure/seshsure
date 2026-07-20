@@ -20,9 +20,12 @@ export default async function FactoryLayout({ children }: { children: React.Reac
         <Link href="/factory" className="display text-[16px]" style={{ color: "#181818" }}>SESHSURE<span style={{ color: "#0D9488" }}> PRODUCTION</span>
         </Link>
         <nav className="flex gap-4 font-mono text-[12px]" style={{ color: "#3E3A30" }}>
+          <Link href="/factory">HOME</Link>
           <Link href="/factory/runs">RUNS</Link>
           <Link href="/factory/board">BOARD</Link>
           <Link href="/factory/claims">CLAIMS</Link>
+          <Link href="/factory/statement">STATEMENT</Link>
+          <Link href="/factory/onboarding">ONBOARDING</Link>
         </nav>
       </header>
       {children}
