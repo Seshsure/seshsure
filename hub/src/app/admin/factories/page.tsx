@@ -1,4 +1,5 @@
 // Factory command: scorecards + concentration risk + onboarding states
+import { FactoryInvitePanel } from "@/components/FactoryInvitePanel";
 import { supabaseServer } from "@/lib/supabase-server";
 import Link from "next/link";
 
@@ -48,7 +49,8 @@ export default async function Factories() {
           const onTime = sc && sc.promised_runs >= 10 ? `${Math.round(100 * sc.on_time_runs / sc.promised_runs)}% ON-TIME (${sc.promised_runs})` : `COLLECTING — ${sc?.promised_runs ?? 0} RUNS`;
           const defects = sc?.fault_disputes ?? 0;
           return (
-            <Link key={f.id} href={`/admin/factories/${f.id}`} className="block px-3 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
+            <div key={f.id}>
+            <Link href={`/admin/factories/${f.id}`} className="block px-3 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
               <div className="flex items-center justify-between">
                 <p className="text-[12.5px] font-bold" style={{ color: "#181818" }}>
                   {f.name}
@@ -62,6 +64,10 @@ export default async function Factories() {
                 {sc?.units_delivered ? ` · ${Number(sc.units_delivered).toLocaleString()} UNITS` : ""}
               </p>
             </Link>
+              <div className="px-3 pb-3" style={{ borderBottom: "1px solid #E7DFCE" }}>
+                <FactoryInvitePanel factoryId={f.id} factoryName={f.name} />
+              </div>
+            </div>
           );
         })}
       </div>
