@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Rfq = { mode: string; origin: string; destination: string; cartons: number; weight_kg: number;
-  ready_date: string; need_by: string | null; incoterm: string | null; dims_note: string | null;
-  stackable: boolean | null; hazmat: boolean };
+type Rfq = { mode: string; cargo_summary: Record<string, string | number> | null; bid_deadline: string | null;
+  incoterm: string | null; dims_note: string | null; stackable: boolean | null; hazmat: boolean };
 
 export function QuoteForm({ token }: { token: string }) {
   const [rfq, setRfq] = useState<Rfq | null>(null);
@@ -44,12 +43,12 @@ export function QuoteForm({ token }: { token: string }) {
           <span className="eyebrow" style={{ color: "#0D9488" }}>{rfq!.mode.toUpperCase()}{rfq!.incoterm ? ` · ${rfq!.incoterm}` : ""}</span>
         </div>
         <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 p-4 text-[13px]">
-          <div><span className="eyebrow" style={{ color: "#5C574A" }}>ORIGIN</span><p className="font-bold" style={{ color: "#181818" }}>{rfq!.origin}</p></div>
-          <div><span className="eyebrow" style={{ color: "#5C574A" }}>DESTINATION</span><p className="font-bold" style={{ color: "#181818" }}>{rfq!.destination}</p></div>
-          <div><span className="eyebrow" style={{ color: "#5C574A" }}>CARGO</span><p style={{ color: "#181818" }}>{rfq!.cartons.toLocaleString()} ctns · {rfq!.weight_kg.toLocaleString()} kg{rfq!.dims_note ? ` · ${rfq!.dims_note}` : ""}</p></div>
+          <div><span className="eyebrow" style={{ color: "#5C574A" }}>ORIGIN</span><p className="font-bold" style={{ color: "#181818" }}>{String(rfq!.cargo_summary?.origin ?? "Per shipment sheet")}</p></div>
+          <div><span className="eyebrow" style={{ color: "#5C574A" }}>DESTINATION</span><p className="font-bold" style={{ color: "#181818" }}>{String(rfq!.cargo_summary?.destination ?? "Denver, CO area")}</p></div>
+          <div><span className="eyebrow" style={{ color: "#5C574A" }}>CARGO</span><p style={{ color: "#181818" }}>{String(rfq!.cargo_summary?.cartons ?? "—")} ctns · {String(rfq!.cargo_summary?.weight_kg ?? "—")} kg{rfq!.dims_note ? ` · ${rfq!.dims_note}` : ""}</p></div>
           <div><span className="eyebrow" style={{ color: "#5C574A" }}>FLAGS</span><p style={{ color: "#181818" }}>{rfq!.stackable === false ? "NOT stackable" : "Stackable"} · {rfq!.hazmat ? "HAZMAT" : "Non-haz"}</p></div>
-          <div><span className="eyebrow" style={{ color: "#5C574A" }}>CARGO READY</span><p style={{ color: "#181818" }}>{rfq!.ready_date}</p></div>
-          <div><span className="eyebrow" style={{ color: "#5C574A" }}>NEED BY</span><p style={{ color: "#181818" }}>{rfq!.need_by ?? "Flexible"}</p></div>
+          <div><span className="eyebrow" style={{ color: "#5C574A" }}>CARGO READY</span><p style={{ color: "#181818" }}>{String(rfq!.cargo_summary?.ready_date ?? "—")}</p></div>
+          <div><span className="eyebrow" style={{ color: "#5C574A" }}>NEED BY</span><p style={{ color: "#181818" }}>{rfq!.bid_deadline ? `Bids close ${rfq!.bid_deadline}` : "Flexible"}</p></div>
         </div>
       </div>
 

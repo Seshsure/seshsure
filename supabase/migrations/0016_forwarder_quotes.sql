@@ -8,7 +8,6 @@ alter table freight_bids add column if not exists valid_until date;
 alter table freight_bids add column if not exists eta_pickup date;
 alter table freight_bids add column if not exists eta_delivery date;
 alter table freight_bids add column if not exists quoted_by_name text;
-alter table freight_bids add column if not exists note text;
 
 create table if not exists forwarder_quote_links (
   id uuid primary key default gen_random_uuid(),

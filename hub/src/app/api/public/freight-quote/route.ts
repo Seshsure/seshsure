@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (token.length < 20) return NextResponse.json({ error: "bad token" }, { status: 400 });
   const sb = admin();
   const { data: link } = await sb.from("forwarder_quote_links")
-    .select("id, expires_at, rfq_id, forwarder_id, forwarders(name), freight_rfqs(id, mode, origin, destination, cartons, weight_kg, ready_date, need_by, incoterm, dims_note, stackable, hazmat, status)")
+    .select("id, expires_at, rfq_id, forwarder_id, forwarders(name), freight_rfqs(id, mode, cargo_summary, bid_deadline, incoterm, dims_note, stackable, hazmat, status)")
     .eq("token", token).single();
   if (!link) return NextResponse.json({ error: "not found" }, { status: 404 });
   if (new Date(link.expires_at) < new Date()) return NextResponse.json({ error: "expired" }, { status: 410 });
@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
 
   await sb.from("freight_bids").upsert({
     rfq_id: link.rfq_id, forwarder_id: link.forwarder_id,
-    amount_cents: Math.round(b.amountUsd * 100),
+    all_in_cents: Math.round(b.amountUsd * 100),
     transit_days: b.transitDays ?? null,
     eta_pickup: b.etaPickup || null, eta_delivery: b.etaDelivery || null,
-    valid_until: b.validUntil, quoted_by_name: b.quotedByName, note: b.note ?? null,
+    valid_until: b.validUntil, quoted_by_name: b.quotedByName, notes: b.note ?? null,
   }, { onConflict: "rfq_id,forwarder_id" });
   await sb.from("forwarder_quote_links").update({ used_at: new Date().toISOString() }).eq("id", link.id);
   return NextResponse.json({ ok: true, message: "Quote received — SeshSure will review and award. Thank you." });

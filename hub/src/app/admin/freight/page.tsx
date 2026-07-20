@@ -5,11 +5,26 @@ export const dynamic = "force-dynamic";
 
 export default async function Freight() {
   const sb = supabaseServer();
-  const [{ data: rfqs }, { data: exceptions }, { data: moving }] = await Promise.all([
-    sb.from("freight_rfqs").select("id, mode, cargo_summary, status, bid_deadline, freight_bids(id, all_in_cents, transit_days, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
+  const ninety = new Date(Date.now() - 90 * 864e5).toISOString();
+  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }] = await Promise.all([
+    sb.from("freight_rfqs").select("id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
     sb.from("logistics_exceptions").select("id, kind, detail, opened_at, shipments(id)").is("resolved_at", null).order("opened_at"),
     sb.from("shipments").select("id, status, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
+    sb.from("freight_bids").select("all_in_cents, created_at, freight_rfqs(mode, cargo_summary)").gte("created_at", ninety),
   ]);
+
+  // self-generating market index: every quote ever received teaches the lane
+  type LH = { all_in_cents: number; freight_rfqs: { mode: string; cargo_summary: Record<string, unknown> | null } };
+  const laneKey = (mode: string, cs: Record<string, unknown> | null | undefined) =>
+    `${mode}|${String(cs?.origin ?? "?")}→${String(cs?.destination ?? "?")}`;
+  const lanes = new Map<string, { sum: bigint; n: number; best: bigint }>();
+  for (const h of (laneHistory ?? []) as unknown as LH[]) {
+    const k = laneKey(h.freight_rfqs?.mode ?? "?", h.freight_rfqs?.cargo_summary);
+    const v = lanes.get(k) ?? { sum: 0n, n: 0, best: BigInt(h.all_in_cents) };
+    v.sum += BigInt(h.all_in_cents); v.n += 1;
+    if (BigInt(h.all_in_cents) < v.best) v.best = BigInt(h.all_in_cents);
+    lanes.set(k, v);
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
@@ -33,7 +48,10 @@ export default async function Freight() {
         </div>
         {(rfqs ?? []).map(r => {
           const c = r.cargo_summary as Record<string, string | number>;
-          type B = { id: string; all_in_cents: number; transit_days: number | null; notes: string | null; forwarders: { name: string } };
+          type B = { id: string; all_in_cents: number; transit_days: number | null; valid_until: string | null; eta_delivery: string | null; notes: string | null; forwarders: { name: string } };
+          const today = new Date().toISOString().slice(0, 10);
+          const lane = lanes.get(laneKey(r.mode, c as Record<string, unknown>));
+          const laneAvg = lane && lane.n >= 3 ? lane.sum / BigInt(lane.n) : null;
           const bids = ((r.freight_bids ?? []) as unknown as B[]).sort((a, b) => a.all_in_cents - b.all_in_cents);
           return (
             <div key={r.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
@@ -45,7 +63,22 @@ export default async function Freight() {
                   <span className="flex-1 text-[13px]" style={{ color: "#181818" }}>{b.forwarders?.name}
                     <span className="font-mono text-[10px] ml-2" style={{ color: "#5C574A" }}>{b.transit_days ? `${b.transit_days}D TRANSIT` : ""}</span>
                   </span>
-                  <span className="font-mono text-[14px] font-bold" style={{ color: "#181818" }}>{formatUSD(BigInt(b.all_in_cents))}</span>
+                  <span className="font-mono text-[14px] font-bold" style={{ color: "#181818" }}>{formatUSD(BigInt(b.all_in_cents))}
+                      {/* LANE-INTEL */}
+                      {(() => {
+                        const expired = b.valid_until && b.valid_until < today;
+                        const delta = laneAvg ? Number((BigInt(b.all_in_cents) - laneAvg) * 1000n / laneAvg) / 10 : null;
+                        const isBest = lane && BigInt(b.all_in_cents) <= lane.best;
+                        const perK = r.units_count ? Number(BigInt(b.all_in_cents) / BigInt(Math.max(1, Math.round(Number(r.units_count) / 1000)))) / 100 : null;
+                        return (
+                          <span className="block font-mono text-[10px] mt-0.5">
+                            {expired && <span style={{ color: "#C77800" }}>EXPIRED {b.valid_until} · </span>}
+                            {delta !== null && <span style={{ color: delta <= 0 ? "#0D9488" : "#D62839" }}>{delta <= 0 ? "" : "+"}{delta}% VS 90D LANE AVG · </span>}
+                            {isBest && <span style={{ color: "#0D9488" }}>★ BEST EVER THIS LANE · </span>}
+                            {perK !== null && <span style={{ color: "#3E3A30" }}>${'{'}perK.toFixed(2){'}'}/1,000 CONES</span>}
+                          </span>
+                        );
+                      })()}</span>
                 </div>
               ))}
               {!bids.length && <p className="font-mono text-[10px] mt-1" style={{ color: "#5C574A" }}>AWAITING QUOTES</p>}
