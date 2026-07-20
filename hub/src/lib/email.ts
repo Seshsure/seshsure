@@ -84,9 +84,16 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
   }),
 };
 
+// ————— MASTER SEND SWITCH —————
+// Until EMAILS_ENABLED=true in the environment, client-facing mail is suppressed
+// (logged as skipped). Auth codes bypass this (they go via Supabase SMTP, not here).
 export async function sendTemplate(args: {
-  to: string; templateKey: string; vars: Vars; from?: string; bccOwner?: boolean;
+  to: string; templateKey: string; vars: Vars; from?: string; bccOwner?: boolean; systemOverride?: boolean;
 }) {
+  if (process.env.EMAILS_ENABLED !== "true" && !args.systemOverride) {
+    console.log(`[email suppressed — EMAILS_ENABLED off] ${args.templateKey} → ${args.to}`);
+    return { ok: true, suppressed: true } as const;
+  }
   const t = TEMPLATES[args.templateKey];
   if (!t) throw new Error(`unknown template ${args.templateKey}`);
   const { subject, html } = t(args.vars);
