@@ -76,8 +76,8 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
 
   return (
     <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <p className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>BRAND ARTWORK — WRAP PREVIEW</p>
-      <label className="block mt-2 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
+      <p className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>BRAND ARTWORK — WRAP PREVIEW</p>
+      <label className="block mt-2 py-3 rounded-lg border-2 border-dashed text-center text-[13px] font-bold cursor-pointer"
         style={{ borderColor: "#0D9488", color: "#0D9488" }}>
         {state === "busy" ? "Uploading…" : "Upload art (PNG · JPG · SVG · PDF, ≤50MB)"}
         <input type="file" accept="image/png,image/jpeg,image/svg+xml,application/pdf" className="hidden" onChange={onPick} />
@@ -88,20 +88,20 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
           <div className="flex-1">
             {verdict && (
               <>
-                <p className="font-mono text-[9px] font-bold" style={{ color: verdict.ready ? "#0D9488" : "#B07A1F" }}>
+                <p className="font-mono text-[11px] font-bold" style={{ color: verdict.ready ? "#0D9488" : "#B07A1F" }}>
                   {verdict.ready ? "✓ PRESS-RESOLUTION OK" : "⚠ PREVIEW-ONLY RESOLUTION"}
                 </p>
-                <p className="text-[9px] mt-1 leading-relaxed" style={{ color: "#514C41" }}>{verdict.notes}</p>
+                <p className="text-[11px] mt-1 leading-relaxed" style={{ color: "#3E3A30" }}>{verdict.notes}</p>
               </>
             )}
-            <p className="font-mono text-[7px] mt-2 leading-relaxed" style={{ color: "#7A7365" }}>
+            <p className="font-mono text-[9px] mt-2 leading-relaxed" style={{ color: "#5C574A" }}>
               DIGITAL PREVIEW ONLY — NOT A PRINT PROOF. COLOR, SCALE, AND PLACEMENT ARE FINALIZED ON THE PRESS PROOF YOU&apos;LL APPROVE BEFORE PRODUCTION.
             </p>
           </div>
         </div>
       )}
-      {state === "done" && !imgUrl && <p className="font-mono text-[9px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ ART RECEIVED — {verdict?.notes}</p>}
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      {state === "done" && !imgUrl && <p className="font-mono text-[11px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ ART RECEIVED — {verdict?.notes}</p>}
+      {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
     </div>
   );
 }

@@ -44,25 +44,25 @@ export default async function OrderApproval({ params }: { params: { id: string }
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <p className="text-[13px] font-bold" style={{ color: "#181818" }}>
+          <p className="text-[15px] font-bold" style={{ color: "#181818" }}>
             {client.dba ?? client.legal_name} · PO {order.po_number}
-            {isFlagship && <span className="ml-2 font-mono text-[8px] px-1.5 py-0.5 rounded" style={{ background: "#0D948822", color: "#0D9488" }}>FLAGSHIP</span>}
+            {isFlagship && <span className="ml-2 font-mono text-[10px] px-1.5 py-0.5 rounded" style={{ background: "#0D948822", color: "#0D9488" }}>FLAGSHIP</span>}
           </p>
         </div>
         {items.map((it, i) => (
           <div key={i} className="flex px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
             <div className="flex-1">
-              <p className="text-[12px]" style={{ color: "#181818" }}>{it.products.description}</p>
-              <p className="font-mono text-[8px]" style={{ color: "#7A7365" }}>{Number(it.quantity).toLocaleString()} CONES @ {formatPerCone(BigInt(it.price_per_cone_microcents))}/CONE</p>
+              <p className="text-[14px]" style={{ color: "#181818" }}>{it.products.description}</p>
+              <p className="font-mono text-[10px]" style={{ color: "#5C574A" }}>{Number(it.quantity).toLocaleString()} CONES @ {formatPerCone(BigInt(it.price_per_cone_microcents))}/CONE</p>
             </div>
-            <span className="font-mono text-[12px] font-bold" style={{ color: "#181818" }}>
+            <span className="font-mono text-[14px] font-bold" style={{ color: "#181818" }}>
               {formatUSD(conesToCents(BigInt(it.quantity), BigInt(it.price_per_cone_microcents)))}
             </span>
           </div>
         ))}
         <div className="flex justify-between px-3 py-2.5" style={{ background: "#FAF5EA" }}>
-          <span className="text-[12px] font-bold" style={{ color: "#181818" }}>Order total</span>
-          <span className="font-mono text-[14px] font-bold" style={{ color: "#0D9488" }}>{formatUSD(total)}</span>
+          <span className="text-[14px] font-bold" style={{ color: "#181818" }}>Order total</span>
+          <span className="font-mono text-[16px] font-bold" style={{ color: "#0D9488" }}>{formatUSD(total)}</span>
         </div>
       </div>
 

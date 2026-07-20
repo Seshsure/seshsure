@@ -18,25 +18,25 @@ export default async function Batches() {
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2.5 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>TODAY&apos;S BATCH</span>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#0D9488" }}>{ready?.length ?? 0} DEBITS</span>
+          <span className="font-mono text-[12px] font-bold" style={{ color: "#3E3A30" }}>TODAY&apos;S BATCH</span>
+          <span className="font-mono text-[12px] font-bold" style={{ color: "#0D9488" }}>{ready?.length ?? 0} DEBITS</span>
         </div>
         {(ready ?? []).length === 0 && <div className="px-4 py-4"><Empty title="Nothing staged for release" hint="CLIENT ACH AUTHORIZATIONS POOL HERE FOR YOUR TWO-TAP MORNING RELEASE" /></div>}
         {(ready ?? []).map(p => (
           <div key={p.id} className="flex px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-            <span className="flex-1 text-[12px]" style={{ color: "#181818" }}>
+            <span className="flex-1 text-[14px]" style={{ color: "#181818" }}>
               {((p.clients as unknown as { dba: string|null })?.dba) ?? (p.clients as unknown as { legal_name: string })?.legal_name}
             </span>
-            <span className="font-mono text-[12px] font-bold" style={{ color: "#181818" }}>{formatUSD(BigInt(p.amount_cents))}</span>
+            <span className="font-mono text-[14px] font-bold" style={{ color: "#181818" }}>{formatUSD(BigInt(p.amount_cents))}</span>
           </div>
         ))}
         <div className="flex justify-between px-3 py-3" style={{ background: "#FAF5EA" }}>
-          <span className="text-[12px] font-bold" style={{ color: "#181818" }}>Total to release</span>
+          <span className="text-[14px] font-bold" style={{ color: "#181818" }}>Total to release</span>
           <span className="font-mono text-[15px] font-bold" style={{ color: "#0D9488" }}>{formatUSD(total)}</span>
         </div>
       </div>
       {total > 0n && <ReleaseButton expectedTotalCents={total.toString()} />}
-      <p className="font-mono text-[8px] mt-3 px-1" style={{ color: "#7A7365" }}>
+      <p className="font-mono text-[10px] mt-3 px-1" style={{ color: "#5C574A" }}>
         RELEASING BUILDS THE NACHA FILE AND MARKS PAYMENTS SUBMITTED · OWNER-ONLY · TWO-TAP CONFIRM
       </p>
     </div>

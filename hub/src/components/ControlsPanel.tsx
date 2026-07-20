@@ -22,8 +22,8 @@ export function ControlsPanel({ clientId, initial }: { clientId: string; initial
   const Toggle = ({ label, sub, value, onFlip, danger }: { label: string; sub: string; value: boolean; onFlip: (v: boolean) => void; danger?: boolean }) => (
     <button onClick={() => onFlip(!value)} className="w-full flex items-center px-3 py-3 border-b text-left" style={{ borderColor: "#E7DFCE" }}>
       <div className="flex-1">
-        <p className="text-[12px] font-semibold" style={{ color: "#181818" }}>{label}</p>
-        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#7A7365" }}>{sub}</p>
+        <p className="text-[14px] font-semibold" style={{ color: "#181818" }}>{label}</p>
+        <p className="font-mono text-[10px] mt-0.5" style={{ color: "#5C574A" }}>{sub}</p>
       </div>
       <div className="w-9 h-5 rounded-full p-0.5 transition-colors" style={{ background: value ? (danger ? "#E63946" : "#0D9488") : "#E7DFCE" }}>
         <div className="w-4 h-4 rounded-full transition-transform" style={{ background: "#181818", transform: value ? "translateX(16px)" : "none" }} />
@@ -34,12 +34,12 @@ export function ControlsPanel({ clientId, initial }: { clientId: string; initial
   return (
     <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
       <div className="px-3 py-2 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
-        <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>CLIENT CONTROLS — EVERY FLIP AUDITED</span>
-        {msg && <span className="font-mono text-[9px]" style={{ color: msg.startsWith("✓") ? "#0D9488" : "#E63946" }}>{msg}</span>}
+        <span className="font-mono text-[12px] font-bold" style={{ color: "#3E3A30" }}>CLIENT CONTROLS — EVERY FLIP AUDITED</span>
+        {msg && <span className="font-mono text-[11px]" style={{ color: msg.startsWith("✓") ? "#0D9488" : "#E63946" }}>{msg}</span>}
       </div>
 
       <div className="px-3 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[8px] font-bold mb-1.5" style={{ color: "#7A7365" }}>PAYMENT METHODS</p>
+        <p className="font-mono text-[10px] font-bold mb-1.5" style={{ color: "#5C574A" }}>PAYMENT METHODS</p>
         <div className="flex gap-1.5 flex-wrap">
           {ALL_METHODS.map(m => {
             const on = c.accepted_methods.includes(m);
@@ -47,8 +47,8 @@ export function ControlsPanel({ clientId, initial }: { clientId: string; initial
               <button key={m} onClick={() => {
                 const next = on ? c.accepted_methods.filter(x => x !== m) : [...c.accepted_methods, m];
                 if (next.length) save({ accepted_methods: next });
-              }} className="font-mono text-[9px] font-bold px-2.5 py-1.5 rounded border"
-                style={{ background: on ? "#0D9488" : "transparent", color: on ? "#FAF5EA" : "#514C41", borderColor: on ? "#0D9488" : "#E7DFCE" }}>
+              }} className="font-mono text-[11px] font-bold px-2.5 py-1.5 rounded border"
+                style={{ background: on ? "#0D9488" : "transparent", color: on ? "#FAF5EA" : "#3E3A30", borderColor: on ? "#0D9488" : "#E7DFCE" }}>
                 {m.toUpperCase()}
               </button>
             );
@@ -62,11 +62,11 @@ export function ControlsPanel({ clientId, initial }: { clientId: string; initial
       <Toggle label="Watch flag" sub="EXTRA EYES AFTER RETURNS / DISPUTES" value={c.watch_flag} onFlip={v => save({ watch_flag: v })} />
 
       <div className="px-3 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[8px] font-bold mb-1.5" style={{ color: "#7A7365" }}>DEFAULT DEPOSIT</p>
+        <p className="font-mono text-[10px] font-bold mb-1.5" style={{ color: "#5C574A" }}>DEFAULT DEPOSIT</p>
         <div className="flex gap-1.5">
           {[0, 25, 50, 100].map(p => (
-            <button key={p} onClick={() => save({ deposit_pct: p })} className="flex-1 py-1.5 rounded font-mono text-[9px] font-bold border"
-              style={{ background: c.deposit_pct === p ? "#181818" : "transparent", color: c.deposit_pct === p ? "#FAF5EA" : "#514C41", borderColor: "#E7DFCE" }}>
+            <button key={p} onClick={() => save({ deposit_pct: p })} className="flex-1 py-1.5 rounded font-mono text-[11px] font-bold border"
+              style={{ background: c.deposit_pct === p ? "#181818" : "transparent", color: c.deposit_pct === p ? "#FAF5EA" : "#3E3A30", borderColor: "#E7DFCE" }}>
               {p}%
             </button>
           ))}
@@ -75,17 +75,17 @@ export function ControlsPanel({ clientId, initial }: { clientId: string; initial
 
       <div className="px-3 py-3 grid grid-cols-2 gap-3">
         <div>
-          <p className="font-mono text-[8px] font-bold mb-1" style={{ color: "#7A7365" }}>CREDIT CEILING ($, BLANK = NONE)</p>
+          <p className="font-mono text-[10px] font-bold mb-1" style={{ color: "#5C574A" }}>CREDIT CEILING ($, BLANK = NONE)</p>
           <input defaultValue={c.credit_ceiling_cents ? String(Number(c.credit_ceiling_cents) / 100) : ""}
             onBlur={e => { const v = e.target.value.replace(/[^\d]/g, ""); save({ credit_ceiling_cents: v ? String(Number(v) * 100) : null }); }}
-            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[11px] border outline-none"
+            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[13px] border outline-none"
             style={{ background: "#FAF5EA", borderColor: "#E7DFCE", color: "#181818" }} />
         </div>
         <div>
-          <p className="font-mono text-[8px] font-bold mb-1" style={{ color: "#7A7365" }}>EXPECTED REORDER (WEEKS)</p>
+          <p className="font-mono text-[10px] font-bold mb-1" style={{ color: "#5C574A" }}>EXPECTED REORDER (WEEKS)</p>
           <input defaultValue={c.expected_reorder_weeks}
             onBlur={e => { const v = parseInt(e.target.value); if (v > 0) save({ expected_reorder_weeks: v }); }}
-            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[11px] border outline-none"
+            inputMode="numeric" className="w-full px-2.5 py-2 rounded font-mono text-[13px] border outline-none"
             style={{ background: "#FAF5EA", borderColor: "#E7DFCE", color: "#181818" }} />
         </div>
       </div>

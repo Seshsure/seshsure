@@ -18,24 +18,24 @@ export function PayPanel({ invoiceId, remainingCents }: { invoiceId: string; rem
 
   if (state === "done") return (
     <div className="mt-4 rounded-xl border p-5 text-center" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <p className="text-[14px] font-bold" style={{ color: "#0D9488" }}>✓ Payment authorized</p>
-      <p className="text-[10px] mt-1 font-mono" style={{ color: "#514C41" }}>ACH DEBITS IN THE NEXT DAILY BATCH · RECEIPT ON CLEARANCE</p>
+      <p className="text-[16px] font-bold" style={{ color: "#0D9488" }}>✓ Payment authorized</p>
+      <p className="text-[12px] mt-1 font-mono" style={{ color: "#3E3A30" }}>ACH DEBITS IN THE NEXT DAILY BATCH · RECEIPT ON CLEARANCE</p>
     </div>
   );
 
   return (
     <div className="mt-4 rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <label className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>PAY AMOUNT (USD)</label>
+      <label className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>PAY AMOUNT (USD)</label>
       <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
         inputMode="decimal" className="w-full mt-1 px-3 py-3 rounded-lg border font-mono text-[18px]"
         style={{ borderColor: "#E7DFCE", color: "#181818" }} />
       <button onClick={pay} disabled={state === "busy" || !parseFloat(amount || "0")}
-        className="w-full mt-3 py-3 rounded-lg font-bold text-[13px] disabled:opacity-50"
+        className="w-full mt-3 py-3 rounded-lg font-bold text-[15px] disabled:opacity-50"
         style={{ background: "#0D9488", color: "#fff" }}>
         {state === "busy" ? "Authorizing…" : "Pay by ACH"}
       </button>
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
-      <p className="font-mono text-[8px] mt-3 text-center" style={{ color: "#7A7365" }}>
+      {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      <p className="font-mono text-[10px] mt-3 text-center" style={{ color: "#5C574A" }}>
         BY TAPPING PAY YOU AUTHORIZE A ONE-TIME ACH DEBIT · NO CARD FEES ON ACH
       </p>
     </div>

@@ -9,7 +9,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
   const { data: { user } } = await sb.auth.getUser();
   const { data: inv } = await sb.from("invoices")
     .select("*, invoice_line_items(description, amount_cents)").eq("id", params.id).single();
-  if (!inv) return <p className="p-8 text-sm" style={{ color: "#514C41" }}>Invoice not found.</p>;
+  if (!inv) return <p className="p-8 text-sm" style={{ color: "#3E3A30" }}>Invoice not found.</p>;
 
   // view evidence — every open logged
   await sb.from("invoice_views").insert({ invoice_id: inv.id, viewer_profile_id: user!.id });
@@ -22,21 +22,21 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
         <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "#E7DFCE" }}>
           <div>
-            <p className="font-mono text-[13px] font-bold" style={{ color: "#181818" }}>{inv.invoice_number}</p>
-            <p className="font-mono text-[8px]" style={{ color: "#514C41" }}>{inv.kind.toUpperCase()}{inv.due_date ? ` · DUE ${inv.due_date}` : ""}</p>
+            <p className="font-mono text-[15px] font-bold" style={{ color: "#181818" }}>{inv.invoice_number}</p>
+            <p className="font-mono text-[10px]" style={{ color: "#3E3A30" }}>{inv.kind.toUpperCase()}{inv.due_date ? ` · DUE ${inv.due_date}` : ""}</p>
           </div>
           <p className="font-mono text-[16px] font-bold" style={{ color: "#181818" }}>{formatUSD(remaining)}</p>
         </div>
         {(inv.invoice_line_items as { description: string; amount_cents: string }[] ?? []).map((l, i) => (
           <div key={i} className="flex justify-between px-4 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-            <span className="text-[11px]" style={{ color: "#181818" }}>{l.description}</span>
-            <span className="font-mono text-[11px]" style={{ color: "#181818" }}>{formatUSD(BigInt(l.amount_cents))}</span>
+            <span className="text-[13px]" style={{ color: "#181818" }}>{l.description}</span>
+            <span className="font-mono text-[13px]" style={{ color: "#181818" }}>{formatUSD(BigInt(l.amount_cents))}</span>
           </div>
         ))}
       </div>
       <a href={`/api/invoices/${inv.id}/pdf`} target="_blank"
-        className="block mt-3 py-2.5 rounded-lg border text-center font-mono text-[10px] font-bold"
-        style={{ borderColor: "#E7DFCE", color: "#514C41", background: "#fff" }}>
+        className="block mt-3 py-2.5 rounded-lg border text-center font-mono text-[12px] font-bold"
+        style={{ borderColor: "#E7DFCE", color: "#3E3A30", background: "#fff" }}>
         ⬇ DOWNLOAD PDF
       </a>
       {payable && <PayPanel invoiceId={inv.id} remainingCents={remaining.toString()} />}

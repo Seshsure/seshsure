@@ -15,25 +15,25 @@ export function BidForm({ postId }: { postId: string }) {
     setState(decline ? "declined" : "done");
   }
 
-  if (state === "done") return <p className="font-mono text-[10px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ BID SEALED & SENT</p>;
-  if (state === "declined") return <p className="font-mono text-[10px] mt-2" style={{ color: "#514C41" }}>DECLINED</p>;
+  if (state === "done") return <p className="font-mono text-[12px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ BID SEALED & SENT</p>;
+  if (state === "declined") return <p className="font-mono text-[12px] mt-2" style={{ color: "#3E3A30" }}>DECLINED</p>;
 
   return (
     <div className="flex gap-2 mt-2 items-end">
       <div className="flex-1">
-        <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>¢/CONE</label>
+        <label className="text-[10px] font-mono font-bold" style={{ color: "#3E3A30" }}>¢/CONE</label>
         <input value={price} onChange={e => setPrice(e.target.value.replace(/[^\d.]/g,""))} placeholder="2.85"
-          inputMode="decimal" className="w-full px-3 py-2 rounded-md border font-mono text-[12px]" style={{ borderColor: "#E7DFCE" }} />
+          inputMode="decimal" className="w-full px-3 py-2 rounded-md border font-mono text-[14px]" style={{ borderColor: "#E7DFCE" }} />
       </div>
       <div className="flex-1">
-        <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>SHIP BY</label>
+        <label className="text-[10px] font-mono font-bold" style={{ color: "#3E3A30" }}>SHIP BY</label>
         <input type="date" value={promise} onChange={e => setPromise(e.target.value)}
-          className="w-full px-3 py-2 rounded-md border font-mono text-[10px]" style={{ borderColor: "#E7DFCE" }} />
+          className="w-full px-3 py-2 rounded-md border font-mono text-[12px]" style={{ borderColor: "#E7DFCE" }} />
       </div>
       <button onClick={() => submit(false)} disabled={state === "busy" || !parseFloat(price)}
-        className="px-4 py-2 rounded-md font-bold text-[11px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>Bid</button>
+        className="px-4 py-2 rounded-md font-bold text-[13px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>Bid</button>
       <button onClick={() => submit(true)} disabled={state === "busy"}
-        className="px-3 py-2 rounded-md font-bold text-[11px] border" style={{ borderColor: "#E7DFCE", color: "#514C41" }}>Pass</button>
+        className="px-3 py-2 rounded-md font-bold text-[13px] border" style={{ borderColor: "#E7DFCE", color: "#3E3A30" }}>Pass</button>
     </div>
   );
 }

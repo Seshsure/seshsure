@@ -18,23 +18,23 @@ export function InvitePanel({ clientId, defaultEmail, held }: { clientId: string
   if (held) return (
     <div className="rounded-lg border-2 mt-4 px-4 py-3" style={{ borderColor: "#E7DFCE", background: "#FFFFFF" }}>
       <span className="eyebrow" style={{ color: "#D62839" }}>PORTAL INVITE BLOCKED — CLIENT ON HOLD</span>
-      <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>Litigation/held accounts don&apos;t get portal access. Resolve the hold first.</p>
+      <p className="text-[12px] mt-1" style={{ color: "#3E3A30" }}>Litigation/held accounts don&apos;t get portal access. Resolve the hold first.</p>
     </div>
   );
 
   return (
     <div className="rounded-lg border mt-4 px-4 py-3" style={{ borderColor: "#E7DFCE", background: "#FFFFFF" }}>
-      <span className="eyebrow" style={{ color: "#514C41" }}>INVITE TO PORTAL — ONBOARDING REQUIRED BEFORE ACCESS</span>
+      <span className="eyebrow" style={{ color: "#3E3A30" }}>INVITE TO PORTAL — ONBOARDING REQUIRED BEFORE ACCESS</span>
       <div className="flex gap-2 mt-2">
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="ap@client.com"
-          className="flex-1 px-3 py-2 rounded-lg text-[12px] border-2 outline-none" style={{ borderColor: "#E7DFCE" }} />
+          className="flex-1 px-3 py-2 rounded-lg text-[14px] border-2 outline-none" style={{ borderColor: "#E7DFCE" }} />
         <button onClick={send} disabled={state === "busy" || !email.includes("@")}
-          className="punch-sm px-4 py-2 rounded-lg font-bold text-[11px] disabled:opacity-50" style={{ background: "#0D9488", color: "#fff" }}>
+          className="punch-sm px-4 py-2 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#0D9488", color: "#fff" }}>
           {state === "busy" ? "Sending…" : "Send invite"}
         </button>
       </div>
-      {state === "done" && <p className="font-mono text-[9px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ {msg} — they&apos;ll set a password, then sign terms before the portal opens</p>}
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      {state === "done" && <p className="font-mono text-[11px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ {msg} — they&apos;ll set a password, then sign terms before the portal opens</p>}
+      {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
     </div>
   );
 }

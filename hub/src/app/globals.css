@@ -21,6 +21,7 @@
 
 html { color-scheme: light; }
 body {
+  font-size: 15px;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-inter), var(--font-geist-sans), -apple-system, sans-serif;
@@ -40,7 +41,7 @@ body {
 .badge-brand { font-family: var(--font-bungee), sans-serif; letter-spacing: .05em; }
 .eyebrow {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 }
 
 /* signature: hard offset shadow — spend it on primary elements only */

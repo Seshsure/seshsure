@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const GRADE_COLOR: Record<string, string> = { A: "#0D9488", B: "#8FD64B", C: "#C77800", D: "#F58B4B", F: "#E63946", "—": "#7A7365" };
+const GRADE_COLOR: Record<string, string> = { A: "#0D9488", B: "#8FD64B", C: "#C77800", D: "#F58B4B", F: "#E63946", "—": "#5C574A" };
 
 function grade(paidCount: number, onTime: number, avgDaysLate: number, returns: number, openOverdue: number): [string, string] {
   if (paidCount < 3) return ["—", `${paidCount} PAID INVOICES — COLLECTING`];
@@ -52,31 +52,31 @@ export default async function Clients() {
       <div className="flex justify-end mt-4"><NewClientButton /></div>
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
+          <span className="font-mono text-[12px] font-bold" style={{ color: "#3E3A30" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
         </div>
         {rows.length === 0 && <div className="px-4 py-4"><Empty title="No clients yet" hint="IMPORT YOUR QUICKBOOKS HISTORY OR ONBOARD YOUR FIRST CLIENT — GRADES START COMPUTING AFTER THREE PAID INVOICES" /></div>}
         {rows.map(({ c, g, basis, exposure, openOverdue }) => (
           <Link key={c.id} href={`/admin/clients/${c.id}`} className="flex items-center px-3 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
-            <span className="w-8 h-8 rounded-lg flex items-center justify-center font-mono text-[14px] font-bold mr-3"
+            <span className="w-8 h-8 rounded-lg flex items-center justify-center font-mono text-[16px] font-bold mr-3"
               style={{ background: `${GRADE_COLOR[g]}18`, color: GRADE_COLOR[g] }}>{g}</span>
             <div className="flex-1">
-              <p className="text-[12px] font-semibold" style={{ color: "#181818" }}>
+              <p className="text-[14px] font-semibold" style={{ color: "#181818" }}>
                 {c.dba ?? c.legal_name}
-                {c.hold_active && <span className="ml-2 font-mono text-[7px]" style={{ color: "#E63946" }}>🔒 HOLD</span>}
-                {c.watch_flag && <span className="ml-1.5 font-mono text-[7px]" style={{ color: "#C77800" }}>👁</span>}
-                {c.dormant && <span className="ml-1.5 font-mono text-[7px]" style={{ color: "#7A7365" }}>💤</span>}
+                {c.hold_active && <span className="ml-2 font-mono text-[9px]" style={{ color: "#E63946" }}>🔒 HOLD</span>}
+                {c.watch_flag && <span className="ml-1.5 font-mono text-[9px]" style={{ color: "#C77800" }}>👁</span>}
+                {c.dormant && <span className="ml-1.5 font-mono text-[9px]" style={{ color: "#5C574A" }}>💤</span>}
               </p>
-              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#7A7365" }}>{basis}</p>
+              <p className="font-mono text-[9px] mt-0.5" style={{ color: "#5C574A" }}>{basis}</p>
             </div>
             <div className="text-right">
-              <p className="font-mono text-[11px] font-bold" style={{ color: openOverdue ? "#E63946" : "#181818" }}>{formatUSD(exposure)}</p>
-              <p className="font-mono text-[7px]" style={{ color: "#7A7365" }}>EXPOSURE</p>
+              <p className="font-mono text-[13px] font-bold" style={{ color: openOverdue ? "#E63946" : "#181818" }}>{formatUSD(exposure)}</p>
+              <p className="font-mono text-[9px]" style={{ color: "#5C574A" }}>EXPOSURE</p>
             </div>
           </Link>
         ))}
-        {!rows.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#7A7365" }}>No active clients yet.</p>}
+        {!rows.length && <p className="px-3 py-4 text-[13px]" style={{ color: "#5C574A" }}>No active clients yet.</p>}
       </div>
-      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#7A7365" }}>
+      <p className="font-mono text-[10px] mt-2 px-1" style={{ color: "#5C574A" }}>
         GRADE RULES: &lt;3 PAID INVOICES = COLLECTING · ACH RETURN CAPS AT D · OPEN OVERDUE BLOCKS A · BASIS ALWAYS SHOWN
       </p>
     </div>

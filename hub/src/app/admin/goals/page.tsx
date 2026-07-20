@@ -71,13 +71,13 @@ export default async function Goals() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
-      <h1 className="text-[13px] font-bold mt-4" style={{ color: "#181818" }}>The exit math — live</h1>
+      <h1 className="text-[15px] font-bold mt-4" style={{ color: "#181818" }}>The exit math — live</h1>
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>UNITS THIS MONTH</span>
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>UNITS THIS MONTH</span>
           <span className="font-mono text-[15px] font-bold" style={{ color: "#181818" }}>
-            {unitsThisMonth.toLocaleString()} <span className="text-[9px]" style={{ color: "#7A7365" }}>/ {UNITS_GOAL.toLocaleString()}</span>
+            {unitsThisMonth.toLocaleString()} <span className="text-[11px]" style={{ color: "#5C574A" }}>/ {UNITS_GOAL.toLocaleString()}</span>
           </span>
         </div>
         <Bar pct={unitsPct} color="#0D9488" />
@@ -85,9 +85,9 @@ export default async function Goals() {
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>TRAILING-12MO INVOICED</span>
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>TRAILING-12MO INVOICED</span>
           <span className="font-mono text-[15px] font-bold" style={{ color: "#181818" }}>
-            {formatUSD(revenue12)} <span className="text-[9px]" style={{ color: "#7A7365" }}>/ $10M</span>
+            {formatUSD(revenue12)} <span className="text-[11px]" style={{ color: "#5C574A" }}>/ $10M</span>
           </span>
         </div>
         <Bar pct={revPct} color="#3B5BDB" />
@@ -95,28 +95,28 @@ export default async function Goals() {
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: blendedMicro !== null && blendedMicro < MARGIN_TARGET_MICRO ? "#E6394655" : "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>BLENDED MARGIN (90D, VOLUME-WEIGHTED)</span>
-          <span className="font-mono text-[15px] font-bold" style={{ color: blendedMicro === null ? "#7A7365" : blendedMicro < MARGIN_TARGET_MICRO ? "#E63946" : "#0D9488" }}>
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>BLENDED MARGIN (90D, VOLUME-WEIGHTED)</span>
+          <span className="font-mono text-[15px] font-bold" style={{ color: blendedMicro === null ? "#5C574A" : blendedMicro < MARGIN_TARGET_MICRO ? "#E63946" : "#0D9488" }}>
             {blendedMicro === null ? "—" : `${(blendedMicro / 10000).toFixed(2)}¢`}
-            <span className="text-[9px]" style={{ color: "#7A7365" }}> / 2.50¢ TARGET</span>
+            <span className="text-[11px]" style={{ color: "#5C574A" }}> / 2.50¢ TARGET</span>
           </span>
         </div>
         {blendedMicro !== null && <Bar pct={Math.min(100, Math.round(100 * blendedMicro / MARGIN_TARGET_MICRO))} color={blendedMicro < MARGIN_TARGET_MICRO ? "#E63946" : "#0D9488"} />}
-        {costMissing && <p className="font-mono text-[8px] mt-2" style={{ color: "#C77800" }}>⚠ SOME PRODUCTS LACK COST BASIS — MARGIN UNDERSTATED UNTIL RATE CARD COMPLETE</p>}
+        {costMissing && <p className="font-mono text-[10px] mt-2" style={{ color: "#C77800" }}>⚠ SOME PRODUCTS LACK COST BASIS — MARGIN UNDERSTATED UNTIL RATE CARD COMPLETE</p>}
       </div>
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: topShare !== null && topShare >= 80 ? "#E6394655" : "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>TOP-FACTORY CONCENTRATION (90D)</span>
-          <span className="font-mono text-[15px] font-bold" style={{ color: topShare === null ? "#7A7365" : topShare >= 80 ? "#E63946" : "#0D9488" }}>
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>TOP-FACTORY CONCENTRATION (90D)</span>
+          <span className="font-mono text-[15px] font-bold" style={{ color: topShare === null ? "#5C574A" : topShare >= 80 ? "#E63946" : "#0D9488" }}>
             {topShare === null ? "—" : `${topShare}%`}
           </span>
         </div>
         {topShare !== null && <Bar pct={topShare} color={topShare >= 80 ? "#E63946" : "#0D9488"} />}
-        <p className="font-mono text-[8px] mt-2" style={{ color: "#7A7365" }}>BUYERS DISCOUNT SINGLE-SOURCE SUPPLY CHAINS — RUN BOARD IS THE FIX</p>
+        <p className="font-mono text-[10px] mt-2" style={{ color: "#5C574A" }}>BUYERS DISCOUNT SINGLE-SOURCE SUPPLY CHAINS — RUN BOARD IS THE FIX</p>
       </div>
 
-      <p className="font-mono text-[8px] mt-3 px-1" style={{ color: "#7A7365" }}>
+      <p className="font-mono text-[10px] mt-3 px-1" style={{ color: "#5C574A" }}>
         THESE FOUR NUMBERS ARE THE ACQUISITION STORY: VOLUME, REVENUE, MARGIN, RESILIENCE.
       </p>
     </div>

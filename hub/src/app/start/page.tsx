@@ -20,49 +20,49 @@ function StartForm() {
     setState("done"); setMsg(j.message);
   }
 
-  const inp = "w-full mt-1 px-3 py-3 rounded-lg text-[14px] border outline-none";
-  const lbl = "block text-[9px] font-mono font-bold mt-3";
+  const inp = "w-full mt-1 px-3 py-3 rounded-lg text-[16px] border outline-none";
+  const lbl = "block text-[11px] font-mono font-bold mt-3";
 
   if (state === "done") return (
     <div className="text-center py-8">
       <p className="text-[20px] font-bold" style={{ color: "#0D9488" }}>✓ Got it</p>
-      <p className="text-[12px] mt-2" style={{ color: "#514C41" }}>{msg}</p>
-      {showName && <p className="font-mono text-[9px] mt-4" style={{ color: "#7A7365" }}>ENJOY {showName.toUpperCase()} — GRAB A SAMPLE AT THE BOOTH</p>}
+      <p className="text-[14px] mt-2" style={{ color: "#3E3A30" }}>{msg}</p>
+      {showName && <p className="font-mono text-[11px] mt-4" style={{ color: "#5C574A" }}>ENJOY {showName.toUpperCase()} — GRAB A SAMPLE AT THE BOOTH</p>}
     </div>
   );
 
   return (
     <>
-      <label className={lbl} style={{ color: "#514C41" }}>COMPANY *</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>COMPANY *</label>
       <input value={f.company} onChange={e => setF({ ...f, company: e.target.value })} className={inp} style={{ borderColor: "#E7DFCE" }} />
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={lbl} style={{ color: "#514C41" }}>YOUR NAME</label>
+          <label className={lbl} style={{ color: "#3E3A30" }}>YOUR NAME</label>
           <input value={f.contactName} onChange={e => setF({ ...f, contactName: e.target.value })} className={inp} style={{ borderColor: "#E7DFCE" }} />
         </div>
         <div>
-          <label className={lbl} style={{ color: "#514C41" }}>PHONE</label>
+          <label className={lbl} style={{ color: "#3E3A30" }}>PHONE</label>
           <input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} inputMode="tel" className={inp} style={{ borderColor: "#E7DFCE" }} />
         </div>
       </div>
-      <label className={lbl} style={{ color: "#514C41" }}>EMAIL *</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>EMAIL *</label>
       <input value={f.email} onChange={e => setF({ ...f, email: e.target.value })} type="email" className={inp} style={{ borderColor: "#E7DFCE" }} />
       {!showName && (
         <>
-          <label className={lbl} style={{ color: "#514C41" }}>HOW&apos;D YOU HEAR ABOUT US? *</label>
+          <label className={lbl} style={{ color: "#3E3A30" }}>HOW&apos;D YOU HEAR ABOUT US? *</label>
           <input value={f.leadSource} onChange={e => setF({ ...f, leadSource: e.target.value })} placeholder="referral, Instagram, MJBizCon…" className={inp} style={{ borderColor: "#E7DFCE" }} />
         </>
       )}
-      <label className={lbl} style={{ color: "#514C41" }}>WHAT DO YOU ROLL? (OPTIONAL)</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>WHAT DO YOU ROLL? (OPTIONAL)</label>
       <input value={f.notes} onChange={e => setF({ ...f, notes: e.target.value })} placeholder="98mm, ~500K/month, white paper…" className={inp} style={{ borderColor: "#E7DFCE" }} />
       {/* honeypot — humans never see it */}
       <input value={f.website} onChange={e => setF({ ...f, website: e.target.value })} tabIndex={-1} autoComplete="off"
         style={{ position: "absolute", left: "-9999px", height: 0, width: 0, opacity: 0 }} aria-hidden="true" />
       <button onClick={submit} disabled={state === "busy" || !f.company || !f.email || (!showName && !f.leadSource)}
-        className="w-full mt-5 py-3.5 rounded-lg font-bold text-[14px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
+        className="w-full mt-5 py-3.5 rounded-lg font-bold text-[16px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
         {state === "busy" ? "…" : showName ? "Count me in" : "Talk cones with us"}
       </button>
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
     </>
   );
 }
@@ -74,13 +74,13 @@ export default function Start() {
         <h1 className="font-bold text-[22px]" style={{ color: "#181818" }}>
           SESHSURE<span style={{ color: "#0D9488" }}>.</span>
         </h1>
-        <p className="text-[12px] mt-1" style={{ color: "#514C41" }}>Wholesale pre-roll cones. Tell us a little and a human replies within one business day.</p>
+        <p className="text-[14px] mt-1" style={{ color: "#3E3A30" }}>Wholesale pre-roll cones. Tell us a little and a human replies within one business day.</p>
         <div className="mt-5 rounded-xl border p-5 relative" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-          <Suspense fallback={<p className="text-[11px]" style={{ color: "#514C41" }}>Loading…</p>}>
+          <Suspense fallback={<p className="text-[13px]" style={{ color: "#3E3A30" }}>Loading…</p>}>
             <StartForm />
           </Suspense>
         </div>
-        <p className="font-mono text-[7px] mt-6 text-center" style={{ color: "#7A7365" }}>
+        <p className="font-mono text-[9px] mt-6 text-center" style={{ color: "#5C574A" }}>
           VIDO MANUFACTURING AND DISTRIBUTION CORP D/B/A SESHSURE · PARKER, CO
         </p>
       </div>

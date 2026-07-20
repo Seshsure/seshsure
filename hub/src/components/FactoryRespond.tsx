@@ -10,14 +10,14 @@ export function FactoryRespond({ disputeId }: { disputeId: string }) {
       body: JSON.stringify({ disputeId, response: text }) });
     setState("done");
   }
-  if (state === "done") return <p className="text-[10px] font-mono mt-2" style={{ color: "#0D9488" }}>✓ SENT TO SESHSURE</p>;
+  if (state === "done") return <p className="text-[12px] font-mono mt-2" style={{ color: "#0D9488" }}>✓ SENT TO SESHSURE</p>;
   return (
     <div className="mt-2">
       <textarea value={text} onChange={e => setText(e.target.value)} rows={3}
         placeholder="Your side: lot QC records, press settings, what you see in the photos…"
-        className="w-full px-3 py-2 rounded-md border text-[11px]" style={{ borderColor: "#E7DFCE" }} />
+        className="w-full px-3 py-2 rounded-md border text-[13px]" style={{ borderColor: "#E7DFCE" }} />
       <button onClick={send} disabled={state === "busy" || text.length < 10}
-        className="mt-1.5 px-4 py-2 rounded-md font-bold text-[11px] disabled:opacity-50"
+        className="mt-1.5 px-4 py-2 rounded-md font-bold text-[13px] disabled:opacity-50"
         style={{ background: "#181818", color: "#fff" }}>
         Send response to SeshSure
       </button>

@@ -33,33 +33,33 @@ export function DisputeMediaUploader({ onChange }: { onChange: (m: UploadedMedia
 
   return (
     <div className="mt-3">
-      <p className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>
+      <p className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>
         PHOTOS &amp; VIDEO — PHOTOS REQUIRED <span style={{ color: photos ? "#0D9488" : "#D62839" }}>({photos} PHOTO{photos === 1 ? "" : "S"})</span>
       </p>
-      <p className="text-[9px] mt-0.5" style={{ color: "#7A7365" }}>
+      <p className="text-[11px] mt-0.5" style={{ color: "#5C574A" }}>
         Shoot the defect close-up, the carton with its lot number visible, and the spread of affected units. Video of the batch behavior helps your case.
       </p>
       <div className="flex gap-2 mt-2">
-        <label className="flex-1 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
+        <label className="flex-1 py-3 rounded-lg border-2 border-dashed text-center text-[13px] font-bold cursor-pointer"
           style={{ borderColor: "#0D9488", color: "#0D9488" }}>
           {busy ? "Uploading…" : "📷 Photos"}
           <input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={onPick} />
         </label>
-        <label className="flex-1 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
-          style={{ borderColor: "#514C41", color: "#514C41" }}>
+        <label className="flex-1 py-3 rounded-lg border-2 border-dashed text-center text-[13px] font-bold cursor-pointer"
+          style={{ borderColor: "#3E3A30", color: "#3E3A30" }}>
           🎥 Video (≤100MB)
           <input type="file" accept="video/mp4,video/quicktime" capture="environment" className="hidden" onChange={onPick} />
         </label>
       </div>
       {items.map(i => (
         <div key={i.path} className="flex items-center mt-1.5 px-3 py-2 rounded-lg border" style={{ borderColor: "#E7DFCE", background: "#fff" }}>
-          <span className="text-[12px] mr-2">{i.kind === "video" ? "🎥" : "📷"}</span>
-          <span className="flex-1 text-[10px] truncate" style={{ color: "#181818" }}>{i.name}</span>
-          <span className="font-mono text-[7px] mr-2" style={{ color: "#7A7365" }}>{(i.sizeBytes / 1048576).toFixed(1)}MB ✓</span>
-          <button onClick={() => remove(i.path)} className="font-mono text-[10px]" style={{ color: "#514C41" }}>✕</button>
+          <span className="text-[14px] mr-2">{i.kind === "video" ? "🎥" : "📷"}</span>
+          <span className="flex-1 text-[12px] truncate" style={{ color: "#181818" }}>{i.name}</span>
+          <span className="font-mono text-[9px] mr-2" style={{ color: "#5C574A" }}>{(i.sizeBytes / 1048576).toFixed(1)}MB ✓</span>
+          <button onClick={() => remove(i.path)} className="font-mono text-[12px]" style={{ color: "#3E3A30" }}>✕</button>
         </div>
       ))}
-      {err && <p className="font-mono text-[8px] mt-1.5" style={{ color: "#D62839" }}>{err}</p>}
+      {err && <p className="font-mono text-[10px] mt-1.5" style={{ color: "#D62839" }}>{err}</p>}
     </div>
   );
 }

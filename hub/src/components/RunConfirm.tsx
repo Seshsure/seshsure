@@ -10,16 +10,16 @@ export function RunConfirm({ runId }: { runId: string }) {
       body: JSON.stringify({ runId, promiseDate: promise }) });
     setState("done");
   }
-  if (state === "done") return <p className="text-[10px] font-mono mt-2" style={{ color: "#0D9488" }}>✓ CONFIRMED — PROMISE {promise}</p>;
+  if (state === "done") return <p className="text-[12px] font-mono mt-2" style={{ color: "#0D9488" }}>✓ CONFIRMED — PROMISE {promise}</p>;
   return (
     <div className="flex gap-2 mt-2 items-end">
       <div className="flex-1">
-        <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>PROMISE SHIP DATE</label>
+        <label className="text-[10px] font-mono font-bold" style={{ color: "#3E3A30" }}>PROMISE SHIP DATE</label>
         <input type="date" value={promise} onChange={e => setPromise(e.target.value)}
-          className="w-full px-3 py-2 rounded-md border font-mono text-[11px]" style={{ borderColor: "#E7DFCE" }} />
+          className="w-full px-3 py-2 rounded-md border font-mono text-[13px]" style={{ borderColor: "#E7DFCE" }} />
       </div>
       <button onClick={confirm} disabled={state === "busy" || !promise}
-        className="px-5 py-2 rounded-md font-bold text-[11px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
+        className="px-5 py-2 rounded-md font-bold text-[13px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
         Confirm run
       </button>
     </div>

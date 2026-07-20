@@ -16,9 +16,9 @@ export function InterestControl({ invoiceId, frozen }: { invoiceId: string; froz
   }
 
   return (
-    <button onClick={flip} disabled={busy} className="font-mono text-[8px] font-bold px-2 py-1.5 rounded border-2 disabled:opacity-50"
+    <button onClick={flip} disabled={busy} className="font-mono text-[10px] font-bold px-2 py-1.5 rounded border-2 disabled:opacity-50"
       style={isFrozen
-        ? { borderColor: "#E7DFCE", color: "#514C41", background: "transparent" }
+        ? { borderColor: "#E7DFCE", color: "#3E3A30", background: "transparent" }
         : { borderColor: "#181818", color: "#FFFFFF", background: "#D62839", boxShadow: "2px 2px 0 #181818" }}>
       {busy ? "…" : isFrozen ? "GRACE" : "⚠ INTEREST RUNNING"}
     </button>

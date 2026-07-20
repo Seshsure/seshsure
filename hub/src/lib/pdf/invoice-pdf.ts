@@ -5,7 +5,7 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 
-const INK = "#181818", MUTE = "#514C41", FAINT = "#7A7365", TEAL = "#0D9488", LINE = "#E7DFCE", RED = "#D62839";
+const INK = "#181818", MUTE = "#3E3A30", FAINT = "#5C574A", TEAL = "#0D9488", LINE = "#E7DFCE", RED = "#D62839";
 
 export type InvoiceData = {
   invoiceNumber: string;

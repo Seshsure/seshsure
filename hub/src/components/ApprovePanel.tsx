@@ -24,28 +24,28 @@ export function ApprovePanel({ orderId, defaultDeposit, isFlagship, factories }:
   return (
     <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
       <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <span className="text-[10px] font-mono font-bold" style={{ color: "#514C41" }}>DEPOSIT</span>
+        <span className="text-[12px] font-mono font-bold" style={{ color: "#3E3A30" }}>DEPOSIT</span>
       </div>
       <div className="flex gap-1.5 px-3 py-2.5">
         {[0, 25, 50, 100].map(p => (
-          <button key={p} onClick={() => setDeposit(p)} className="flex-1 py-2 rounded-md font-mono text-[10px] font-bold border"
-            style={{ background: deposit === p ? "#0D9488" : "transparent", color: deposit === p ? "#FAF5EA" : "#514C41", borderColor: deposit === p ? "#0D9488" : "#E7DFCE" }}>
+          <button key={p} onClick={() => setDeposit(p)} className="flex-1 py-2 rounded-md font-mono text-[12px] font-bold border"
+            style={{ background: deposit === p ? "#0D9488" : "transparent", color: deposit === p ? "#FAF5EA" : "#3E3A30", borderColor: deposit === p ? "#0D9488" : "#E7DFCE" }}>
             {p === 0 ? "0% — START NOW" : `${p}%`}
           </button>
         ))}
       </div>
 
       <div className="px-3 py-2 border-y" style={{ borderColor: "#E7DFCE" }}>
-        <span className="text-[10px] font-mono font-bold" style={{ color: "#514C41" }}>ROUTING</span>
+        <span className="text-[12px] font-mono font-bold" style={{ color: "#3E3A30" }}>ROUTING</span>
       </div>
       <div className="flex gap-1.5 px-3 py-2.5">
-        <button onClick={() => setRouting("assign")} className="flex-1 py-2 rounded-md font-mono text-[10px] font-bold border"
-          style={{ background: routing === "assign" ? "#181818" : "transparent", color: routing === "assign" ? "#FAF5EA" : "#514C41", borderColor: "#E7DFCE" }}>
+        <button onClick={() => setRouting("assign")} className="flex-1 py-2 rounded-md font-mono text-[12px] font-bold border"
+          style={{ background: routing === "assign" ? "#181818" : "transparent", color: routing === "assign" ? "#FAF5EA" : "#3E3A30", borderColor: "#E7DFCE" }}>
           ASSIGN FACTORY
         </button>
         <button onClick={() => !isFlagship && setRouting("board")} disabled={isFlagship}
-          className="flex-1 py-2 rounded-md font-mono text-[10px] font-bold border disabled:opacity-40"
-          style={{ background: routing === "board" ? "#181818" : "transparent", color: routing === "board" ? "#FAF5EA" : "#514C41", borderColor: "#E7DFCE" }}>
+          className="flex-1 py-2 rounded-md font-mono text-[12px] font-bold border disabled:opacity-40"
+          style={{ background: routing === "board" ? "#181818" : "transparent", color: routing === "board" ? "#FAF5EA" : "#3E3A30", borderColor: "#E7DFCE" }}>
           {isFlagship ? "BOARD — BLOCKED (FLAGSHIP)" : "POST TO RUN BOARD"}
         </button>
       </div>
@@ -57,8 +57,8 @@ export function ApprovePanel({ orderId, defaultDeposit, isFlagship, factories }:
             {factoryId === f.id && <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#0D9488" }} />}
           </div>
           <div className="flex-1">
-            <p className="text-[12px] font-semibold" style={{ color: "#181818" }}>{f.name}{!f.eligible ? " — NOT FLAGSHIP-APPROVED" : ""}</p>
-            <p className="font-mono text-[8px]" style={{ color: "#7A7365" }}>
+            <p className="text-[14px] font-semibold" style={{ color: "#181818" }}>{f.name}{!f.eligible ? " — NOT FLAGSHIP-APPROVED" : ""}</p>
+            <p className="font-mono text-[10px]" style={{ color: "#5C574A" }}>
               {f.rateMicro ? `${(Number(f.rateMicro)/10000).toFixed(2)}¢/CONE` : "NO RATE ON FILE"} · ON-TIME {f.onTime} · {f.load} OPEN RUNS
             </p>
           </div>
@@ -67,13 +67,13 @@ export function ApprovePanel({ orderId, defaultDeposit, isFlagship, factories }:
 
       <div className="p-3">
         {state === "done"
-          ? <p className="text-[12px] font-bold text-center py-1" style={{ color: "#0D9488" }}>{msg}</p>
+          ? <p className="text-[14px] font-bold text-center py-1" style={{ color: "#0D9488" }}>{msg}</p>
           : <>
               <button onClick={approve} disabled={state === "busy" || (routing === "assign" && !factoryId)}
-                className="w-full py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#0D9488", color: "#FAF5EA" }}>
+                className="w-full py-3 rounded-lg font-bold text-[15px] disabled:opacity-50" style={{ background: "#0D9488", color: "#FAF5EA" }}>
                 {state === "busy" ? "Checking floors…" : "Approve order"}
               </button>
-              {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#C77800" }}>{msg}</p>}
+              {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#C77800" }}>{msg}</p>}
             </>}
       </div>
     </div>

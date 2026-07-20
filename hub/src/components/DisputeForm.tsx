@@ -39,61 +39,61 @@ export function DisputeForm({ orders }: { orders: { id: string; label: string }[
   if (state === "done") return (
     <div className="mt-4 rounded-xl border p-5 text-center" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
       <p className="text-[15px] font-bold" style={{ color: "#0D9488" }}>✓ Dispute received</p>
-      <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "#514C41" }}>{msg}</p>
+      <p className="text-[13px] mt-2 leading-relaxed" style={{ color: "#3E3A30" }}>{msg}</p>
     </div>
   );
 
-  const lbl = "block text-[9px] font-mono font-bold mt-3";
-  const inp = "w-full mt-1 px-3 py-2.5 rounded-lg text-[13px] border outline-none";
+  const lbl = "block text-[11px] font-mono font-bold mt-3";
+  const inp = "w-full mt-1 px-3 py-2.5 rounded-lg text-[15px] border outline-none";
 
   return (
     <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <label className={lbl} style={{ color: "#514C41" }}>WHICH ORDER</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>WHICH ORDER</label>
       <select value={orderId} onChange={e => setOrderId(e.target.value)} className={inp} style={{ borderColor: "#E7DFCE" }}>
         {orders.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
-      <label className={lbl} style={{ color: "#514C41" }}>LOT NUMBER (ON THE CARTON)</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>LOT NUMBER (ON THE CARTON)</label>
       <input value={lot} onChange={e => setLot(e.target.value)} placeholder="GL-20143-B" className={inp} style={{ borderColor: "#E7DFCE" }} />
-      <label className={lbl} style={{ color: "#514C41" }}>WHAT&apos;S WRONG *</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>WHAT&apos;S WRONG *</label>
       <div className="flex gap-1.5 flex-wrap mt-1">
         {ISSUES.map(i => (
           <button key={i} onClick={() => setIssues(issues.includes(i) ? issues.filter(x => x !== i) : [...issues, i])}
-            className="font-mono text-[9px] font-bold px-2.5 py-1.5 rounded-lg border"
-            style={{ background: issues.includes(i) ? "#181818" : "transparent", color: issues.includes(i) ? "#fff" : "#514C41", borderColor: issues.includes(i) ? "#181818" : "#E7DFCE" }}>
+            className="font-mono text-[11px] font-bold px-2.5 py-1.5 rounded-lg border"
+            style={{ background: issues.includes(i) ? "#181818" : "transparent", color: issues.includes(i) ? "#fff" : "#3E3A30", borderColor: issues.includes(i) ? "#181818" : "#E7DFCE" }}>
             {i.toUpperCase()}
           </button>
         ))}
       </div>
-      <label className={lbl} style={{ color: "#514C41" }}>TELL US WHAT YOU&apos;RE SEEING *</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>TELL US WHAT YOU&apos;RE SEEING *</label>
       <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3} className={inp} style={{ borderColor: "#E7DFCE" }}
         placeholder="What's affected, how you found it, whether it spans cases…" />
       <div className="grid grid-cols-2 gap-3">
-        <div><label className={lbl} style={{ color: "#514C41" }}>UNITS AFFECTED (EST.)</label>
+        <div><label className={lbl} style={{ color: "#3E3A30" }}>UNITS AFFECTED (EST.)</label>
           <input value={qty} onChange={e => setQty(e.target.value.replace(/\D/g,""))} inputMode="numeric" className={inp} style={{ borderColor: "#E7DFCE" }} /></div>
-        <div><label className={lbl} style={{ color: "#514C41" }}>% OF SHIPMENT INSPECTED</label>
+        <div><label className={lbl} style={{ color: "#3E3A30" }}>% OF SHIPMENT INSPECTED</label>
           <input value={pct} onChange={e => setPct(e.target.value.replace(/\D/g,"").slice(0,3))} inputMode="numeric" className={inp} style={{ borderColor: "#E7DFCE" }} /></div>
       </div>
       <button onClick={() => setStopped(!stopped)} className="w-full flex items-center mt-3 px-3 py-2.5 rounded-lg border text-left"
         style={{ borderColor: stopped ? "#D62839" : "#E7DFCE", background: stopped ? "#D628390A" : "transparent" }}>
-        <span className="text-[13px] mr-2">{stopped ? "🔴" : "⚪"}</span>
-        <span className="text-[11px] font-bold" style={{ color: stopped ? "#D62839" : "#514C41" }}>This is stopping our production line</span>
+        <span className="text-[15px] mr-2">{stopped ? "🔴" : "⚪"}</span>
+        <span className="text-[13px] font-bold" style={{ color: stopped ? "#D62839" : "#3E3A30" }}>This is stopping our production line</span>
       </button>
-      <label className={lbl} style={{ color: "#514C41" }}>WHAT WOULD MAKE THIS RIGHT</label>
+      <label className={lbl} style={{ color: "#3E3A30" }}>WHAT WOULD MAKE THIS RIGHT</label>
       <div className="flex gap-1.5 mt-1">
         {(["replacement","credit","refund","other"] as const).map(w => (
-          <button key={w} onClick={() => setWant(w)} className="flex-1 py-2 rounded-lg font-mono text-[8px] font-bold border"
-            style={{ background: want === w ? "#181818" : "transparent", color: want === w ? "#fff" : "#514C41", borderColor: want === w ? "#181818" : "#E7DFCE" }}>
+          <button key={w} onClick={() => setWant(w)} className="flex-1 py-2 rounded-lg font-mono text-[10px] font-bold border"
+            style={{ background: want === w ? "#181818" : "transparent", color: want === w ? "#fff" : "#3E3A30", borderColor: want === w ? "#181818" : "#E7DFCE" }}>
             {w.toUpperCase()}
           </button>
         ))}
       </div>
       <DisputeMediaUploader onChange={setMedia} />
       <button onClick={submit} disabled={state === "busy" || !valid}
-        className="w-full mt-4 py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
+        className="w-full mt-4 py-3 rounded-lg font-bold text-[15px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
         {state === "busy" ? "Submitting…" : "Submit dispute"}
       </button>
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
-      <p className="font-mono text-[7px] mt-3 text-center leading-relaxed" style={{ color: "#7A7365" }}>
+      {state === "err" && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      <p className="font-mono text-[9px] mt-3 text-center leading-relaxed" style={{ color: "#5C574A" }}>
         PLEASE QUARANTINE AFFECTED PRODUCT — WE MAY NEED SAMPLES RETURNED · PHOTOS PROTECT YOU AS MUCH AS US
       </p>
     </div>

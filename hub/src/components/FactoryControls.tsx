@@ -20,8 +20,8 @@ export function FactoryControls({ factoryId, initial, qualified }: { factoryId: 
     <button onClick={() => !disabled && onFlip(!value)} disabled={disabled}
       className="w-full flex items-center px-3 py-3 border-b text-left disabled:opacity-40" style={{ borderColor: "#E7DFCE" }}>
       <div className="flex-1">
-        <p className="text-[12px] font-semibold" style={{ color: "#181818" }}>{label}</p>
-        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#7A7365" }}>{sub}</p>
+        <p className="text-[14px] font-semibold" style={{ color: "#181818" }}>{label}</p>
+        <p className="font-mono text-[10px] mt-0.5" style={{ color: "#5C574A" }}>{sub}</p>
       </div>
       <div className="w-9 h-5 rounded-full p-0.5" style={{ background: value ? (danger ? "#E63946" : "#0D9488") : "#E7DFCE" }}>
         <div className="w-4 h-4 rounded-full" style={{ background: "#181818", transform: value ? "translateX(16px)" : "none" }} />
@@ -32,8 +32,8 @@ export function FactoryControls({ factoryId, initial, qualified }: { factoryId: 
   return (
     <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
       <div className="px-3 py-2 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
-        <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>QUALIFICATION — YOUR FLIPS, AUDITED</span>
-        {msg && <span className="font-mono text-[8px]" style={{ color: msg.startsWith("✓") ? "#0D9488" : "#E63946" }}>{msg}</span>}
+        <span className="font-mono text-[12px] font-bold" style={{ color: "#3E3A30" }}>QUALIFICATION — YOUR FLIPS, AUDITED</span>
+        {msg && <span className="font-mono text-[10px]" style={{ color: msg.startsWith("✓") ? "#0D9488" : "#E63946" }}>{msg}</span>}
       </div>
       <Row label="Board eligible" sub={qualified ? "QUALIFICATION RUN ON RECORD — CLEAR TO FLIP" : "BLOCKED: NO COMPLETED QUALIFICATION RUN"} value={c.board_eligible} onFlip={v => flip({ board_eligible: v })} disabled={!qualified && !c.board_eligible} />
       <Row label="Flagship approved" sub="ONLY FLAGSHIP-APPROVED FACTORIES CAN EVER TOUCH THE PATENTED CONE" value={c.flagship_approved} onFlip={v => flip({ flagship_approved: v })} />

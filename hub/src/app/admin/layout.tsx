@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin" className="display display-shadow text-[16px] whitespace-nowrap" style={{ color: "var(--ink)" }}>
           SESHSURE<span style={{ color: "var(--teal)" }}>.</span>
         </Link>
-        <nav className="flex gap-4 font-mono text-[9px] font-bold tracking-wider overflow-x-auto" style={{ color: "var(--mute)" }}>
+        <nav className="flex gap-4 font-mono text-[11px] font-bold tracking-wider overflow-x-auto" style={{ color: "var(--mute)" }}>
           {NAV.map(([href, label]) => (
             <Link key={href} href={href} className="hover:text-[#181818] py-1 whitespace-nowrap">{label}</Link>
           ))}
