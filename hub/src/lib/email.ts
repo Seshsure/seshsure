@@ -92,7 +92,7 @@ export async function sendTemplate(args: {
   const { subject, html } = t(args.vars);
   const resend = new Resend(process.env.RESEND_API_KEY);
   const res = await resend.emails.send({
-    from: args.from ?? "SeshSure Billing <billing@seshsure.com>",
+    from: args.from ?? process.env.EMAIL_FROM ?? "SeshSure Billing <billing@seshsure.com>",
     to: args.to,
     bcc: args.bccOwner === false ? undefined : "rob@seshsure.com",
     subject, html,
