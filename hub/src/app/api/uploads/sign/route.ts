@@ -15,10 +15,14 @@ const LIMITS: Record<string, { types: string[]; maxBytes: number }> = {
     types: ["image/png", "image/jpeg", "image/heic", "video/mp4", "video/quicktime"],
     maxBytes: 100 * 1024 * 1024,
   },
+  "factory-docs": {
+    types: ["image/png", "image/jpeg", "application/pdf"],
+    maxBytes: 25 * 1024 * 1024,
+  },
 };
 
 const Body = z.object({
-  bucket: z.enum(["art", "dispute-media"]),
+  bucket: z.enum(["art", "dispute-media", "factory-docs"]),
   filename: z.string().min(1).max(180),
   contentType: z.string(),
   sizeBytes: z.number().int().positive(),
@@ -28,9 +32,9 @@ export async function POST(req: NextRequest) {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: "auth" }, { status: 401 });
-  const { data: prof } = await sb.from("profiles").select("client_id, role").eq("id", user.id).single();
-  if (!prof?.client_id && prof?.role !== "owner")
-    return NextResponse.json({ error: "client account required" }, { status: 403 });
+  const { data: prof } = await sb.from("profiles").select("client_id, factory_id, role").eq("id", user.id).single();
+  if (!prof?.client_id && !prof?.factory_id && prof?.role !== "owner")
+    return NextResponse.json({ error: "account required" }, { status: 403 });
 
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "bad request" }, { status: 400 });
@@ -44,7 +48,8 @@ export async function POST(req: NextRequest) {
 
   // path lives inside the caller's own client folder — the storage RLS wall
   const safe = b.filename.replace(/[^\w.\-]/g, "_").slice(-120);
-  const path = `${prof.client_id ?? "internal"}/${Date.now()}-${safe}`;
+  const owner_folder = b.bucket === "factory-docs" ? (prof.factory_id ?? "internal") : (prof.client_id ?? "internal");
+  const path = `${owner_folder}/${Date.now()}-${safe}`;
 
   const { data, error } = await sb.storage.from(b.bucket).createSignedUploadUrl(path);
   if (error || !data) return NextResponse.json({ error: error?.message ?? "sign failed" }, { status: 500 });
