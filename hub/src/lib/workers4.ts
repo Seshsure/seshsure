@@ -308,3 +308,45 @@ Vido Manufacturing and Distribution Corp d/b/a SeshSure`;
     await log(sb, "worker.demand_drafted", { client: clientId, total_cents: total.toString() });
   }
 }
+
+// ————— WORKER 24: BID CHASE + QUOTE EXPIRY —————
+// Cheap freight needs live competition: RFQs open 3+ days with under 3 bids
+// get a task (and, when EMAILS_ENABLED, a nudge would ride the daily brief);
+// bids past their valid-until date get flagged so awards never lean on dead prices.
+export async function bidChase(sb: SupabaseClient) {
+  const threeDaysAgo = new Date(Date.now() - 3 * 864e5).toISOString();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data: thin } = await sb.from("freight_rfqs")
+    .select("id, mode, cargo_summary, created_at, freight_bids(id)")
+    .eq("status", "open").lt("created_at", threeDaysAgo);
+
+  for (const r of thin ?? []) {
+    const bidCount = (r.freight_bids as { id: string }[] | null)?.length ?? 0;
+    if (bidCount >= 3) continue;
+    const cs = r.cargo_summary as Record<string, unknown> | null;
+    const marker = `bidchase:${r.id}`;
+    const { data: existing } = await sb.from("tasks").select("id").eq("dedupe_key", marker).limit(1);
+    if (existing?.length) continue;
+    await sb.from("tasks").insert({
+      kind: "freight", title: `RFQ thin on bids — ${String(cs?.origin ?? "?")} → ${String(cs?.destination ?? "?")}`,
+      detail: `Open 3+ days with ${bidCount} bid${bidCount === 1 ? "" : "s"}. Chase forwarders or widen the invite list — competition is the discount.`,
+      dedupe_key: marker, due_date: today,
+    });
+  }
+
+  // flag expired quotes still sitting on open RFQs
+  const { data: expired } = await sb.from("freight_bids")
+    .select("id, rfq_id, valid_until, freight_rfqs!inner(status)")
+    .lt("valid_until", today).eq("freight_rfqs.status", "open");
+  for (const b of expired ?? []) {
+    const marker = `bidexpired:${b.id}`;
+    const { data: existing } = await sb.from("tasks").select("id").eq("dedupe_key", marker).limit(1);
+    if (existing?.length) continue;
+    await sb.from("tasks").insert({
+      kind: "freight", title: "Freight quote expired on open RFQ",
+      detail: `A bid's valid-until (${b.valid_until}) passed while the RFQ is still open. Re-quote before awarding — expired prices aren't prices.`,
+      dedupe_key: marker, due_date: today,
+    });
+  }
+}
