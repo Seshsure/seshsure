@@ -13,7 +13,7 @@ export default async function NewOrder() {
   ]);
   return (
     <div className="max-w-3xl mx-auto px-4 py-5">
-      <h1 className="font-bold text-[16px] mb-3" style={{ color: "#15181A" }}>New order</h1>
+      <h1 className="font-bold text-[16px] mb-3" style={{ color: "#181818" }}>New order</h1>
       <OrderForm
         products={(products ?? []).filter(p => !p.is_flagship).map(p => ({ id: p.id, sku: p.sku, description: p.description }))}
         addresses={(addresses ?? []).map(a => ({ id: a.id, label: a.label }))}

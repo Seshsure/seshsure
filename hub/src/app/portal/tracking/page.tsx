@@ -19,8 +19,8 @@ export default async function Tracking() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-5">
-      <h1 className="font-bold text-[16px] mb-1" style={{ color: "#15181A" }}>Where&apos;s my order</h1>
-      <p className="text-[10px] font-mono mb-3" style={{ color: "#6E756B" }}>TRACKING BEGINS AT US ARRIVAL · ETAS UPDATE LIVE</p>
+      <h1 className="font-bold text-[16px] mb-1" style={{ color: "#181818" }}>Where&apos;s my order</h1>
+      <p className="text-[10px] font-mono mb-3" style={{ color: "#6E6A5E" }}>TRACKING BEGINS AT US ARRIVAL · ETAS UPDATE LIVE</p>
       <div className="space-y-3">
         {(orders ?? []).map(o => {
           type Ship = { id: string; eta: string | null; delivered_at: string | null; shipment_milestones: { code: string; occurred_at: string }[] };
@@ -28,10 +28,10 @@ export default async function Tracking() {
           const hit = new Map((ship?.shipment_milestones ?? []).map(m => [m.code, m.occurred_at]));
           const inProduction = o.status === "in_production" && !hit.size;
           return (
-            <div key={o.id} className="rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
+            <div key={o.id} className="rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
               <div className="flex items-center justify-between">
-                <p className="font-mono text-[11px] font-bold" style={{ color: "#15181A" }}>{o.order_number ?? "ORDER"} · PO {o.po_number}</p>
-                <span className="font-mono text-[8px] font-bold" style={{ color: o.status === "delivered" ? "#0D9488" : "#6E756B" }}>
+                <p className="font-mono text-[11px] font-bold" style={{ color: "#181818" }}>{o.order_number ?? "ORDER"} · PO {o.po_number}</p>
+                <span className="font-mono text-[8px] font-bold" style={{ color: o.status === "delivered" ? "#0D9488" : "#6E6A5E" }}>
                   {inProduction ? "IN PRODUCTION" : String(o.status).replace(/_/g, " ").toUpperCase()}
                 </span>
               </div>
@@ -46,11 +46,11 @@ export default async function Tracking() {
                           style={{ borderColor: done ? "#0D9488" : "#D9D6CE", background: done ? "#0D9488" : "#fff" }}>
                           {done && <span className="text-[6px]" style={{ color: "#fff" }}>✓</span>}
                         </div>
-                        {i < 3 && <div className="w-0.5 h-5" style={{ background: done ? "#0D9488" : "#E4E1DA" }} />}
+                        {i < 3 && <div className="w-0.5 h-5" style={{ background: done ? "#0D9488" : "#E7DFCE" }} />}
                       </div>
                       <div className="pb-2">
-                        <p className="text-[11px] font-semibold leading-3" style={{ color: done ? "#15181A" : "#9B9F98" }}>{label}</p>
-                        {when && <p className="font-mono text-[7px] mt-0.5" style={{ color: "#6E756B" }}>{new Date(when).toLocaleDateString()}</p>}
+                        <p className="text-[11px] font-semibold leading-3" style={{ color: done ? "#181818" : "#9B9484" }}>{label}</p>
+                        {when && <p className="font-mono text-[7px] mt-0.5" style={{ color: "#6E6A5E" }}>{new Date(when).toLocaleDateString()}</p>}
                       </div>
                     </div>
                   );
@@ -62,7 +62,7 @@ export default async function Tracking() {
             </div>
           );
         })}
-        {!orders?.length && <p className="text-[11px]" style={{ color: "#6E756B" }}>Nothing in motion right now.</p>}
+        {!orders?.length && <p className="text-[11px]" style={{ color: "#6E6A5E" }}>Nothing in motion right now.</p>}
       </div>
     </div>
   );

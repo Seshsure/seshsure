@@ -14,7 +14,7 @@ export default async function Money() {
   ]);
   return (
     <div className="max-w-3xl mx-auto px-4 py-5">
-      <h1 className="font-bold text-[16px] mb-3" style={{ color: "#15181A" }}>Money</h1>
+      <h1 className="font-bold text-[16px] mb-3" style={{ color: "#181818" }}>Money</h1>
       <MoneySettings
         accepted={client?.accepted_methods ?? ["ach"]}
         preferred={client?.preferred_method ?? "ach"}

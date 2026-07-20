@@ -21,8 +21,8 @@ export default async function FactoryOnboarding() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
-      <h1 className="font-bold text-[17px]" style={{ color: "#15181A" }}>Partner setup</h1>
-      <p className="text-[11px] mt-1" style={{ color: "#6E756B" }}>Two steps on your side. Payment terms and rates are set with SeshSure directly.</p>
+      <h1 className="font-bold text-[17px]" style={{ color: "#181818" }}>Partner setup</h1>
+      <p className="text-[11px] mt-1" style={{ color: "#6E6A5E" }}>Two steps on your side. Payment terms and rates are set with SeshSure directly.</p>
       <FactoryOnboardWizard
         factoryId={factoryId}
         termsDone={(sigs?.length ?? 0) > 0}

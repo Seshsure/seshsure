@@ -2,7 +2,7 @@
 import { Resend } from "resend";
 
 const FOOTER = `
-<div style="margin-top:28px;padding-top:14px;border-top:1px solid #E4E1DA;font-family:monospace;font-size:10px;color:#8b8f8a;line-height:1.7">
+<div style="margin-top:28px;padding-top:14px;border-top:1px solid #E7DFCE;font-family:monospace;font-size:10px;color:#8b8f8a;line-height:1.7">
 Vido Manufacturing and Distribution Corp d/b/a SeshSure<br/>
 10940 S. Parker Rd, Suite 788, Parker, CO 80134<br/>
 You're receiving this because you have an account or open business with SeshSure.<br/>
@@ -10,7 +10,7 @@ Questions? Reply here or write support@seshsure.com — a human reads everything
 </div>`;
 
 const wrap = (title: string, body: string) => `
-<div style="font-family:-apple-system,Segoe UI,Inter,sans-serif;max-width:560px;margin:0 auto;color:#15181A">
+<div style="font-family:-apple-system,Segoe UI,Inter,sans-serif;max-width:560px;margin:0 auto;color:#181818">
   <div style="padding:18px 0;font-weight:800;font-size:15px">SESHSURE<span style="color:#0D9488"> HUB</span></div>
   <h1 style="font-size:17px;margin:0 0 10px">${title}</h1>
   ${body}

@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Archivo_Black, Bungee, Inter } from "next/font/google";
 import "./globals.css";
+
+const archivo = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-archivo" });
+const bungee = Bungee({ weight: "400", subsets: ["latin"], variable: "--font-bungee" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${bungee.variable} ${inter.variable} antialiased`}
       >
         {children}
       </body>

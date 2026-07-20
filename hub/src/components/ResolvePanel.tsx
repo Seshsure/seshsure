@@ -26,49 +26,49 @@ export function ResolvePanel({ disputeId }: { disputeId: string }) {
   }
 
   if (state === "done") return (
-    <p className="mt-3 py-3 text-center rounded-lg border text-[12px] font-bold" style={{ background: "#14181B", borderColor: "#2DD4BF44", color: "#2DD4BF" }}>
+    <p className="mt-3 py-3 text-center rounded-lg border text-[12px] font-bold" style={{ background: "#FFFFFF", borderColor: "#0D948844", color: "#0D9488" }}>
       ✓ Ruled — client notified, collections resume, ledger updated
     </p>
   );
 
   const Chip = ({ on, label, onTap, danger }: { on: boolean; label: string; onTap: () => void; danger?: boolean }) => (
     <button onClick={onTap} className="font-mono text-[8px] font-bold px-2 py-1.5 rounded border"
-      style={{ background: on ? (danger ? "#E5484D" : "#2DD4BF") : "transparent", color: on ? "#0C0F11" : "#8B949C", borderColor: on ? (danger ? "#E5484D" : "#2DD4BF") : "#262C31" }}>
+      style={{ background: on ? (danger ? "#E63946" : "#0D9488") : "transparent", color: on ? "#FAF5EA" : "#6E6A5E", borderColor: on ? (danger ? "#E63946" : "#0D9488") : "#E7DFCE" }}>
       {label}
     </button>
   );
 
   return (
-    <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
-      <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
-        <span className="font-mono text-[9px] font-bold" style={{ color: "#8B949C" }}>YOUR RULING — ROOT CAUSE + SCOPE REQUIRED</span>
+    <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
+      <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
+        <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>YOUR RULING — ROOT CAUSE + SCOPE REQUIRED</span>
       </div>
-      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#262C31" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#5C666D" }}>ROOT CAUSE (FEEDS SCORECARDS — ONLY FACTORY FAULT COUNTS AGAINST THEM)</p>
+      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>ROOT CAUSE (FEEDS SCORECARDS — ONLY FACTORY FAULT COUNTS AGAINST THEM)</p>
         <div className="flex gap-1.5 flex-wrap">{CAUSES.map(([v, l]) => <Chip key={v} on={cause === v} label={l} onTap={() => setCause(v)} />)}</div>
       </div>
-      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#262C31" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#5C666D" }}>DEFECT SCOPE (LOT-WIDE TRIGGERS BLAST-RADIUS OUTREACH TASK)</p>
+      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>DEFECT SCOPE (LOT-WIDE TRIGGERS BLAST-RADIUS OUTREACH TASK)</p>
         <div className="flex gap-1.5">
           <Chip on={scope === "order_specific"} label="THIS ORDER ONLY" onTap={() => setScope("order_specific")} />
           <Chip on={scope === "lot_wide"} label="LOT-WIDE 💥" onTap={() => setScope("lot_wide")} danger />
         </div>
       </div>
-      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#262C31" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#5C666D" }}>RESOLUTION (FACTORY-FAULT REPLACEMENT = $0 RUN, FACTORY PAYS)</p>
+      <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>RESOLUTION (FACTORY-FAULT REPLACEMENT = $0 RUN, FACTORY PAYS)</p>
         <div className="flex gap-1.5 flex-wrap">{TYPES.map(([v, l]) => <Chip key={v} on={type === v} label={l} onTap={() => setType(v)} danger={v === "denied"} />)}</div>
         {needsValue && (
           <input value={value} onChange={e => setValue(e.target.value.replace(/[^\d.]/g,""))} placeholder="Credit amount ($)"
             inputMode="decimal" className="w-full mt-2 px-3 py-2 rounded font-mono text-[12px] border outline-none"
-            style={{ background: "#0C0F11", borderColor: "#262C31", color: "#E8EAEC" }} />
+            style={{ background: "#FAF5EA", borderColor: "#E7DFCE", color: "#181818" }} />
         )}
       </div>
       <div className="p-3">
         <button onClick={resolve} disabled={state === "busy" || !cause || !type || (needsValue && !parseFloat(value))}
-          className="w-full py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#2DD4BF", color: "#0C0F11" }}>
+          className="w-full py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#0D9488", color: "#FAF5EA" }}>
           {state === "busy" ? "Ruling…" : "Rule & close"}
         </button>
-        {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#E5484D" }}>{msg}</p>}
+        {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#E63946" }}>{msg}</p>}
       </div>
     </div>
   );

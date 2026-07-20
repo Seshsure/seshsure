@@ -76,11 +76,11 @@ export async function dailyBrief(sb: SupabaseClient) {
   const inFlight = (pays ?? []).reduce((s, p) => s + BigInt(p.amount_cents), 0n);
 
   const html = `
-<div style="font-family:-apple-system,Inter,sans-serif;max-width:560px;margin:0 auto;color:#15181A">
+<div style="font-family:-apple-system,Inter,sans-serif;max-width:560px;margin:0 auto;color:#181818">
 <h1 style="font-size:16px">☀️ SeshSure — ${now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</h1>
 <p style="font-family:monospace;font-size:12px;line-height:2">
 AR OUTSTANDING: <b>${formatUSD(ar)}</b><br/>
-OVERDUE: <b style="color:${overdue.length ? "#B4231F" : "#0D9488"}">${overdue.length} invoice${overdue.length===1?"":"s"}</b><br/>
+OVERDUE: <b style="color:${overdue.length ? "#D62839" : "#0D9488"}">${overdue.length} invoice${overdue.length===1?"":"s"}</b><br/>
 MONEY IN FLIGHT: <b>${formatUSD(inFlight)}</b></p>
 <h2 style="font-size:13px">Your queue</h2>
 <ul style="font-size:12px;line-height:1.9">${(tasks ?? []).map(t => `<li>${t.title}</li>`).join("") || "<li>Clear ✓</li>"}</ul>

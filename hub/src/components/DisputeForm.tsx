@@ -37,9 +37,9 @@ export function DisputeForm({ orders }: { orders: { id: string; label: string }[
   }
 
   if (state === "done") return (
-    <div className="mt-4 rounded-xl border p-5 text-center" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
+    <div className="mt-4 rounded-xl border p-5 text-center" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
       <p className="text-[15px] font-bold" style={{ color: "#0D9488" }}>✓ Dispute received</p>
-      <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "#6E756B" }}>{msg}</p>
+      <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "#6E6A5E" }}>{msg}</p>
     </div>
   );
 
@@ -47,53 +47,53 @@ export function DisputeForm({ orders }: { orders: { id: string; label: string }[
   const inp = "w-full mt-1 px-3 py-2.5 rounded-lg text-[13px] border outline-none";
 
   return (
-    <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
-      <label className={lbl} style={{ color: "#6E756B" }}>WHICH ORDER</label>
-      <select value={orderId} onChange={e => setOrderId(e.target.value)} className={inp} style={{ borderColor: "#E4E1DA" }}>
+    <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
+      <label className={lbl} style={{ color: "#6E6A5E" }}>WHICH ORDER</label>
+      <select value={orderId} onChange={e => setOrderId(e.target.value)} className={inp} style={{ borderColor: "#E7DFCE" }}>
         {orders.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
-      <label className={lbl} style={{ color: "#6E756B" }}>LOT NUMBER (ON THE CARTON)</label>
-      <input value={lot} onChange={e => setLot(e.target.value)} placeholder="GL-20143-B" className={inp} style={{ borderColor: "#E4E1DA" }} />
-      <label className={lbl} style={{ color: "#6E756B" }}>WHAT&apos;S WRONG *</label>
+      <label className={lbl} style={{ color: "#6E6A5E" }}>LOT NUMBER (ON THE CARTON)</label>
+      <input value={lot} onChange={e => setLot(e.target.value)} placeholder="GL-20143-B" className={inp} style={{ borderColor: "#E7DFCE" }} />
+      <label className={lbl} style={{ color: "#6E6A5E" }}>WHAT&apos;S WRONG *</label>
       <div className="flex gap-1.5 flex-wrap mt-1">
         {ISSUES.map(i => (
           <button key={i} onClick={() => setIssues(issues.includes(i) ? issues.filter(x => x !== i) : [...issues, i])}
             className="font-mono text-[9px] font-bold px-2.5 py-1.5 rounded-lg border"
-            style={{ background: issues.includes(i) ? "#15181A" : "transparent", color: issues.includes(i) ? "#fff" : "#6E756B", borderColor: issues.includes(i) ? "#15181A" : "#E4E1DA" }}>
+            style={{ background: issues.includes(i) ? "#181818" : "transparent", color: issues.includes(i) ? "#fff" : "#6E6A5E", borderColor: issues.includes(i) ? "#181818" : "#E7DFCE" }}>
             {i.toUpperCase()}
           </button>
         ))}
       </div>
-      <label className={lbl} style={{ color: "#6E756B" }}>TELL US WHAT YOU&apos;RE SEEING *</label>
-      <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3} className={inp} style={{ borderColor: "#E4E1DA" }}
+      <label className={lbl} style={{ color: "#6E6A5E" }}>TELL US WHAT YOU&apos;RE SEEING *</label>
+      <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3} className={inp} style={{ borderColor: "#E7DFCE" }}
         placeholder="What's affected, how you found it, whether it spans cases…" />
       <div className="grid grid-cols-2 gap-3">
-        <div><label className={lbl} style={{ color: "#6E756B" }}>UNITS AFFECTED (EST.)</label>
-          <input value={qty} onChange={e => setQty(e.target.value.replace(/\D/g,""))} inputMode="numeric" className={inp} style={{ borderColor: "#E4E1DA" }} /></div>
-        <div><label className={lbl} style={{ color: "#6E756B" }}>% OF SHIPMENT INSPECTED</label>
-          <input value={pct} onChange={e => setPct(e.target.value.replace(/\D/g,"").slice(0,3))} inputMode="numeric" className={inp} style={{ borderColor: "#E4E1DA" }} /></div>
+        <div><label className={lbl} style={{ color: "#6E6A5E" }}>UNITS AFFECTED (EST.)</label>
+          <input value={qty} onChange={e => setQty(e.target.value.replace(/\D/g,""))} inputMode="numeric" className={inp} style={{ borderColor: "#E7DFCE" }} /></div>
+        <div><label className={lbl} style={{ color: "#6E6A5E" }}>% OF SHIPMENT INSPECTED</label>
+          <input value={pct} onChange={e => setPct(e.target.value.replace(/\D/g,"").slice(0,3))} inputMode="numeric" className={inp} style={{ borderColor: "#E7DFCE" }} /></div>
       </div>
       <button onClick={() => setStopped(!stopped)} className="w-full flex items-center mt-3 px-3 py-2.5 rounded-lg border text-left"
-        style={{ borderColor: stopped ? "#B4231F" : "#E4E1DA", background: stopped ? "#B4231F0A" : "transparent" }}>
+        style={{ borderColor: stopped ? "#D62839" : "#E7DFCE", background: stopped ? "#D628390A" : "transparent" }}>
         <span className="text-[13px] mr-2">{stopped ? "🔴" : "⚪"}</span>
-        <span className="text-[11px] font-bold" style={{ color: stopped ? "#B4231F" : "#6E756B" }}>This is stopping our production line</span>
+        <span className="text-[11px] font-bold" style={{ color: stopped ? "#D62839" : "#6E6A5E" }}>This is stopping our production line</span>
       </button>
-      <label className={lbl} style={{ color: "#6E756B" }}>WHAT WOULD MAKE THIS RIGHT</label>
+      <label className={lbl} style={{ color: "#6E6A5E" }}>WHAT WOULD MAKE THIS RIGHT</label>
       <div className="flex gap-1.5 mt-1">
         {(["replacement","credit","refund","other"] as const).map(w => (
           <button key={w} onClick={() => setWant(w)} className="flex-1 py-2 rounded-lg font-mono text-[8px] font-bold border"
-            style={{ background: want === w ? "#15181A" : "transparent", color: want === w ? "#fff" : "#6E756B", borderColor: want === w ? "#15181A" : "#E4E1DA" }}>
+            style={{ background: want === w ? "#181818" : "transparent", color: want === w ? "#fff" : "#6E6A5E", borderColor: want === w ? "#181818" : "#E7DFCE" }}>
             {w.toUpperCase()}
           </button>
         ))}
       </div>
       <DisputeMediaUploader onChange={setMedia} />
       <button onClick={submit} disabled={state === "busy" || !valid}
-        className="w-full mt-4 py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#15181A", color: "#fff" }}>
+        className="w-full mt-4 py-3 rounded-lg font-bold text-[13px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
         {state === "busy" ? "Submitting…" : "Submit dispute"}
       </button>
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#B4231F" }}>{msg}</p>}
-      <p className="font-mono text-[7px] mt-3 text-center leading-relaxed" style={{ color: "#9B9F98" }}>
+      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
+      <p className="font-mono text-[7px] mt-3 text-center leading-relaxed" style={{ color: "#9B9484" }}>
         PLEASE QUARANTINE AFFECTED PRODUCT — WE MAY NEED SAMPLES RETURNED · PHOTOS PROTECT YOU AS MUCH AS US
       </p>
     </div>

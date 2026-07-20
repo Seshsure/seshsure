@@ -2,61 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ————— SESHSURE HUB TOKENS — one truth, no OS mode flipping ————— */
+/* ————— SESHSURE BRAND TOKENS — the Memphis system, operational dialect ————— */
 :root {
-  /* command (dark) world */
-  --ink-0: #0C0F11;   /* floor */
-  --ink-1: #14181B;   /* card */
-  --ink-2: #1B2126;   /* raised */
-  --line-d: #262C31;
-  --text-d: #E8EAEC;
-  --mute-d: #8B949C;
-  --dim-d: #5C666D;
-  /* portal (paper) world */
-  --paper-0: #F4F2ED;
-  --paper-1: #FFFFFF;
-  --line-l: #E4E1DA;
-  --text-l: #15181A;
-  --mute-l: #6E756B;
-  --dim-l: #9B9F98;
-  /* shared voice */
-  --teal: #2DD4BF;
-  --teal-deep: #0D9488;
-  --red: #E5484D;
-  --red-l: #B4231F;
-  --amber: #F5B84B;
-  --blue: #4B9BFF;
+  --paper: #FAF5EA;     /* the brand floor */
+  --card: #FFFFFF;
+  --ink: #181818;       /* brand black */
+  --line: #E7DFCE;      /* warm hairline */
+  --mute: #6E6A5E;
+  --dim: #9B9484;
+  --teal: #0D9488;      /* primary action */
+  --red: #E63946;       /* brand red — alarms only */
+  --red-text: #D62839;
+  --amber: #C77800;
+  --yellow: #FFD23F;    /* the offset-shadow bright */
+  --purple: #6C4AB6;
+  --orange: #F4845F;
 }
 
-html { color-scheme: dark; }
+html { color-scheme: light; }
 body {
-  background: var(--ink-0);
-  color: var(--text-d);
-  font-family: var(--font-geist-sans), -apple-system, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-inter), var(--font-geist-sans), -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* money and codes always align */
 .font-mono { font-family: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; }
 
-/* quiet scrollbars in the command world */
-::-webkit-scrollbar { height: 8px; width: 10px; }
-::-webkit-scrollbar-thumb { background: var(--line-d); border-radius: 99px; }
-::-webkit-scrollbar-track { background: transparent; }
-
-::selection { background: var(--teal); color: var(--ink-0); }
-
-a { transition: opacity .12s ease, color .12s ease; }
-a:hover { opacity: 1; }
-
-:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+/* the brand voice */
+.display {
+  font-family: var(--font-archivo), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  line-height: 1.05;
 }
-
-/* micro-label — the hub's signature voice */
+.display-shadow { text-shadow: 3px 3px 0 var(--yellow); }
+.badge-brand { font-family: var(--font-bungee), sans-serif; letter-spacing: .05em; }
 .eyebrow {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
 }
+
+/* signature: hard offset shadow — spend it on primary elements only */
+.punch { border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.punch-sm { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.punch-yellow { border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--yellow); }
+a.punch-sm:hover, button.punch-sm:hover { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+
+::selection { background: var(--yellow); color: var(--ink); }
+::-webkit-scrollbar { height: 8px; width: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+a { transition: opacity .12s, color .12s, transform .08s, box-shadow .08s; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

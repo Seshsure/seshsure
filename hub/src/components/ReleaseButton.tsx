@@ -15,23 +15,23 @@ export function ReleaseButton({ expectedTotalCents }: { expectedTotalCents: stri
     setMsg(`✓ Batch released — ${j.entries} debits`);
   }
 
-  if (stage === "done") return <p className="mt-3 text-center text-[13px] font-bold" style={{ color: "#2DD4BF" }}>{msg}</p>;
+  if (stage === "done") return <p className="mt-3 text-center text-[13px] font-bold" style={{ color: "#0D9488" }}>{msg}</p>;
   return (
     <div className="mt-3">
       {stage === "confirm" ? (
         <div className="flex gap-2">
-          <button onClick={() => setStage("idle")} className="flex-1 py-3 rounded-lg font-bold text-[12px] border" style={{ borderColor: "#262C31", color: "#8B949C" }}>Back</button>
-          <button onClick={release} className="flex-[2] py-3 rounded-lg font-bold text-[12px]" style={{ background: "#2DD4BF", color: "#0C0F11" }}>
+          <button onClick={() => setStage("idle")} className="flex-1 py-3 rounded-lg font-bold text-[12px] border" style={{ borderColor: "#E7DFCE", color: "#6E6A5E" }}>Back</button>
+          <button onClick={release} className="flex-[2] py-3 rounded-lg font-bold text-[12px]" style={{ background: "#0D9488", color: "#FAF5EA" }}>
             {stage === "confirm" ? "CONFIRM — send to bank" : "…"}
           </button>
         </div>
       ) : (
         <button onClick={() => setStage("confirm")} disabled={stage === "busy"}
-          className="w-full py-3 rounded-lg font-bold text-[13px]" style={{ background: "#E8EAEC", color: "#0C0F11" }}>
+          className="w-full py-3 rounded-lg font-bold text-[13px]" style={{ background: "#181818", color: "#FAF5EA" }}>
           {stage === "busy" ? "Building NACHA…" : "Release today's batch"}
         </button>
       )}
-      {stage === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#E5484D" }}>{msg}</p>}
+      {stage === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#E63946" }}>{msg}</p>}
     </div>
   );
 }

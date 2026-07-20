@@ -33,10 +33,10 @@ export function DisputeMediaUploader({ onChange }: { onChange: (m: UploadedMedia
 
   return (
     <div className="mt-3">
-      <p className="font-mono text-[9px] font-bold" style={{ color: "#6E756B" }}>
-        PHOTOS &amp; VIDEO — PHOTOS REQUIRED <span style={{ color: photos ? "#0D9488" : "#B4231F" }}>({photos} PHOTO{photos === 1 ? "" : "S"})</span>
+      <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>
+        PHOTOS &amp; VIDEO — PHOTOS REQUIRED <span style={{ color: photos ? "#0D9488" : "#D62839" }}>({photos} PHOTO{photos === 1 ? "" : "S"})</span>
       </p>
-      <p className="text-[9px] mt-0.5" style={{ color: "#9B9F98" }}>
+      <p className="text-[9px] mt-0.5" style={{ color: "#9B9484" }}>
         Shoot the defect close-up, the carton with its lot number visible, and the spread of affected units. Video of the batch behavior helps your case.
       </p>
       <div className="flex gap-2 mt-2">
@@ -46,20 +46,20 @@ export function DisputeMediaUploader({ onChange }: { onChange: (m: UploadedMedia
           <input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={onPick} />
         </label>
         <label className="flex-1 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
-          style={{ borderColor: "#6E756B", color: "#6E756B" }}>
+          style={{ borderColor: "#6E6A5E", color: "#6E6A5E" }}>
           🎥 Video (≤100MB)
           <input type="file" accept="video/mp4,video/quicktime" capture="environment" className="hidden" onChange={onPick} />
         </label>
       </div>
       {items.map(i => (
-        <div key={i.path} className="flex items-center mt-1.5 px-3 py-2 rounded-lg border" style={{ borderColor: "#E4E1DA", background: "#fff" }}>
+        <div key={i.path} className="flex items-center mt-1.5 px-3 py-2 rounded-lg border" style={{ borderColor: "#E7DFCE", background: "#fff" }}>
           <span className="text-[12px] mr-2">{i.kind === "video" ? "🎥" : "📷"}</span>
-          <span className="flex-1 text-[10px] truncate" style={{ color: "#15181A" }}>{i.name}</span>
-          <span className="font-mono text-[7px] mr-2" style={{ color: "#9B9F98" }}>{(i.sizeBytes / 1048576).toFixed(1)}MB ✓</span>
-          <button onClick={() => remove(i.path)} className="font-mono text-[10px]" style={{ color: "#6E756B" }}>✕</button>
+          <span className="flex-1 text-[10px] truncate" style={{ color: "#181818" }}>{i.name}</span>
+          <span className="font-mono text-[7px] mr-2" style={{ color: "#9B9484" }}>{(i.sizeBytes / 1048576).toFixed(1)}MB ✓</span>
+          <button onClick={() => remove(i.path)} className="font-mono text-[10px]" style={{ color: "#6E6A5E" }}>✕</button>
         </div>
       ))}
-      {err && <p className="font-mono text-[8px] mt-1.5" style={{ color: "#B4231F" }}>{err}</p>}
+      {err && <p className="font-mono text-[8px] mt-1.5" style={{ color: "#D62839" }}>{err}</p>}
     </div>
   );
 }

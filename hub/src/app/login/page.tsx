@@ -36,43 +36,45 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-8" style={{ background: "#0C0F11" }}>
-      <h1 className="text-3xl font-bold" style={{ color: "#E8EAEC" }}>
-        SESHSURE<span style={{ color: "#2DD4BF" }}> HUB</span>
+    <main className="min-h-screen flex flex-col items-center justify-center px-8" style={{ background: "var(--paper)", position: "relative", overflow: "hidden" }}>
+      <svg width="70" height="18" viewBox="0 0 70 18" style={{ position: "absolute", top: 34, left: 28, opacity: .9 }}><path d="M2 9 Q 10 1, 18 9 T 34 9 T 50 9 T 66 9" stroke="#F4845F" strokeWidth="3.5" fill="none" strokeLinecap="round"/></svg>
+      <div style={{ position: "absolute", bottom: 44, right: 36, width: 16, height: 16, borderRadius: 99, border: "3.5px solid #6C4AB6" }} />
+      <h1 className="display display-shadow text-3xl" style={{ color: "#181818" }}>
+        SESHSURE<span style={{ color: "#0D9488" }}> HUB</span>
       </h1>
-      <p className="font-mono text-[9px] tracking-[2px] mt-2 mb-7" style={{ color: "#5C666D" }}>PUFF · PEEL · PASS ™</p>
+      <p className="font-mono text-[9px] tracking-[2px] mt-2 mb-7" style={{ color: "#9B9484" }}>PUFF · PEEL · PASS ™</p>
 
-      <div className="w-full max-w-[330px] rounded-xl p-5" style={{ background: "#14181B", border: "1px solid #262C31" }}>
+      <div className="w-full max-w-[330px] rounded-xl p-5" style={{ background: "#FFFFFF", border: "1px solid #E7DFCE" }}>
         {mode !== "otp" ? (
           <>
-            <label className="font-mono text-[9px] tracking-wide" style={{ color: "#8B949C" }}>EMAIL</label>
+            <label className="font-mono text-[9px] tracking-wide" style={{ color: "#6E6A5E" }}>EMAIL</label>
             <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email"
               className="font-mono w-full mt-1 mb-3 px-3 py-2.5 rounded-md text-[13px]"
-              style={{ background: "#0C0F11", border: "1px solid #262C31", color: "#E8EAEC" }} />
+              style={{ background: "#FAF5EA", border: "1px solid #E7DFCE", color: "#181818" }} />
             {mode === "password" && (
               <>
-                <label className="font-mono text-[9px] tracking-wide" style={{ color: "#8B949C" }}>PASSWORD</label>
+                <label className="font-mono text-[9px] tracking-wide" style={{ color: "#6E6A5E" }}>PASSWORD</label>
                 <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="current-password"
                   className="font-mono w-full mt-1 px-3 py-2.5 rounded-md text-[13px]"
-                  style={{ background: "#0C0F11", border: "1px solid #262C31", color: "#E8EAEC" }} />
+                  style={{ background: "#FAF5EA", border: "1px solid #E7DFCE", color: "#181818" }} />
               </>
             )}
             <button onClick={signIn} disabled={busy || !email}
               className="w-full mt-4 py-3 rounded-md font-bold text-[14px] disabled:opacity-50"
-              style={{ background: "#2DD4BF", color: "#0C0F11" }}>
+              style={{ background: "#0D9488", color: "#FAF5EA" }}>
               {busy ? "…" : mode === "password" ? "Sign in" : "Email me a sign-in link"}
             </button>
             <button onClick={() => setMode(mode === "password" ? "link" : "password")}
-              className="font-mono w-full text-center mt-3 text-[10px]" style={{ color: "#8B949C" }}>
+              className="font-mono w-full text-center mt-3 text-[10px]" style={{ color: "#6E6A5E" }}>
               {mode === "password" ? "EMAIL ME A SIGN-IN LINK INSTEAD" : "USE PASSWORD INSTEAD"}
             </button>
           </>
         ) : (
           <OtpEntry onSubmit={verifyOtp} busy={busy} />
         )}
-        {msg && <p className="font-mono mt-3 text-[10px]" style={{ color: "#F5B84B" }}>{msg}</p>}
+        {msg && <p className="font-mono mt-3 text-[10px]" style={{ color: "#C77800" }}>{msg}</p>}
       </div>
-      <p className="font-mono text-[9px] mt-6" style={{ color: "#5C666D" }}>SUPPORT@SESHSURE.COM</p>
+      <p className="font-mono text-[9px] mt-6" style={{ color: "#9B9484" }}>SUPPORT@SESHSURE.COM</p>
     </main>
   );
 }
@@ -81,14 +83,14 @@ function OtpEntry({ onSubmit, busy }: { onSubmit: (c: string) => void; busy: boo
   const [code, setCode] = useState("");
   return (
     <>
-      <label className="font-mono text-[9px] tracking-wide" style={{ color: "#8B949C" }}>6-DIGIT CODE FROM YOUR EMAIL</label>
+      <label className="font-mono text-[9px] tracking-wide" style={{ color: "#6E6A5E" }}>6-DIGIT CODE FROM YOUR EMAIL</label>
       <input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
         inputMode="numeric" autoFocus
         className="font-mono w-full mt-1 px-3 py-3 rounded-md text-[22px] text-center tracking-[8px]"
-        style={{ background: "#0C0F11", border: "1px solid #262C31", color: "#E8EAEC" }} />
+        style={{ background: "#FAF5EA", border: "1px solid #E7DFCE", color: "#181818" }} />
       <button onClick={() => onSubmit(code)} disabled={busy || code.length !== 6}
         className="w-full mt-4 py-3 rounded-md font-bold text-[14px] disabled:opacity-50"
-        style={{ background: "#2DD4BF", color: "#0C0F11" }}>
+        style={{ background: "#0D9488", color: "#FAF5EA" }}>
         {busy ? "…" : "Verify & enter"}
       </button>
     </>

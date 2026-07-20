@@ -28,34 +28,34 @@ export function FactoryOnboardWizard({ factoryId, termsDone, specDone, docKeys, 
 
   return (
     <>
-      <div className={card} style={{ background: "#fff", borderColor: "#E4E1DA" }}>
-        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E756B" }}>STEP 1 — AGREEMENTS</p>
-        <p className="text-[10px] mt-1" style={{ color: "#6E756B" }}>
+      <div className={card} style={{ background: "#fff", borderColor: "#E7DFCE" }}>
+        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>STEP 1 — AGREEMENTS</p>
+        <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
           NDA, non-circumvention, and services terms. Typing your name below is your electronic signature; time, IP, and device are recorded.
         </p>
         {tState === "done" ? <p className="font-mono text-[10px] font-bold mt-3" style={{ color: "#0D9488" }}>✓ SIGNED & ON FILE</p> : (
           <>
             <div className="grid grid-cols-2 gap-3 mt-2">
               <div>
-                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E756B" }}>FULL LEGAL NAME</label>
-                <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E4E1DA" }} />
+                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E6A5E" }}>FULL LEGAL NAME</label>
+                <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E7DFCE" }} />
               </div>
               <div>
-                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E756B" }}>TITLE</label>
-                <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Director" className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E4E1DA" }} />
+                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E6A5E" }}>TITLE</label>
+                <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Director" className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E7DFCE" }} />
               </div>
             </div>
             <button onClick={signTerms} disabled={tState === "busy" || name.length < 3 || title.length < 2}
-              className="w-full mt-3 py-3 rounded-lg font-bold text-[12px] disabled:opacity-50" style={{ background: "#15181A", color: "#fff" }}>
+              className="w-full mt-3 py-3 rounded-lg font-bold text-[12px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
               {tState === "busy" ? "…" : "Sign agreements"}
             </button>
           </>
         )}
       </div>
 
-      <div className={card} style={{ background: "#fff", borderColor: "#E4E1DA", opacity: tState === "done" ? 1 : 0.5 }}>
-        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E756B" }}>STEP 2 — PRODUCT SPEC ACKNOWLEDGMENT</p>
-        <p className="text-[10px] mt-1" style={{ color: "#6E756B" }}>
+      <div className={card} style={{ background: "#fff", borderColor: "#E7DFCE", opacity: tState === "done" ? 1 : 0.5 }}>
+        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>STEP 2 — PRODUCT SPEC ACKNOWLEDGMENT</p>
+        <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
           Confirm you&apos;ve read the current specs. Runs are QC&apos;d against exactly these versions.
         </p>
         {sState === "done" ? <p className="font-mono text-[10px] font-bold mt-3" style={{ color: "#0D9488" }}>✓ ACKNOWLEDGED</p> : (
@@ -65,12 +65,12 @@ export function FactoryOnboardWizard({ factoryId, termsDone, specDone, docKeys, 
                 <input type="checkbox" checked={checked.includes(s.id)} disabled={tState !== "done"}
                   onChange={e => setChecked(e.target.checked ? [...checked, s.id] : checked.filter(x => x !== s.id))}
                   className="mr-2" />
-                <span className="text-[11px]" style={{ color: "#15181A" }}>{s.title} <span className="font-mono text-[8px]" style={{ color: "#9B9F98" }}>v{s.version}</span></span>
+                <span className="text-[11px]" style={{ color: "#181818" }}>{s.title} <span className="font-mono text-[8px]" style={{ color: "#9B9484" }}>v{s.version}</span></span>
               </label>
             ))}
-            {!specs.length && <p className="text-[10px] mt-2" style={{ color: "#9B9F98" }}>Specs will appear here when SeshSure publishes them.</p>}
+            {!specs.length && <p className="text-[10px] mt-2" style={{ color: "#9B9484" }}>Specs will appear here when SeshSure publishes them.</p>}
             <button onClick={ackSpecs} disabled={sState === "busy" || tState !== "done" || !checked.length}
-              className="w-full mt-3 py-3 rounded-lg font-bold text-[12px] disabled:opacity-50" style={{ background: "#15181A", color: "#fff" }}>
+              className="w-full mt-3 py-3 rounded-lg font-bold text-[12px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
               {sState === "busy" ? "…" : "Acknowledge specs"}
             </button>
           </>

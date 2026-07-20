@@ -17,16 +17,16 @@ export default async function PortalHome() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="text-[17px] font-bold" style={{ color: "#15181A" }}>
+      <h1 className="text-[17px] font-bold" style={{ color: "#181818" }}>
         Welcome back{prof?.full_name ? `, ${prof.full_name.split(" ")[0]}` : ""}
       </h1>
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <Link href="/portal/invoices" className="rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
-          <p className="font-mono text-[8px] font-bold" style={{ color: "#6E756B" }}>OPEN BALANCE</p>
-          <p className="font-mono text-[18px] font-bold mt-1" style={{ color: overdue ? "#B4231F" : "#15181A" }}>{formatUSD(open)}</p>
-          {overdue > 0 && <p className="font-mono text-[8px] mt-1" style={{ color: "#B4231F" }}>{overdue} OVERDUE</p>}
+        <Link href="/portal/invoices" className="rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
+          <p className="font-mono text-[8px] font-bold" style={{ color: "#6E6A5E" }}>OPEN BALANCE</p>
+          <p className="font-mono text-[18px] font-bold mt-1" style={{ color: overdue ? "#D62839" : "#181818" }}>{formatUSD(open)}</p>
+          {overdue > 0 && <p className="font-mono text-[8px] mt-1" style={{ color: "#D62839" }}>{overdue} OVERDUE</p>}
         </Link>
-        <Link href="/portal/orders/new" className="rounded-xl border p-4 flex flex-col justify-center items-center" style={{ background: "#15181A", borderColor: "#15181A" }}>
+        <Link href="/portal/orders/new" className="rounded-xl border p-4 flex flex-col justify-center items-center" style={{ background: "#181818", borderColor: "#181818" }}>
           <p className="text-[14px] font-bold" style={{ color: "#fff" }}>+ New order</p>
         </Link>
       </div>

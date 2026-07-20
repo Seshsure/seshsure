@@ -75,8 +75,8 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
   }
 
   return (
-    <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
-      <p className="font-mono text-[9px] font-bold" style={{ color: "#6E756B" }}>BRAND ARTWORK — WRAP PREVIEW</p>
+    <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
+      <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>BRAND ARTWORK — WRAP PREVIEW</p>
       <label className="block mt-2 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
         style={{ borderColor: "#0D9488", color: "#0D9488" }}>
         {state === "busy" ? "Uploading…" : "Upload art (PNG · JPG · SVG · PDF, ≤50MB)"}
@@ -84,24 +84,24 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
       </label>
       {imgUrl && (
         <div className="flex gap-3 mt-3 items-start">
-          <canvas ref={canvasRef} width={150} height={210} className="rounded-lg border" style={{ borderColor: "#E4E1DA", background: "#FBF9F4" }} />
+          <canvas ref={canvasRef} width={150} height={210} className="rounded-lg border" style={{ borderColor: "#E7DFCE", background: "#FBF9F4" }} />
           <div className="flex-1">
             {verdict && (
               <>
                 <p className="font-mono text-[9px] font-bold" style={{ color: verdict.ready ? "#0D9488" : "#B07A1F" }}>
                   {verdict.ready ? "✓ PRESS-RESOLUTION OK" : "⚠ PREVIEW-ONLY RESOLUTION"}
                 </p>
-                <p className="text-[9px] mt-1 leading-relaxed" style={{ color: "#6E756B" }}>{verdict.notes}</p>
+                <p className="text-[9px] mt-1 leading-relaxed" style={{ color: "#6E6A5E" }}>{verdict.notes}</p>
               </>
             )}
-            <p className="font-mono text-[7px] mt-2 leading-relaxed" style={{ color: "#9B9F98" }}>
+            <p className="font-mono text-[7px] mt-2 leading-relaxed" style={{ color: "#9B9484" }}>
               DIGITAL PREVIEW ONLY — NOT A PRINT PROOF. COLOR, SCALE, AND PLACEMENT ARE FINALIZED ON THE PRESS PROOF YOU&apos;LL APPROVE BEFORE PRODUCTION.
             </p>
           </div>
         </div>
       )}
       {state === "done" && !imgUrl && <p className="font-mono text-[9px] mt-2 font-bold" style={{ color: "#0D9488" }}>✓ ART RECEIVED — {verdict?.notes}</p>}
-      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#B4231F" }}>{msg}</p>}
+      {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
     </div>
   );
 }

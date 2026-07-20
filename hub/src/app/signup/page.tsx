@@ -12,26 +12,26 @@ export default function Signup() {
   }, []);
   const STEPS = ["company", "team", "shipping", "agreements", "payment"];
   return (
-    <main className="min-h-screen" style={{ background: "#F4F2ED" }}>
+    <main className="min-h-screen" style={{ background: "#FAF5EA" }}>
       <div className="max-w-lg mx-auto px-4 py-8">
-        <h1 className="font-bold text-[18px]" style={{ color: "#15181A" }}>Welcome to SeshSure</h1>
-        <p className="text-[11px] mt-1" style={{ color: "#6E756B" }}>A few steps and you&apos;re ordering. Progress saves — leave and come back anytime.</p>
+        <h1 className="font-bold text-[18px]" style={{ color: "#181818" }}>Welcome to SeshSure</h1>
+        <p className="text-[11px] mt-1" style={{ color: "#6E6A5E" }}>A few steps and you&apos;re ordering. Progress saves — leave and come back anytime.</p>
         <div className="flex gap-1 mt-4">
           {STEPS.map(s => (
             <div key={s} className="flex-1 h-1.5 rounded-full"
-              style={{ background: state?.done?.includes(s) ? "#0D9488" : "#E4E1DA" }} />
+              style={{ background: state?.done?.includes(s) ? "#0D9488" : "#E7DFCE" }} />
           ))}
         </div>
-        <div className="mt-6 rounded-xl border p-5" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
-          {loading ? <p className="text-[11px]" style={{ color: "#6E756B" }}>Loading…</p>
-            : !state ? <p className="text-[11px]" style={{ color: "#6E756B" }}>Signup opens from your invite link. Check your email or contact rob@seshsure.com.</p>
+        <div className="mt-6 rounded-xl border p-5" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
+          {loading ? <p className="text-[11px]" style={{ color: "#6E6A5E" }}>Loading…</p>
+            : !state ? <p className="text-[11px]" style={{ color: "#6E6A5E" }}>Signup opens from your invite link. Check your email or contact rob@seshsure.com.</p>
             : state.next === "done" ? (
               <div className="text-center py-4">
                 <p className="text-[15px] font-bold" style={{ color: "#0D9488" }}>✓ You&apos;re all set</p>
-                <a href="/portal" className="inline-block mt-3 px-5 py-2.5 rounded-lg font-bold text-[12px]" style={{ background: "#15181A", color: "#fff" }}>Enter your portal</a>
+                <a href="/portal" className="inline-block mt-3 px-5 py-2.5 rounded-lg font-bold text-[12px]" style={{ background: "#181818", color: "#fff" }}>Enter your portal</a>
               </div>
             ) : (
-              <p className="text-[12px]" style={{ color: "#15181A" }}>
+              <p className="text-[12px]" style={{ color: "#181818" }}>
                 Next step: <b>{state.next}</b> — the step forms post to /api/onboarding and resume automatically.
               </p>
             )}

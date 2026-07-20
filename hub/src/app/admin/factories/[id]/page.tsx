@@ -25,21 +25,21 @@ export default async function FactoryDetail({ params }: { params: { id: string }
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
-      <div className="mt-4 rounded-lg border p-3" style={{ background: "#14181B", borderColor: "#262C31" }}>
-        <p className="text-[14px] font-bold" style={{ color: "#E8EAEC" }}>{f.name}</p>
-        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#5C666D" }}>{f.country ?? "COUNTRY TBD"} · {f.currency}</p>
+      <div className="mt-4 rounded-lg border p-3" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
+        <p className="text-[14px] font-bold" style={{ color: "#181818" }}>{f.name}</p>
+        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#9B9484" }}>{f.country ?? "COUNTRY TBD"} · {f.currency}</p>
       </div>
-      <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
-        <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#8B949C" }}>ONBOARDING</span>
+      <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
+        <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
+          <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>ONBOARDING</span>
         </div>
         {steps.map(([label, done, sub]) => (
-          <div key={label} className="flex items-center px-3 py-2.5 border-b" style={{ borderColor: "#262C31" }}>
+          <div key={label} className="flex items-center px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
             <span className="w-4 h-4 rounded-full mr-3 flex items-center justify-center text-[8px] font-bold"
-              style={{ background: done ? "#2DD4BF" : "#262C31", color: done ? "#0C0F11" : "#5C666D" }}>{done ? "✓" : "·"}</span>
+              style={{ background: done ? "#0D9488" : "#E7DFCE", color: done ? "#FAF5EA" : "#9B9484" }}>{done ? "✓" : "·"}</span>
             <div className="flex-1">
-              <p className="font-mono text-[9px] font-bold" style={{ color: done ? "#E8EAEC" : "#8B949C" }}>{label}</p>
-              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#5C666D" }}>{sub}</p>
+              <p className="font-mono text-[9px] font-bold" style={{ color: done ? "#181818" : "#6E6A5E" }}>{label}</p>
+              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#9B9484" }}>{sub}</p>
             </div>
           </div>
         ))}
