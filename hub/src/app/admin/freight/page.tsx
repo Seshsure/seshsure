@@ -21,7 +21,7 @@ export default async function Freight() {
           {(exceptions ?? []).map(e => (
             <div key={e.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
               <p className="text-[11px] font-semibold" style={{ color: "#181818" }}>{e.kind.replace(/_/g," ").toUpperCase()}</p>
-              <p className="font-mono text-[8px]" style={{ color: "#6E6A5E" }}>{e.detail}</p>
+              <p className="font-mono text-[8px]" style={{ color: "#514C41" }}>{e.detail}</p>
             </div>
           ))}
         </div>
@@ -29,7 +29,7 @@ export default async function Freight() {
 
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="text-[10px] font-mono font-bold" style={{ color: "#6E6A5E" }}>OPEN RFQS — THE DESK</span>
+          <span className="text-[10px] font-mono font-bold" style={{ color: "#514C41" }}>OPEN RFQS — THE DESK</span>
         </div>
         {(rfqs ?? []).map(r => {
           const c = r.cargo_summary as Record<string, string | number>;
@@ -43,31 +43,31 @@ export default async function Freight() {
               {bids.map(b => (
                 <div key={b.id} className="flex items-center mt-1.5 pl-2">
                   <span className="flex-1 text-[11px]" style={{ color: "#181818" }}>{b.forwarders?.name}
-                    <span className="font-mono text-[8px] ml-2" style={{ color: "#9B9484" }}>{b.transit_days ? `${b.transit_days}D TRANSIT` : ""}</span>
+                    <span className="font-mono text-[8px] ml-2" style={{ color: "#7A7365" }}>{b.transit_days ? `${b.transit_days}D TRANSIT` : ""}</span>
                   </span>
                   <span className="font-mono text-[12px] font-bold" style={{ color: "#181818" }}>{formatUSD(BigInt(b.all_in_cents))}</span>
                 </div>
               ))}
-              {!bids.length && <p className="font-mono text-[8px] mt-1" style={{ color: "#9B9484" }}>AWAITING QUOTES</p>}
+              {!bids.length && <p className="font-mono text-[8px] mt-1" style={{ color: "#7A7365" }}>AWAITING QUOTES</p>}
             </div>
           );
         })}
-        {!rfqs?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#9B9484" }}>No open RFQs.</p>}
+        {!rfqs?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#7A7365" }}>No open RFQs.</p>}
       </div>
 
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="text-[10px] font-mono font-bold" style={{ color: "#6E6A5E" }}>IN MOTION</span>
+          <span className="text-[10px] font-mono font-bold" style={{ color: "#514C41" }}>IN MOTION</span>
         </div>
         {(moving ?? []).map(s => (
           <div key={s.id} className="flex items-center px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
             <span className="flex-1 text-[11px]" style={{ color: "#181818" }}>{String(s.status).replace(/_/g," ").toUpperCase()}</span>
-            <span className="font-mono text-[8px]" style={{ color: "#9B9484" }}>
+            <span className="font-mono text-[8px]" style={{ color: "#7A7365" }}>
               {s.eta ? `ETA ${s.eta}` : ""}{s.arrived_port_at && s.free_days ? ` · FREE DAYS BURNING` : ""}
             </span>
           </div>
         ))}
-        {!moving?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#9B9484" }}>Nothing on the water.</p>}
+        {!moving?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#7A7365" }}>Nothing on the water.</p>}
       </div>
     </div>
   );

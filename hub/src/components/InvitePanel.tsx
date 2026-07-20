@@ -18,13 +18,13 @@ export function InvitePanel({ clientId, defaultEmail, held }: { clientId: string
   if (held) return (
     <div className="rounded-lg border-2 mt-4 px-4 py-3" style={{ borderColor: "#E7DFCE", background: "#FFFFFF" }}>
       <span className="eyebrow" style={{ color: "#D62839" }}>PORTAL INVITE BLOCKED — CLIENT ON HOLD</span>
-      <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>Litigation/held accounts don&apos;t get portal access. Resolve the hold first.</p>
+      <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>Litigation/held accounts don&apos;t get portal access. Resolve the hold first.</p>
     </div>
   );
 
   return (
     <div className="rounded-lg border mt-4 px-4 py-3" style={{ borderColor: "#E7DFCE", background: "#FFFFFF" }}>
-      <span className="eyebrow" style={{ color: "#6E6A5E" }}>INVITE TO PORTAL — ONBOARDING REQUIRED BEFORE ACCESS</span>
+      <span className="eyebrow" style={{ color: "#514C41" }}>INVITE TO PORTAL — ONBOARDING REQUIRED BEFORE ACCESS</span>
       <div className="flex gap-2 mt-2">
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="ap@client.com"
           className="flex-1 px-3 py-2 rounded-lg text-[12px] border-2 outline-none" style={{ borderColor: "#E7DFCE" }} />

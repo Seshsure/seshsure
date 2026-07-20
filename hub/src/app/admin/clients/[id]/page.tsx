@@ -26,12 +26,12 @@ export default async function ClientDetail({ params }: { params: { id: string } 
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <p className="text-[14px] font-bold" style={{ color: "#181818" }}>{client.dba ?? client.legal_name}</p>
-        <p className="font-mono text-[9px] mt-1" style={{ color: overdue ? "#E63946" : "#6E6A5E" }}>
+        <p className="font-mono text-[9px] mt-1" style={{ color: overdue ? "#E63946" : "#514C41" }}>
           EXPOSURE {formatUSD(exposure)}{overdue ? ` · ${overdue} OVERDUE` : ""}{client.hold_active ? " · 🔒 HOLD ACTIVE" : ""}{client.watch_flag ? " · 👁 WATCH" : ""}
         </p>
       </div>
       <div className="flex gap-2 mt-3">
-        <a href={`/api/statements/pdf?clientId=${client.id}`} target="_blank" className="flex-1 py-2.5 rounded-lg border text-center font-mono text-[9px] font-bold" style={{ borderColor: "#E7DFCE", color: "#6E6A5E" }}>⬇ STATEMENT PDF</a>
+        <a href={`/api/statements/pdf?clientId=${client.id}`} target="_blank" className="flex-1 py-2.5 rounded-lg border text-center font-mono text-[9px] font-bold" style={{ borderColor: "#E7DFCE", color: "#514C41" }}>⬇ STATEMENT PDF</a>
         <a href={`/api/statements/pdf?clientId=${client.id}&forCourt=1`} target="_blank" className="flex-1 py-2.5 rounded-lg border text-center font-mono text-[9px] font-bold" style={{ borderColor: "#C7780044", color: "#C77800" }}>⚖ COURT-RECITAL VERSION</a>
       </div>
       <ControlsPanel clientId={client.id} initial={{
@@ -46,13 +46,13 @@ export default async function ClientDetail({ params }: { params: { id: string } 
       }} />
       <div className="rounded-lg border mt-4 overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-4 py-2 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
-          <span className="eyebrow" style={{ color: "#6E6A5E" }}>OPEN INVOICES — INTEREST STARTS ONLY WHEN YOU DECLARE DEFAULT</span>
+          <span className="eyebrow" style={{ color: "#514C41" }}>OPEN INVOICES — INTEREST STARTS ONLY WHEN YOU DECLARE DEFAULT</span>
         </div>
         {(invoices ?? []).filter(i => BigInt(i.total_cents) > BigInt(i.paid_cents)).map(i => (
           <div key={i.id} className="px-4 py-2.5 border-b last:border-0 flex items-center justify-between gap-3" style={{ borderColor: "#E7DFCE" }}>
             <div>
               <span className="font-mono text-[11px] font-bold" style={{ color: "#181818" }}>{i.invoice_number ?? i.legacy_number}</span>
-              <span className="font-mono text-[9px] ml-2" style={{ color: i.due_date && i.due_date < new Date().toISOString().slice(0,10) ? "#D62839" : "#9B9484" }}>DUE {i.due_date ?? "—"}</span>
+              <span className="font-mono text-[9px] ml-2" style={{ color: i.due_date && i.due_date < new Date().toISOString().slice(0,10) ? "#D62839" : "#7A7365" }}>DUE {i.due_date ?? "—"}</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="font-mono text-[11px] font-bold" style={{ color: "#181818" }}>

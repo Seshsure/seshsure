@@ -26,34 +26,34 @@ function StartForm() {
   if (state === "done") return (
     <div className="text-center py-8">
       <p className="text-[20px] font-bold" style={{ color: "#0D9488" }}>✓ Got it</p>
-      <p className="text-[12px] mt-2" style={{ color: "#6E6A5E" }}>{msg}</p>
-      {showName && <p className="font-mono text-[9px] mt-4" style={{ color: "#9B9484" }}>ENJOY {showName.toUpperCase()} — GRAB A SAMPLE AT THE BOOTH</p>}
+      <p className="text-[12px] mt-2" style={{ color: "#514C41" }}>{msg}</p>
+      {showName && <p className="font-mono text-[9px] mt-4" style={{ color: "#7A7365" }}>ENJOY {showName.toUpperCase()} — GRAB A SAMPLE AT THE BOOTH</p>}
     </div>
   );
 
   return (
     <>
-      <label className={lbl} style={{ color: "#6E6A5E" }}>COMPANY *</label>
+      <label className={lbl} style={{ color: "#514C41" }}>COMPANY *</label>
       <input value={f.company} onChange={e => setF({ ...f, company: e.target.value })} className={inp} style={{ borderColor: "#E7DFCE" }} />
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={lbl} style={{ color: "#6E6A5E" }}>YOUR NAME</label>
+          <label className={lbl} style={{ color: "#514C41" }}>YOUR NAME</label>
           <input value={f.contactName} onChange={e => setF({ ...f, contactName: e.target.value })} className={inp} style={{ borderColor: "#E7DFCE" }} />
         </div>
         <div>
-          <label className={lbl} style={{ color: "#6E6A5E" }}>PHONE</label>
+          <label className={lbl} style={{ color: "#514C41" }}>PHONE</label>
           <input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} inputMode="tel" className={inp} style={{ borderColor: "#E7DFCE" }} />
         </div>
       </div>
-      <label className={lbl} style={{ color: "#6E6A5E" }}>EMAIL *</label>
+      <label className={lbl} style={{ color: "#514C41" }}>EMAIL *</label>
       <input value={f.email} onChange={e => setF({ ...f, email: e.target.value })} type="email" className={inp} style={{ borderColor: "#E7DFCE" }} />
       {!showName && (
         <>
-          <label className={lbl} style={{ color: "#6E6A5E" }}>HOW&apos;D YOU HEAR ABOUT US? *</label>
+          <label className={lbl} style={{ color: "#514C41" }}>HOW&apos;D YOU HEAR ABOUT US? *</label>
           <input value={f.leadSource} onChange={e => setF({ ...f, leadSource: e.target.value })} placeholder="referral, Instagram, MJBizCon…" className={inp} style={{ borderColor: "#E7DFCE" }} />
         </>
       )}
-      <label className={lbl} style={{ color: "#6E6A5E" }}>WHAT DO YOU ROLL? (OPTIONAL)</label>
+      <label className={lbl} style={{ color: "#514C41" }}>WHAT DO YOU ROLL? (OPTIONAL)</label>
       <input value={f.notes} onChange={e => setF({ ...f, notes: e.target.value })} placeholder="98mm, ~500K/month, white paper…" className={inp} style={{ borderColor: "#E7DFCE" }} />
       {/* honeypot — humans never see it */}
       <input value={f.website} onChange={e => setF({ ...f, website: e.target.value })} tabIndex={-1} autoComplete="off"
@@ -74,13 +74,13 @@ export default function Start() {
         <h1 className="font-bold text-[22px]" style={{ color: "#181818" }}>
           SESHSURE<span style={{ color: "#0D9488" }}>.</span>
         </h1>
-        <p className="text-[12px] mt-1" style={{ color: "#6E6A5E" }}>Wholesale pre-roll cones. Tell us a little and a human replies within one business day.</p>
+        <p className="text-[12px] mt-1" style={{ color: "#514C41" }}>Wholesale pre-roll cones. Tell us a little and a human replies within one business day.</p>
         <div className="mt-5 rounded-xl border p-5 relative" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-          <Suspense fallback={<p className="text-[11px]" style={{ color: "#6E6A5E" }}>Loading…</p>}>
+          <Suspense fallback={<p className="text-[11px]" style={{ color: "#514C41" }}>Loading…</p>}>
             <StartForm />
           </Suspense>
         </div>
-        <p className="font-mono text-[7px] mt-6 text-center" style={{ color: "#9B9484" }}>
+        <p className="font-mono text-[7px] mt-6 text-center" style={{ color: "#7A7365" }}>
           VIDO MANUFACTURING AND DISTRIBUTION CORP D/B/A SESHSURE · PARKER, CO
         </p>
       </div>

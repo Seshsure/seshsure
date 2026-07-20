@@ -34,7 +34,7 @@ export function AiDraftPanel({ tasks, entityId }: { tasks: string[]; entityId?: 
   return (
     <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
       <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <span className="font-mono text-[10px] font-bold" style={{ color: "#6E6A5E" }}>AI DRAFTING — READS THE RECORD, WRITES IN YOUR VOICE, NEVER SENDS</span>
+        <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>AI DRAFTING — READS THE RECORD, WRITES IN YOUR VOICE, NEVER SENDS</span>
       </div>
       <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
         <input value={steer} onChange={e => setSteer(e.target.value)} placeholder="Optional steering: 'be extra warm, mention the replacement ships Friday'…"
@@ -45,7 +45,7 @@ export function AiDraftPanel({ tasks, entityId }: { tasks: string[]; entityId?: 
         {tasks.map(t => (
           <button key={t} onClick={() => run(t)} disabled={state === "busy"}
             className="font-mono text-[8px] font-bold px-2.5 py-2 rounded border disabled:opacity-50"
-            style={{ background: active === t ? "#0D9488" : "transparent", color: active === t ? "#FAF5EA" : "#6E6A5E", borderColor: active === t ? "#0D9488" : "#E7DFCE" }}>
+            style={{ background: active === t ? "#0D9488" : "transparent", color: active === t ? "#FAF5EA" : "#514C41", borderColor: active === t ? "#0D9488" : "#E7DFCE" }}>
             {state === "busy" && active === t ? "DRAFTING…" : TASK_LABEL[t] ?? t}
           </button>
         ))}
@@ -64,7 +64,7 @@ export function AiDraftPanel({ tasks, entityId }: { tasks: string[]; entityId?: 
                     {copied ? "✓ Copied" : "Copy to send yourself"}
                   </button>
                 </div>
-                <p className="font-mono text-[7px] mt-2" style={{ color: "#9B9484" }}>
+                <p className="font-mono text-[7px] mt-2" style={{ color: "#7A7365" }}>
                   EDIT FREELY — THIS IS A DRAFT, NOT A DECISION. SEND FROM YOUR OWN EMAIL/WHATSAPP.
                 </p>
               </>}

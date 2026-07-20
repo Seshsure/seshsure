@@ -39,7 +39,7 @@ export default async function DisputeDetail({ params }: { params: { id: string }
           </p>
           <span className="font-mono text-[9px] font-bold" style={{ color: open ? "#C77800" : "#0D9488" }}>{String(d.status).replace(/_/g," ").toUpperCase()}</span>
         </div>
-        <p className="font-mono text-[8px] mt-1" style={{ color: "#9B9484" }}>
+        <p className="font-mono text-[8px] mt-1" style={{ color: "#7A7365" }}>
           {client.dba ?? client.legal_name}{run ? ` · ${run.run_number} @ ${run.factories?.name}` : ""}{d.lot_number ? ` · LOT ${d.lot_number}` : ""}
           {d.days_since_delivery !== null ? ` · FILED DAY ${d.days_since_delivery}` : ""}
         </p>
@@ -49,19 +49,19 @@ export default async function DisputeDetail({ params }: { params: { id: string }
       <div className="flex gap-2 mt-3">
         <Card title="CLIENT'S STORY" color="#3B5BDB">
           <p className="text-[11px] leading-relaxed" style={{ color: "#181818" }}>{d.description}</p>
-          <p className="font-mono text-[8px] mt-2" style={{ color: "#9B9484" }}>
+          <p className="font-mono text-[8px] mt-2" style={{ color: "#7A7365" }}>
             {(d.issue_types ?? []).join(" · ").toUpperCase()}
             {d.qty_affected_units ? ` · ${Number(d.qty_affected_units).toLocaleString()} UNITS` : ""}
             {d.pct_inspected ? ` · ${d.pct_inspected}% INSPECTED` : ""}
           </p>
-          {d.desired_resolution && <p className="font-mono text-[8px] mt-1" style={{ color: "#6E6A5E" }}>WANTS: {String(d.desired_resolution).toUpperCase()}</p>}
-          <p className="font-mono text-[8px] mt-2" style={{ color: "#9B9484" }}>{media.length} PHOTO{media.length === 1 ? "" : "S"} ATTACHED</p>
+          {d.desired_resolution && <p className="font-mono text-[8px] mt-1" style={{ color: "#514C41" }}>WANTS: {String(d.desired_resolution).toUpperCase()}</p>}
+          <p className="font-mono text-[8px] mt-2" style={{ color: "#7A7365" }}>{media.length} PHOTO{media.length === 1 ? "" : "S"} ATTACHED</p>
         </Card>
         <Card title="FACTORY'S STORY" color="#C77800">
           {d.factory_response
             ? <p className="text-[11px] leading-relaxed" style={{ color: "#181818" }}>{d.factory_response}</p>
-            : <p className="text-[10px]" style={{ color: "#9B9484" }}>No response yet — they see the claim in their portal.</p>}
-          {d.factory_responded_at && <p className="font-mono text-[8px] mt-2" style={{ color: "#9B9484" }}>RESPONDED {String(d.factory_responded_at).slice(0, 10)}</p>}
+            : <p className="text-[10px]" style={{ color: "#7A7365" }}>No response yet — they see the claim in their portal.</p>}
+          {d.factory_responded_at && <p className="font-mono text-[8px] mt-2" style={{ color: "#7A7365" }}>RESPONDED {String(d.factory_responded_at).slice(0, 10)}</p>}
         </Card>
       </div>
 
@@ -71,17 +71,17 @@ export default async function DisputeDetail({ params }: { params: { id: string }
       {/* timeline */}
       <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>TIMELINE</span>
+          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>TIMELINE</span>
         </div>
         {events.map((e, i) => (
           <div key={i} className="flex px-3 py-2 border-b font-mono text-[9px]" style={{ borderColor: "#E7DFCE" }}>
-            <span style={{ color: "#9B9484" }}>{e.created_at.slice(0, 16).replace("T", " ")}</span>
+            <span style={{ color: "#7A7365" }}>{e.created_at.slice(0, 16).replace("T", " ")}</span>
             <span className="ml-3" style={{ color: "#181818" }}>{e.actor_side.toUpperCase()} · {e.action.toUpperCase()}</span>
           </div>
         ))}
       </div>
       {!open && d.root_cause && (
-        <p className="font-mono text-[9px] mt-2 px-1" style={{ color: "#6E6A5E" }}>
+        <p className="font-mono text-[9px] mt-2 px-1" style={{ color: "#514C41" }}>
           RULED: {String(d.root_cause).replace(/_/g," ").toUpperCase()} · {String(d.defect_scope ?? "").replace(/_/g," ").toUpperCase()} · {String(d.resolution_type ?? "").toUpperCase()}
         </p>
       )}

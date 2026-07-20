@@ -18,7 +18,7 @@ export default async function Batches() {
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2.5 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#6E6A5E" }}>TODAY&apos;S BATCH</span>
+          <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>TODAY&apos;S BATCH</span>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#0D9488" }}>{ready?.length ?? 0} DEBITS</span>
         </div>
         {(ready ?? []).length === 0 && <div className="px-4 py-4"><Empty title="Nothing staged for release" hint="CLIENT ACH AUTHORIZATIONS POOL HERE FOR YOUR TWO-TAP MORNING RELEASE" /></div>}
@@ -36,7 +36,7 @@ export default async function Batches() {
         </div>
       </div>
       {total > 0n && <ReleaseButton expectedTotalCents={total.toString()} />}
-      <p className="font-mono text-[8px] mt-3 px-1" style={{ color: "#9B9484" }}>
+      <p className="font-mono text-[8px] mt-3 px-1" style={{ color: "#7A7365" }}>
         RELEASING BUILDS THE NACHA FILE AND MARKS PAYMENTS SUBMITTED · OWNER-ONLY · TWO-TAP CONFIRM
       </p>
     </div>

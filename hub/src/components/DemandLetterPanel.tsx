@@ -28,7 +28,7 @@ export function DemandLetterPanel({ letters }: { letters: Letter[] }) {
             <span className="flex-1 text-[11px]" style={{ color: "#181818" }}>
               ${(Number(l.totalCents) / 100).toLocaleString()} · drafted {l.createdAt.slice(0, 10)}
             </span>
-            <span className="font-mono text-[8px] font-bold" style={{ color: l.status === "draft" ? "#C77800" : l.status === "approved_sent" ? "#0D9488" : "#9B9484" }}>
+            <span className="font-mono text-[8px] font-bold" style={{ color: l.status === "draft" ? "#C77800" : l.status === "approved_sent" ? "#0D9488" : "#7A7365" }}>
               {l.status.replace(/_/g, " ").toUpperCase()}
             </span>
           </button>
@@ -40,7 +40,7 @@ export function DemandLetterPanel({ letters }: { letters: Letter[] }) {
               <div className="flex gap-1.5 mt-2">
                 {(["email","certified_mail","both"] as const).map(v => (
                   <button key={v} onClick={() => setVia(v)} className="flex-1 py-1.5 rounded font-mono text-[8px] font-bold border"
-                    style={{ background: via === v ? "#181818" : "transparent", color: via === v ? "#FAF5EA" : "#6E6A5E", borderColor: "#E7DFCE" }}>
+                    style={{ background: via === v ? "#181818" : "transparent", color: via === v ? "#FAF5EA" : "#514C41", borderColor: "#E7DFCE" }}>
                     {v.replace("_", " ").toUpperCase()}
                   </button>
                 ))}
@@ -48,14 +48,14 @@ export function DemandLetterPanel({ letters }: { letters: Letter[] }) {
               {state === "done" ? <p className="text-[11px] font-bold mt-2 text-center" style={{ color: "#0D9488" }}>✓ Done</p> : (
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => act(l.id, "withdraw")} disabled={state === "busy"}
-                    className="flex-1 py-2.5 rounded font-bold text-[11px] border" style={{ borderColor: "#E7DFCE", color: "#6E6A5E" }}>Withdraw</button>
+                    className="flex-1 py-2.5 rounded font-bold text-[11px] border" style={{ borderColor: "#E7DFCE", color: "#514C41" }}>Withdraw</button>
                   <button onClick={() => act(l.id, "approve_send")} disabled={state === "busy"}
                     className="flex-[2] py-2.5 rounded font-bold text-[11px]" style={{ background: "#C77800", color: "#FAF5EA" }}>
                     {state === "busy" ? "…" : "Approve & send"}
                   </button>
                 </div>
               )}
-              <p className="font-mono text-[7px] mt-2" style={{ color: "#9B9484" }}>
+              <p className="font-mono text-[7px] mt-2" style={{ color: "#7A7365" }}>
                 CERTIFIED MAIL: PRINT THIS TEXT, MAIL FROM PARKER PO, KEEP THE GREEN CARD — IT&apos;S COURT EVIDENCE
               </p>
             </div>

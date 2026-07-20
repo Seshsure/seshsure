@@ -27,19 +27,19 @@ export default async function FactoryDetail({ params }: { params: { id: string }
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border p-3" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <p className="text-[14px] font-bold" style={{ color: "#181818" }}>{f.name}</p>
-        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#9B9484" }}>{f.country ?? "COUNTRY TBD"} · {f.currency}</p>
+        <p className="font-mono text-[8px] mt-0.5" style={{ color: "#7A7365" }}>{f.country ?? "COUNTRY TBD"} · {f.currency}</p>
       </div>
       <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>ONBOARDING</span>
+          <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>ONBOARDING</span>
         </div>
         {steps.map(([label, done, sub]) => (
           <div key={label} className="flex items-center px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
             <span className="w-4 h-4 rounded-full mr-3 flex items-center justify-center text-[8px] font-bold"
-              style={{ background: done ? "#0D9488" : "#E7DFCE", color: done ? "#FAF5EA" : "#9B9484" }}>{done ? "✓" : "·"}</span>
+              style={{ background: done ? "#0D9488" : "#E7DFCE", color: done ? "#FAF5EA" : "#7A7365" }}>{done ? "✓" : "·"}</span>
             <div className="flex-1">
-              <p className="font-mono text-[9px] font-bold" style={{ color: done ? "#181818" : "#6E6A5E" }}>{label}</p>
-              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#9B9484" }}>{sub}</p>
+              <p className="font-mono text-[9px] font-bold" style={{ color: done ? "#181818" : "#514C41" }}>{label}</p>
+              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#7A7365" }}>{sub}</p>
             </div>
           </div>
         ))}

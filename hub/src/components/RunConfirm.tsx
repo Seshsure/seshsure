@@ -14,7 +14,7 @@ export function RunConfirm({ runId }: { runId: string }) {
   return (
     <div className="flex gap-2 mt-2 items-end">
       <div className="flex-1">
-        <label className="text-[8px] font-mono font-bold" style={{ color: "#6E6A5E" }}>PROMISE SHIP DATE</label>
+        <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>PROMISE SHIP DATE</label>
         <input type="date" value={promise} onChange={e => setPromise(e.target.value)}
           className="w-full px-3 py-2 rounded-md border font-mono text-[11px]" style={{ borderColor: "#E7DFCE" }} />
       </div>

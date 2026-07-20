@@ -20,7 +20,7 @@ export function ReleaseButton({ expectedTotalCents }: { expectedTotalCents: stri
     <div className="mt-3">
       {stage === "confirm" ? (
         <div className="flex gap-2">
-          <button onClick={() => setStage("idle")} className="flex-1 py-3 rounded-lg font-bold text-[12px] border" style={{ borderColor: "#E7DFCE", color: "#6E6A5E" }}>Back</button>
+          <button onClick={() => setStage("idle")} className="flex-1 py-3 rounded-lg font-bold text-[12px] border" style={{ borderColor: "#E7DFCE", color: "#514C41" }}>Back</button>
           <button onClick={release} className="flex-[2] py-3 rounded-lg font-bold text-[12px]" style={{ background: "#0D9488", color: "#FAF5EA" }}>
             {stage === "confirm" ? "CONFIRM — send to bank" : "…"}
           </button>

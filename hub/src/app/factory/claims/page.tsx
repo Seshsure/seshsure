@@ -12,7 +12,7 @@ export default async function Claims() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-1" style={{ color: "#181818" }}>Quality claims</h1>
-      <p className="text-[10px] font-mono mb-3" style={{ color: "#6E6A5E" }}>YOUR RESPONSE GOES TO SESHSURE — SESHSURE RULES AND HANDLES THE CUSTOMER</p>
+      <p className="text-[10px] font-mono mb-3" style={{ color: "#514C41" }}>YOUR RESPONSE GOES TO SESHSURE — SESHSURE RULES AND HANDLES THE CUSTOMER</p>
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
         {(disputes ?? []).map(d => (
           <div key={d.id} className="px-4 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
@@ -22,7 +22,7 @@ export default async function Claims() {
                 {d.factory_responded_at ? "RESPONDED ✓" : "RESPONSE NEEDED"}
               </span>
             </div>
-            <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
+            <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>
               {(d.issue_types ?? []).join(", ")}{d.lot_number ? ` · LOT ${d.lot_number}` : ""}
               {d.qty_affected_units ? ` · ${Number(d.qty_affected_units).toLocaleString()} UNITS` : ""}
             </p>
@@ -30,7 +30,7 @@ export default async function Claims() {
             {!d.factory_responded_at && <FactoryRespond disputeId={d.id} />}
           </div>
         ))}
-        {!disputes?.length && <p className="px-4 py-6 text-[11px]" style={{ color: "#6E6A5E" }}>No open claims.</p>}
+        {!disputes?.length && <p className="px-4 py-6 text-[11px]" style={{ color: "#514C41" }}>No open claims.</p>}
       </div>
     </div>
   );

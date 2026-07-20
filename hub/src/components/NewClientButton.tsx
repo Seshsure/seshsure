@@ -29,17 +29,17 @@ export function NewClientButton() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "#18181866" }} onClick={() => setOpen(false)}>
           <div className="w-full max-w-md rounded-xl punch p-5" style={{ background: "#FAF5EA" }} onClick={e => e.stopPropagation()}>
             <p className="display text-[15px]" style={{ color: "#181818" }}>NEW CLIENT</p>
-            <label className={lbl} style={{ color: "#6E6A5E" }}>LEGAL NAME *</label>
+            <label className={lbl} style={{ color: "#514C41" }}>LEGAL NAME *</label>
             <input className={inp} style={{ borderColor: "#E7DFCE" }} value={f.legalName} onChange={e => setF({ ...f, legalName: e.target.value })} />
-            <label className={lbl} style={{ color: "#6E6A5E" }}>DBA</label>
+            <label className={lbl} style={{ color: "#514C41" }}>DBA</label>
             <input className={inp} style={{ borderColor: "#E7DFCE" }} value={f.dba} onChange={e => setF({ ...f, dba: e.target.value })} />
             <div className="grid grid-cols-2 gap-3">
-              <div><label className={lbl} style={{ color: "#6E6A5E" }}>CONTACT EMAIL</label>
+              <div><label className={lbl} style={{ color: "#514C41" }}>CONTACT EMAIL</label>
                 <input className={inp} style={{ borderColor: "#E7DFCE" }} value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></div>
-              <div><label className={lbl} style={{ color: "#6E6A5E" }}>PHONE</label>
+              <div><label className={lbl} style={{ color: "#514C41" }}>PHONE</label>
                 <input className={inp} style={{ borderColor: "#E7DFCE" }} value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></div>
             </div>
-            <label className={lbl} style={{ color: "#6E6A5E" }}>HOW&apos;D THEY FIND YOU? *</label>
+            <label className={lbl} style={{ color: "#514C41" }}>HOW&apos;D THEY FIND YOU? *</label>
             <input className={inp} style={{ borderColor: "#E7DFCE" }} placeholder="referral — Grizzly / MJBizCon / Instagram…" value={f.leadSource} onChange={e => setF({ ...f, leadSource: e.target.value })} />
             <button onClick={() => setF({ ...f, invite: !f.invite })} className="flex items-center gap-2 mt-4">
               <span className="text-[14px]">{f.invite ? "☑" : "☐"}</span>

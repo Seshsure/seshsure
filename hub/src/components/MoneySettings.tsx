@@ -27,7 +27,7 @@ export function MoneySettings({ accepted, preferred, bankLast4, bankVerified, ch
   return (
     <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
       <div className="px-4 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>HOW YOU PAY</span>
+        <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>HOW YOU PAY</span>
       </div>
       {accepted.map(m => (
         <button key={m} onClick={() => choose(m)} className="w-full flex items-center px-4 py-3 border-b text-left"
@@ -38,20 +38,20 @@ export function MoneySettings({ accepted, preferred, bankLast4, bankVerified, ch
           </div>
           <div>
             <p className="text-[12px] font-bold" style={{ color: "#181818" }}>{LABELS[m]?.[0] ?? m.toUpperCase()}</p>
-            <p className="text-[9px]" style={{ color: "#6E6A5E" }}>{LABELS[m]?.[1]}</p>
+            <p className="text-[9px]" style={{ color: "#514C41" }}>{LABELS[m]?.[1]}</p>
           </div>
         </button>
       ))}
       {sel === "ach" && (
         <div className="px-4 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <p className="font-mono text-[9px]" style={{ color: "#6E6A5E" }}>
+          <p className="font-mono text-[9px]" style={{ color: "#514C41" }}>
             BANK: {bankLast4 ? `••••${bankLast4} ${bankVerified ? "· VERIFIED ✓" : "· VERIFICATION PENDING"}` : "NONE ON FILE — ADD DURING NEXT PAYMENT"}
           </p>
         </div>
       )}
       {sel === "check" && (
         <div className="px-4 py-3 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <p className="font-mono text-[9px] leading-relaxed" style={{ color: "#6E6A5E" }}>
+          <p className="font-mono text-[9px] leading-relaxed" style={{ color: "#514C41" }}>
             PAYABLE TO: {checksPayableTo}<br/>MAIL TO: {remitAddress}<br/>NOTE: PRODUCTION CREDITS WHEN FUNDS CLEAR, NOT AT DEPOSIT.
           </p>
         </div>

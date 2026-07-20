@@ -14,7 +14,7 @@ export default async function AdminBoard() {
     <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#6E6A5E" }}>RUN BOARD — SEALED BIDS · VALUE BESIDE PRICE</span>
+          <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>RUN BOARD — SEALED BIDS · VALUE BESIDE PRICE</span>
         </div>
         {(posts ?? []).map(p => {
           const specs = p.specs as Record<string, string | number>;
@@ -33,7 +33,7 @@ export default async function AdminBoard() {
                   <div key={b.id} className="flex items-center mt-2 pl-2">
                     <div className="flex-1">
                       <p className="text-[11px] font-semibold" style={{ color: "#181818" }}>{b.factories?.name}</p>
-                      <p className="font-mono text-[7px]" style={{ color: "#9B9484" }}>{onTime}{b.promise_date ? ` · SHIP ${b.promise_date}` : ""}</p>
+                      <p className="font-mono text-[7px]" style={{ color: "#7A7365" }}>{onTime}{b.promise_date ? ` · SHIP ${b.promise_date}` : ""}</p>
                     </div>
                     <span className="font-mono text-[12px] font-bold" style={{ color: "#0D9488" }}>
                       {b.price_per_cone_microcents ? `${(Number(b.price_per_cone_microcents) / 10000).toFixed(2)}¢` : "—"}
@@ -41,13 +41,13 @@ export default async function AdminBoard() {
                   </div>
                 );
               })}
-              {!bids.length && <p className="font-mono text-[8px] mt-1" style={{ color: "#9B9484" }}>AWAITING BIDS</p>}
+              {!bids.length && <p className="font-mono text-[8px] mt-1" style={{ color: "#7A7365" }}>AWAITING BIDS</p>}
             </div>
           );
         })}
-        {!posts?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#9B9484" }}>Nothing posted.</p>}
+        {!posts?.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#7A7365" }}>Nothing posted.</p>}
       </div>
-      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#9B9484" }}>
+      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#7A7365" }}>
         FACTORIES SEE ONLY THEIR OWN BID · CLIENT IDENTITY ANONYMIZED · FLAGSHIP NEVER POSTS
       </p>
     </div>

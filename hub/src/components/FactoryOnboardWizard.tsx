@@ -29,19 +29,19 @@ export function FactoryOnboardWizard({ factoryId, termsDone, specDone, docKeys, 
   return (
     <>
       <div className={card} style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>STEP 1 — AGREEMENTS</p>
-        <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
+        <p className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>STEP 1 — AGREEMENTS</p>
+        <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>
           NDA, non-circumvention, and services terms. Typing your name below is your electronic signature; time, IP, and device are recorded.
         </p>
         {tState === "done" ? <p className="font-mono text-[10px] font-bold mt-3" style={{ color: "#0D9488" }}>✓ SIGNED & ON FILE</p> : (
           <>
             <div className="grid grid-cols-2 gap-3 mt-2">
               <div>
-                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E6A5E" }}>FULL LEGAL NAME</label>
+                <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>FULL LEGAL NAME</label>
                 <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E7DFCE" }} />
               </div>
               <div>
-                <label className="text-[8px] font-mono font-bold" style={{ color: "#6E6A5E" }}>TITLE</label>
+                <label className="text-[8px] font-mono font-bold" style={{ color: "#514C41" }}>TITLE</label>
                 <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Director" className="w-full mt-1 px-3 py-2.5 rounded-lg border text-[13px]" style={{ borderColor: "#E7DFCE" }} />
               </div>
             </div>
@@ -54,8 +54,8 @@ export function FactoryOnboardWizard({ factoryId, termsDone, specDone, docKeys, 
       </div>
 
       <div className={card} style={{ background: "#fff", borderColor: "#E7DFCE", opacity: tState === "done" ? 1 : 0.5 }}>
-        <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>STEP 2 — PRODUCT SPEC ACKNOWLEDGMENT</p>
-        <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
+        <p className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>STEP 2 — PRODUCT SPEC ACKNOWLEDGMENT</p>
+        <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>
           Confirm you&apos;ve read the current specs. Runs are QC&apos;d against exactly these versions.
         </p>
         {sState === "done" ? <p className="font-mono text-[10px] font-bold mt-3" style={{ color: "#0D9488" }}>✓ ACKNOWLEDGED</p> : (
@@ -65,10 +65,10 @@ export function FactoryOnboardWizard({ factoryId, termsDone, specDone, docKeys, 
                 <input type="checkbox" checked={checked.includes(s.id)} disabled={tState !== "done"}
                   onChange={e => setChecked(e.target.checked ? [...checked, s.id] : checked.filter(x => x !== s.id))}
                   className="mr-2" />
-                <span className="text-[11px]" style={{ color: "#181818" }}>{s.title} <span className="font-mono text-[8px]" style={{ color: "#9B9484" }}>v{s.version}</span></span>
+                <span className="text-[11px]" style={{ color: "#181818" }}>{s.title} <span className="font-mono text-[8px]" style={{ color: "#7A7365" }}>v{s.version}</span></span>
               </label>
             ))}
-            {!specs.length && <p className="text-[10px] mt-2" style={{ color: "#9B9484" }}>Specs will appear here when SeshSure publishes them.</p>}
+            {!specs.length && <p className="text-[10px] mt-2" style={{ color: "#7A7365" }}>Specs will appear here when SeshSure publishes them.</p>}
             <button onClick={ackSpecs} disabled={sState === "busy" || tState !== "done" || !checked.length}
               className="w-full mt-3 py-3 rounded-lg font-bold text-[12px] disabled:opacity-50" style={{ background: "#181818", color: "#fff" }}>
               {sState === "busy" ? "…" : "Acknowledge specs"}

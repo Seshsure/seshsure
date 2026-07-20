@@ -33,7 +33,7 @@ export function ResolvePanel({ disputeId }: { disputeId: string }) {
 
   const Chip = ({ on, label, onTap, danger }: { on: boolean; label: string; onTap: () => void; danger?: boolean }) => (
     <button onClick={onTap} className="font-mono text-[8px] font-bold px-2 py-1.5 rounded border"
-      style={{ background: on ? (danger ? "#E63946" : "#0D9488") : "transparent", color: on ? "#FAF5EA" : "#6E6A5E", borderColor: on ? (danger ? "#E63946" : "#0D9488") : "#E7DFCE" }}>
+      style={{ background: on ? (danger ? "#E63946" : "#0D9488") : "transparent", color: on ? "#FAF5EA" : "#514C41", borderColor: on ? (danger ? "#E63946" : "#0D9488") : "#E7DFCE" }}>
       {label}
     </button>
   );
@@ -41,21 +41,21 @@ export function ResolvePanel({ disputeId }: { disputeId: string }) {
   return (
     <div className="mt-3 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
       <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <span className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>YOUR RULING — ROOT CAUSE + SCOPE REQUIRED</span>
+        <span className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>YOUR RULING — ROOT CAUSE + SCOPE REQUIRED</span>
       </div>
       <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>ROOT CAUSE (FEEDS SCORECARDS — ONLY FACTORY FAULT COUNTS AGAINST THEM)</p>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#7A7365" }}>ROOT CAUSE (FEEDS SCORECARDS — ONLY FACTORY FAULT COUNTS AGAINST THEM)</p>
         <div className="flex gap-1.5 flex-wrap">{CAUSES.map(([v, l]) => <Chip key={v} on={cause === v} label={l} onTap={() => setCause(v)} />)}</div>
       </div>
       <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>DEFECT SCOPE (LOT-WIDE TRIGGERS BLAST-RADIUS OUTREACH TASK)</p>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#7A7365" }}>DEFECT SCOPE (LOT-WIDE TRIGGERS BLAST-RADIUS OUTREACH TASK)</p>
         <div className="flex gap-1.5">
           <Chip on={scope === "order_specific"} label="THIS ORDER ONLY" onTap={() => setScope("order_specific")} />
           <Chip on={scope === "lot_wide"} label="LOT-WIDE 💥" onTap={() => setScope("lot_wide")} danger />
         </div>
       </div>
       <div className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
-        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#9B9484" }}>RESOLUTION (FACTORY-FAULT REPLACEMENT = $0 RUN, FACTORY PAYS)</p>
+        <p className="font-mono text-[7px] font-bold mb-1.5" style={{ color: "#7A7365" }}>RESOLUTION (FACTORY-FAULT REPLACEMENT = $0 RUN, FACTORY PAYS)</p>
         <div className="flex gap-1.5 flex-wrap">{TYPES.map(([v, l]) => <Chip key={v} on={type === v} label={l} onTap={() => setType(v)} danger={v === "denied"} />)}</div>
         {needsValue && (
           <input value={value} onChange={e => setValue(e.target.value.replace(/[^\d.]/g,""))} placeholder="Credit amount ($)"

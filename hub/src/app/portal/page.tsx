@@ -22,7 +22,7 @@ export default async function PortalHome() {
       </h1>
       <div className="grid grid-cols-2 gap-3 mt-4">
         <Link href="/portal/invoices" className="rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-          <p className="font-mono text-[8px] font-bold" style={{ color: "#6E6A5E" }}>OPEN BALANCE</p>
+          <p className="font-mono text-[8px] font-bold" style={{ color: "#514C41" }}>OPEN BALANCE</p>
           <p className="font-mono text-[18px] font-bold mt-1" style={{ color: overdue ? "#D62839" : "#181818" }}>{formatUSD(open)}</p>
           {overdue > 0 && <p className="font-mono text-[8px] mt-1" style={{ color: "#D62839" }}>{overdue} OVERDUE</p>}
         </Link>

@@ -76,7 +76,7 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
 
   return (
     <div className="rounded-xl border p-4 mt-3" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <p className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>BRAND ARTWORK — WRAP PREVIEW</p>
+      <p className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>BRAND ARTWORK — WRAP PREVIEW</p>
       <label className="block mt-2 py-3 rounded-lg border-2 border-dashed text-center text-[11px] font-bold cursor-pointer"
         style={{ borderColor: "#0D9488", color: "#0D9488" }}>
         {state === "busy" ? "Uploading…" : "Upload art (PNG · JPG · SVG · PDF, ≤50MB)"}
@@ -91,10 +91,10 @@ export function ArtUploader({ onRegistered }: { onRegistered?: (id: string) => v
                 <p className="font-mono text-[9px] font-bold" style={{ color: verdict.ready ? "#0D9488" : "#B07A1F" }}>
                   {verdict.ready ? "✓ PRESS-RESOLUTION OK" : "⚠ PREVIEW-ONLY RESOLUTION"}
                 </p>
-                <p className="text-[9px] mt-1 leading-relaxed" style={{ color: "#6E6A5E" }}>{verdict.notes}</p>
+                <p className="text-[9px] mt-1 leading-relaxed" style={{ color: "#514C41" }}>{verdict.notes}</p>
               </>
             )}
-            <p className="font-mono text-[7px] mt-2 leading-relaxed" style={{ color: "#9B9484" }}>
+            <p className="font-mono text-[7px] mt-2 leading-relaxed" style={{ color: "#7A7365" }}>
               DIGITAL PREVIEW ONLY — NOT A PRINT PROOF. COLOR, SCALE, AND PLACEMENT ARE FINALIZED ON THE PRESS PROOF YOU&apos;LL APPROVE BEFORE PRODUCTION.
             </p>
           </div>

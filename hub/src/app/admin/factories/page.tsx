@@ -32,16 +32,16 @@ export default async function Factories() {
     <div className="max-w-5xl mx-auto px-4 pb-8">
       {concentration !== null && (
         <div className="mt-4 p-3 rounded-lg border" style={{ background: "#FFFFFF", borderColor: concentration >= 80 ? "#E6394655" : "#E7DFCE" }}>
-          <p className="text-[9px] font-semibold" style={{ color: "#6E6A5E" }}>CONCENTRATION RISK — TRAILING 90 DAYS</p>
+          <p className="text-[9px] font-semibold" style={{ color: "#514C41" }}>CONCENTRATION RISK — TRAILING 90 DAYS</p>
           <p className="font-mono text-[17px] font-bold" style={{ color: concentration >= 80 ? "#E63946" : "#181818" }}>
-            {concentration}% <span className="text-[10px]" style={{ color: "#9B9484" }}>OF VOLUME ON TOP FACTORY</span>
+            {concentration}% <span className="text-[10px]" style={{ color: "#7A7365" }}>OF VOLUME ON TOP FACTORY</span>
           </p>
           {concentration >= 80 && <p className="font-mono text-[8px] mt-1" style={{ color: "#E63946" }}>DIVERSIFY VIA THE RUN BOARD — SECOND-SOURCE FILE RECOMMENDED</p>}
         </div>
       )}
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="text-[10px] font-mono font-bold" style={{ color: "#6E6A5E" }}>FACTORIES — SCORES ARE COMPUTED, NEVER TYPED</span>
+          <span className="text-[10px] font-mono font-bold" style={{ color: "#514C41" }}>FACTORIES — SCORES ARE COMPUTED, NEVER TYPED</span>
         </div>
         {(factories ?? []).map(f => {
           const sc = scoreMap.get(f.id);
@@ -55,9 +55,9 @@ export default async function Factories() {
                   {f.flagship_approved && <span className="ml-2 font-mono text-[7px] px-1.5 py-0.5 rounded" style={{ background: "#0D948822", color: "#0D9488" }}>FLAGSHIP</span>}
                   {!f.board_eligible && <span className="ml-2 font-mono text-[7px] px-1.5 py-0.5 rounded" style={{ background: "#C7780022", color: "#C77800" }}>QUALIFYING</span>}
                 </p>
-                <span className="font-mono text-[8px]" style={{ color: "#9B9484" }}>{f.country ?? ""} · {f.payment_terms ?? "terms TBD"}</span>
+                <span className="font-mono text-[8px]" style={{ color: "#7A7365" }}>{f.country ?? ""} · {f.payment_terms ?? "terms TBD"}</span>
               </div>
-              <p className="font-mono text-[9px] mt-1" style={{ color: "#6E6A5E" }}>
+              <p className="font-mono text-[9px] mt-1" style={{ color: "#514C41" }}>
                 {onTime} · {sc?.completed_runs ?? 0} RUNS COMPLETE · {defects} FAULT DISPUTE{defects === 1 ? "" : "S"}
                 {sc?.units_delivered ? ` · ${Number(sc.units_delivered).toLocaleString()} UNITS` : ""}
               </p>
@@ -65,7 +65,7 @@ export default async function Factories() {
           );
         })}
       </div>
-      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#9B9484" }}>
+      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#7A7365" }}>
         DISPLAY RULES: NO SCORE UNDER 10 RUNS · VOLUME BESIDE PERCENTAGE · ONLY ROB-RULED FACTORY-FAULT COUNTS
       </p>
     </div>

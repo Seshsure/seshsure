@@ -7,7 +7,7 @@ export default function FactoryLayout({ children }: { children: React.ReactNode 
         style={{ background: "#FAF5EA", borderColor: "#E7DFCE" }}>
         <Link href="/factory" className="display text-[14px]" style={{ color: "#181818" }}>SESHSURE<span style={{ color: "#0D9488" }}> PRODUCTION</span>
         </Link>
-        <nav className="flex gap-4 font-mono text-[10px]" style={{ color: "#6E6A5E" }}>
+        <nav className="flex gap-4 font-mono text-[10px]" style={{ color: "#514C41" }}>
           <Link href="/factory/runs">RUNS</Link>
           <Link href="/factory/board">BOARD</Link>
           <Link href="/factory/claims">CLAIMS</Link>

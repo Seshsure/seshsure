@@ -19,13 +19,13 @@ export function PayPanel({ invoiceId, remainingCents }: { invoiceId: string; rem
   if (state === "done") return (
     <div className="mt-4 rounded-xl border p-5 text-center" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
       <p className="text-[14px] font-bold" style={{ color: "#0D9488" }}>✓ Payment authorized</p>
-      <p className="text-[10px] mt-1 font-mono" style={{ color: "#6E6A5E" }}>ACH DEBITS IN THE NEXT DAILY BATCH · RECEIPT ON CLEARANCE</p>
+      <p className="text-[10px] mt-1 font-mono" style={{ color: "#514C41" }}>ACH DEBITS IN THE NEXT DAILY BATCH · RECEIPT ON CLEARANCE</p>
     </div>
   );
 
   return (
     <div className="mt-4 rounded-xl border p-4" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
-      <label className="font-mono text-[9px] font-bold" style={{ color: "#6E6A5E" }}>PAY AMOUNT (USD)</label>
+      <label className="font-mono text-[9px] font-bold" style={{ color: "#514C41" }}>PAY AMOUNT (USD)</label>
       <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
         inputMode="decimal" className="w-full mt-1 px-3 py-3 rounded-lg border font-mono text-[18px]"
         style={{ borderColor: "#E7DFCE", color: "#181818" }} />
@@ -35,7 +35,7 @@ export function PayPanel({ invoiceId, remainingCents }: { invoiceId: string; rem
         {state === "busy" ? "Authorizing…" : "Pay by ACH"}
       </button>
       {state === "err" && <p className="font-mono text-[9px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
-      <p className="font-mono text-[8px] mt-3 text-center" style={{ color: "#9B9484" }}>
+      <p className="font-mono text-[8px] mt-3 text-center" style={{ color: "#7A7365" }}>
         BY TAPPING PAY YOU AUTHORIZE A ONE-TIME ACH DEBIT · NO CARD FEES ON ACH
       </p>
     </div>

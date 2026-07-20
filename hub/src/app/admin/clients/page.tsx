@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const GRADE_COLOR: Record<string, string> = { A: "#0D9488", B: "#8FD64B", C: "#C77800", D: "#F58B4B", F: "#E63946", "—": "#9B9484" };
+const GRADE_COLOR: Record<string, string> = { A: "#0D9488", B: "#8FD64B", C: "#C77800", D: "#F58B4B", F: "#E63946", "—": "#7A7365" };
 
 function grade(paidCount: number, onTime: number, avgDaysLate: number, returns: number, openOverdue: number): [string, string] {
   if (paidCount < 3) return ["—", `${paidCount} PAID INVOICES — COLLECTING`];
@@ -52,7 +52,7 @@ export default async function Clients() {
       <div className="flex justify-end mt-4"><NewClientButton /></div>
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
-          <span className="font-mono text-[10px] font-bold" style={{ color: "#6E6A5E" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
+          <span className="font-mono text-[10px] font-bold" style={{ color: "#514C41" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
         </div>
         {rows.length === 0 && <div className="px-4 py-4"><Empty title="No clients yet" hint="IMPORT YOUR QUICKBOOKS HISTORY OR ONBOARD YOUR FIRST CLIENT — GRADES START COMPUTING AFTER THREE PAID INVOICES" /></div>}
         {rows.map(({ c, g, basis, exposure, openOverdue }) => (
@@ -64,19 +64,19 @@ export default async function Clients() {
                 {c.dba ?? c.legal_name}
                 {c.hold_active && <span className="ml-2 font-mono text-[7px]" style={{ color: "#E63946" }}>🔒 HOLD</span>}
                 {c.watch_flag && <span className="ml-1.5 font-mono text-[7px]" style={{ color: "#C77800" }}>👁</span>}
-                {c.dormant && <span className="ml-1.5 font-mono text-[7px]" style={{ color: "#9B9484" }}>💤</span>}
+                {c.dormant && <span className="ml-1.5 font-mono text-[7px]" style={{ color: "#7A7365" }}>💤</span>}
               </p>
-              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#9B9484" }}>{basis}</p>
+              <p className="font-mono text-[7px] mt-0.5" style={{ color: "#7A7365" }}>{basis}</p>
             </div>
             <div className="text-right">
               <p className="font-mono text-[11px] font-bold" style={{ color: openOverdue ? "#E63946" : "#181818" }}>{formatUSD(exposure)}</p>
-              <p className="font-mono text-[7px]" style={{ color: "#9B9484" }}>EXPOSURE</p>
+              <p className="font-mono text-[7px]" style={{ color: "#7A7365" }}>EXPOSURE</p>
             </div>
           </Link>
         ))}
-        {!rows.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#9B9484" }}>No active clients yet.</p>}
+        {!rows.length && <p className="px-3 py-4 text-[11px]" style={{ color: "#7A7365" }}>No active clients yet.</p>}
       </div>
-      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#9B9484" }}>
+      <p className="font-mono text-[8px] mt-2 px-1" style={{ color: "#7A7365" }}>
         GRADE RULES: &lt;3 PAID INVOICES = COLLECTING · ACH RETURN CAPS AT D · OPEN OVERDUE BLOCKS A · BASIS ALWAYS SHOWN
       </p>
     </div>

@@ -12,7 +12,7 @@ export default async function Runs() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-1" style={{ color: "#181818" }}>Production runs</h1>
-      <p className="text-[10px] font-mono mb-3" style={{ color: "#6E6A5E" }}>CONFIRM WITHIN 48H · PROMISE-DATE CHANGES REQUIRE SESHSURE ACKNOWLEDGMENT</p>
+      <p className="text-[10px] font-mono mb-3" style={{ color: "#514C41" }}>CONFIRM WITHIN 48H · PROMISE-DATE CHANGES REQUIRE SESHSURE ACKNOWLEDGMENT</p>
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E7DFCE" }}>
         {(runs ?? []).map(r => {
           type RO = { orders: { order_number: string; clients: { dba: string|null; legal_name: string|null }; order_items: { quantity: number; products: { description: string } }[] } };
@@ -29,7 +29,7 @@ export default async function Runs() {
                   {r.status === "placed" ? `AWAITING CONFIRMATION · ${hrs}H` : String(r.status).replace(/_/g," ").toUpperCase()}
                 </span>
               </div>
-              <p className="text-[10px] mt-1" style={{ color: "#6E6A5E" }}>
+              <p className="text-[10px] mt-1" style={{ color: "#514C41" }}>
                 {qty.toLocaleString()} cones · {desc}
                 {ros[0]?.orders?.clients ? ` · ${ros[0].orders.clients.dba ?? ros[0].orders.clients.legal_name}` : ""}
                 {r.promise_date ? ` · PROMISE ${r.promise_date}` : ""}
@@ -38,7 +38,7 @@ export default async function Runs() {
             </div>
           );
         })}
-        {!runs?.length && <p className="px-4 py-6 text-[11px]" style={{ color: "#6E6A5E" }}>No open runs.</p>}
+        {!runs?.length && <p className="px-4 py-6 text-[11px]" style={{ color: "#514C41" }}>No open runs.</p>}
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         style={{ background: "#FAF5EA", borderColor: "#E7DFCE" }}>
         <Link href="/portal" className="display text-[14px]" style={{ color: "#181818" }}>SESHSURE<span style={{ color: "#0D9488" }}> HUB</span>
         </Link>
-        <nav className="flex gap-4 font-mono text-[10px]" style={{ color: "#6E6A5E" }}>
+        <nav className="flex gap-4 font-mono text-[10px]" style={{ color: "#514C41" }}>
           <Link href="/portal/invoices">INVOICES</Link>
           <Link href="/portal/orders/new">ORDER</Link>
           <Link href="/portal/tracking">TRACKING</Link>
@@ -15,7 +15,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </nav>
       </header>
       {children}
-      <footer className="px-4 py-8 text-center font-mono text-[8px]" style={{ color: "#9B9484" }}>
+      <footer className="px-4 py-8 text-center font-mono text-[8px]" style={{ color: "#7A7365" }}>
         VIDO MANUFACTURING AND DISTRIBUTION CORP D/B/A SESHSURE · PARKER, CO · SUPPORT@SESHSURE.COM
       </footer>
     </div>

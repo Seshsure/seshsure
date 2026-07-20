@@ -9,7 +9,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
   const { data: { user } } = await sb.auth.getUser();
   const { data: inv } = await sb.from("invoices")
     .select("*, invoice_line_items(description, amount_cents)").eq("id", params.id).single();
-  if (!inv) return <p className="p-8 text-sm" style={{ color: "#6E6A5E" }}>Invoice not found.</p>;
+  if (!inv) return <p className="p-8 text-sm" style={{ color: "#514C41" }}>Invoice not found.</p>;
 
   // view evidence — every open logged
   await sb.from("invoice_views").insert({ invoice_id: inv.id, viewer_profile_id: user!.id });
@@ -23,7 +23,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
         <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "#E7DFCE" }}>
           <div>
             <p className="font-mono text-[13px] font-bold" style={{ color: "#181818" }}>{inv.invoice_number}</p>
-            <p className="font-mono text-[8px]" style={{ color: "#6E6A5E" }}>{inv.kind.toUpperCase()}{inv.due_date ? ` · DUE ${inv.due_date}` : ""}</p>
+            <p className="font-mono text-[8px]" style={{ color: "#514C41" }}>{inv.kind.toUpperCase()}{inv.due_date ? ` · DUE ${inv.due_date}` : ""}</p>
           </div>
           <p className="font-mono text-[16px] font-bold" style={{ color: "#181818" }}>{formatUSD(remaining)}</p>
         </div>
@@ -36,7 +36,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
       </div>
       <a href={`/api/invoices/${inv.id}/pdf`} target="_blank"
         className="block mt-3 py-2.5 rounded-lg border text-center font-mono text-[10px] font-bold"
-        style={{ borderColor: "#E7DFCE", color: "#6E6A5E", background: "#fff" }}>
+        style={{ borderColor: "#E7DFCE", color: "#514C41", background: "#fff" }}>
         ⬇ DOWNLOAD PDF
       </a>
       {payable && <PayPanel invoiceId={inv.id} remainingCents={remaining.toString()} />}
