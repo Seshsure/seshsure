@@ -350,3 +350,79 @@ export async function bidChase(sb: SupabaseClient) {
     });
   }
 }
+
+// ————— WORKER 25: AUTO-RFQ — money cleared + pickup date = shipment sheet —————
+// When a run has (a) a factory-set pickup_ready_date, (b) its order's deposit
+// invoice fully cleared, and (c) no RFQ yet: build the cargo sheet from the
+// order's real line items (cartons, weight, dims from the product catalog),
+// post the RFQ, mint sealed quote links for every active forwarder, and task
+// Rob to send them. Addresses stay city-level — exact addresses go to the
+// winner only, post-award.
+export async function autoRfq(sb: SupabaseClient) {
+  const { data: runs } = await sb.from("production_runs")
+    .select("id, run_number, factory_id, pickup_ready_date, run_orders_rfq_id, factories(city, country), run_orders(order_id, orders(id, client_id, freight_mode, seshsure_arranged_freight, ship_to_address_id, need_by))")
+    .not("pickup_ready_date", "is", null).is("run_orders_rfq_id", null);
+
+  for (const r of runs ?? []) {
+    type RO = { order_id: string; orders: { id: string; client_id: string; freight_mode: string | null; seshsure_arranged_freight: boolean; ship_to_address_id: string | null; need_by: string | null } };
+    const ro = (r.run_orders as unknown as RO[] | null)?.[0];
+    if (!ro?.orders) continue;
+    const o = ro.orders;
+    if (!o.seshsure_arranged_freight) continue;   // client-arranged freight: not our RFQ
+
+    // (b) deposit cleared? — order's deposit invoice must be fully paid
+    const { data: dep } = await sb.from("invoices")
+      .select("id, total_cents, paid_cents").eq("order_id", o.id).eq("kind", "deposit").maybeSingle();
+    if (dep && BigInt(dep.paid_cents) < BigInt(dep.total_cents)) continue;
+
+    // cargo math from real line items × catalog carton specs
+    const { data: items } = await sb.from("order_items")
+      .select("quantity, products(cones_per_carton, carton_weight_g, carton_l_mm, carton_w_mm, carton_h_mm)")
+      .eq("order_id", o.id);
+    let cartons = 0, weightKg = 0, units = 0; let dims = "";
+    for (const it of (items ?? []) as unknown as { quantity: number; products: { cones_per_carton: number | null; carton_weight_g: number | null; carton_l_mm: number | null; carton_w_mm: number | null; carton_h_mm: number | null } }[]) {
+      const pr = it.products;
+      units += it.quantity;
+      if (pr?.cones_per_carton) {
+        const c = Math.ceil(it.quantity / pr.cones_per_carton);
+        cartons += c;
+        if (pr.carton_weight_g) weightKg += (c * pr.carton_weight_g) / 1000;
+        if (pr.carton_l_mm && !dims) dims = `${(pr.carton_l_mm/10).toFixed(0)}×${(pr.carton_w_mm!/10).toFixed(0)}×${(pr.carton_h_mm!/10).toFixed(0)} cm cartons`;
+      }
+    }
+
+    // destination: city-level from the ship-to
+    let destination = "Denver, CO area";
+    if (o.ship_to_address_id) {
+      const { data: addr } = await sb.from("client_addresses").select("city, region").eq("id", o.ship_to_address_id).single();
+      if (addr?.city) destination = `${addr.city}, ${addr.region ?? ""}`.trim();
+    }
+    const fac = r.factories as unknown as { city: string | null; country: string | null } | null;
+    const origin = fac?.city ? `${fac.city}, ${fac.country ?? ""}`.trim() : "Port of origin (per shipment sheet)";
+
+    const { data: rfq } = await sb.from("freight_rfqs").insert({
+      run_id: r.id, mode: o.freight_mode ?? "sea", status: "open", auto_created: true,
+      units_count: units || null,
+      cargo_summary: { origin, destination, cartons: cartons || null, weight_kg: weightKg ? Math.round(weightKg) : null, ready_date: r.pickup_ready_date, need_by: o.need_by },
+      dims_note: dims || null,
+      bid_deadline: new Date(Date.now() + 4 * 864e5).toISOString().slice(0, 10),
+    }).select("id").single();
+    if (!rfq) continue;
+
+    await sb.from("production_runs").update({ run_orders_rfq_id: rfq.id }).eq("id", r.id);
+
+    const { data: fwds } = await sb.from("forwarders").select("id, name").eq("is_active", true);
+    for (const f of fwds ?? []) {
+      await sb.from("forwarder_quote_links").insert({ rfq_id: rfq.id, forwarder_id: f.id });
+    }
+    await sb.from("tasks").insert({
+      kind: "freight", title: `Auto-RFQ posted — run ${r.run_number} ready ${r.pickup_ready_date}`,
+      detail: `Deposit cleared and factory set pickup. Sheet built: ${cartons || "?"} cartons, ${Math.round(weightKg) || "?"} kg, ${origin} → ${destination}. Quote links minted for ${(fwds ?? []).length} forwarders — copy links from the desk and send.`,
+      dedupe_key: `autorfq:${r.id}`, due_date: new Date().toISOString().slice(0, 10),
+    });
+    await sb.from("activity_log").insert({
+      actor_label: "worker:autoRfq", action: "freight.rfq_auto_created", entity_table: "freight_rfqs", entity_id: rfq.id,
+      after: { run_id: r.id, cartons, weight_kg: Math.round(weightKg), origin, destination },
+    });
+  }
+}

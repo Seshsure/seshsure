@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase-server";
+import { PickupDate } from "@/components/PickupDate";
 import { RunConfirm } from "@/components/RunConfirm";
 
 export const dynamic = "force-dynamic";
@@ -6,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function Runs() {
   const sb = supabaseServer();
   const { data: runs } = await sb.from("production_runs")
-    .select("id, run_number, status, promise_date, created_at, run_orders(orders(order_number, clients(dba, legal_name), order_items(quantity, products(description))))")
+    .select("id, run_number, status, promise_date, pickup_ready_date, created_at, run_orders(orders(order_number, clients(dba, legal_name), order_items(quantity, products(description))))")
     .not("status", "in", '("closed")').order("created_at", { ascending: false });
 
   return (
@@ -35,6 +36,8 @@ export default async function Runs() {
                 {r.promise_date ? ` · PROMISE ${r.promise_date}` : ""}
               </p>
               {r.status === "placed" && <RunConfirm runId={r.id} />}
+              {["confirmed","in_production","qc_submitted","qc_approved"].includes(String(r.status)) &&
+                <PickupDate runId={r.id} current={r.pickup_ready_date} />}
             </div>
           );
         })}

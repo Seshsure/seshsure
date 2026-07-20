@@ -80,6 +80,7 @@ export function QuoteForm({ token }: { token: string }) {
         {msg && <p className="font-mono text-[11px] mt-2" style={{ color: "#D62839" }}>{msg}</p>}
         <p className="font-mono text-[10px] mt-3 leading-relaxed" style={{ color: "#5C574A" }}>
           YOUR QUOTE IS SEALED — OTHER FORWARDERS CANNOT SEE IT. AWARD NOTICE COMES FROM SESHSURE DIRECTLY.
+          {" "}EXACT PICKUP AND DELIVERY ADDRESSES ARE PROVIDED TO THE AWARDED FORWARDER AT BOOKING.
         </p>
       </div>
     </>
