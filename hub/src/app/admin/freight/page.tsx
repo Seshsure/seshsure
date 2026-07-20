@@ -2,19 +2,21 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import { LaneTarget } from "@/components/LaneTarget";
 import { CopyLink } from "@/components/CopyLink";
+import { ShipDocs } from "@/components/ShipDocs";
 
 export const dynamic = "force-dynamic";
 
 export default async function Freight() {
   const sb = supabaseServer();
   const ninety = new Date(Date.now() - 90 * 864e5).toISOString();
-  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: quoteLinks }, { data: awarded }] = await Promise.all([
-    sb.from("freight_rfqs").select("id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
+  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: quoteLinks }, { data: runDocs }, { data: awarded }] = await Promise.all([
+    sb.from("freight_rfqs").select("id, run_id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
     sb.from("logistics_exceptions").select("id, kind, detail, opened_at, shipments(id)").is("resolved_at", null).order("opened_at"),
     sb.from("shipments").select("id, status, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
     sb.from("freight_bids").select("all_in_cents, created_at, freight_rfqs(mode, cargo_summary)").gte("created_at", ninety),
     sb.from("lane_targets").select("lane_key, target_cents"),
     sb.from("forwarder_quote_links").select("rfq_id, token, expires_at, forwarders(name)").gt("expires_at", new Date().toISOString()),
+    sb.from("run_documents").select("run_id, doc_type, filename"),
     sb.from("freight_rfqs").select("id, awarded_forwarder_id, awarded_at, freight_bids(all_in_cents, forwarder_id)").not("awarded_at", "is", null).gte("awarded_at", ninety),
   ]);
 
@@ -82,6 +84,7 @@ export default async function Freight() {
           const laneTarget = targetMap.get(lk) ?? null;
           type QL = { rfq_id: string; token: string; forwarders: { name: string } };
           const myLinks = ((quoteLinks ?? []) as unknown as QL[]).filter(q => q.rfq_id === r.id);
+          const myDocs = ((runDocs ?? []) as { run_id: string; doc_type: string; filename: string }[]).filter(d => d.run_id === (r as unknown as { run_id: string | null }).run_id);
           const bids = ((r.freight_bids ?? []) as unknown as B[]).sort((a, b) => a.all_in_cents - b.all_in_cents);
           return (
             <div key={r.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
@@ -102,6 +105,7 @@ export default async function Freight() {
                   ))}
                 </span>
               )}
+              {(r as unknown as { run_id: string | null }).run_id && <ShipDocs runId={(r as unknown as { run_id: string }).run_id} existing={myDocs} />}
               {bids.map(b => (
                 <div key={b.id} className="flex items-center mt-1.5 pl-2">
                   <span className="flex-1 text-[13px]" style={{ color: "#181818" }}>{b.forwarders?.name}
