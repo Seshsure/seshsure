@@ -32,6 +32,28 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // ————— SECOND-LOCK ENFORCEMENT —————
+  // A password-only session is half a key. The access token's AMR (auth method
+  // reference) must show the email code (otp) or a magic link was verified;
+  // otherwise the session is parked at the code screen. No skipping the gate.
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  let otpVerified = false;
+  if (token) {
+    try {
+      const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+      const methods: string[] = (payload.amr ?? []).map((m: { method: string }) => m.method);
+      otpVerified = methods.includes("otp") || methods.includes("magiclink");
+    } catch { otpVerified = false; }
+  }
+  if (!otpVerified) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("step", "code");
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
   const { data: prof } = await supabase
     .from("profiles").select("role,is_active").eq("id", user.id).single();
 
