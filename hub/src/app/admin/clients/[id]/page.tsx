@@ -11,13 +11,17 @@ export const dynamic = "force-dynamic";
 
 export default async function ClientDetail({ params }: { params: { id: string } }) {
   const sb = supabaseServer();
-  const [{ data: client }, { data: invoices }, { data: contacts }, { data: letters }] = await Promise.all([
+  const [{ data: client }, { data: invoices }, { data: contacts }, { data: clientPays }, { data: allAllocs }, { data: letters }] = await Promise.all([
     sb.from("clients").select("*").eq("id", params.id).single(),
-    sb.from("invoices").select("id, invoice_number, legacy_number, total_cents, paid_cents, due_date, interest_frozen").eq("client_id", params.id).in("status", ["sent","viewed","partially_paid","overdue"]),
+    sb.from("invoices").select("id, invoice_number, legacy_number, total_cents, paid_cents, due_date, interest_frozen, dunning_paused").eq("client_id", params.id).in("status", ["sent","viewed","partially_paid","overdue"]),
     sb.from("client_contacts").select("email").eq("client_id", params.id).limit(1),
+    sb.from("payments").select("id, amount_cents").eq("client_id", params.id).eq("status", "cleared"),
+    sb.from("payment_allocations").select("payment_id"),
     sb.from("demand_letters").select("id, status, total_demanded_cents, draft_text, created_at").eq("client_id", params.id).order("created_at", { ascending: false }).limit(3),
   ]);
   if (!client) return <p className="p-8 text-sm text-neutral-400">Client not found.</p>;
+  const allocSet = new Set((allAllocs ?? []).map(a => a.payment_id));
+  const clientUnapplied = (clientPays ?? []).filter(p => !allocSet.has(p.id)).reduce((s2, p) => s2 + BigInt(p.amount_cents), 0n);
   const exposure = (invoices ?? []).reduce((s, i) => s + BigInt(i.total_cents) - BigInt(i.paid_cents), 0n);
   const today = new Date().toISOString().slice(0, 10);
   const overdue = (invoices ?? []).filter(i => i.due_date && i.due_date < today).length;
@@ -47,6 +51,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
       <div className="rounded-lg border mt-4 overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-4 py-2 border-b flex justify-between" style={{ borderColor: "#E7DFCE" }}>
           <span className="eyebrow" style={{ color: "#3E3A30" }}>OPEN INVOICES — INTEREST STARTS ONLY WHEN YOU DECLARE DEFAULT</span>
+          {clientUnapplied > 0n && <span className="font-mono text-[11px] font-bold" style={{ color: "#0D9488" }}>UNAPPLIED CASH ON ACCOUNT: ${(clientUnapplied / 100n).toLocaleString()}</span>}
         </div>
         {(invoices ?? []).filter(i => BigInt(i.total_cents) > BigInt(i.paid_cents)).map(i => (
           <div key={i.id} className="px-4 py-2.5 border-b last:border-0 flex items-center justify-between gap-3" style={{ borderColor: "#E7DFCE" }}>

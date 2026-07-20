@@ -8,13 +8,19 @@ export const dynamic = "force-dynamic";
 export default async function Command() {
   const sb = supabaseServer();
   const today = new Date().toISOString().slice(0, 10);
-  const [{ data: invoices }, { data: ready }, { data: tasks }, { data: submitted }] = await Promise.all([
+  const [{ data: invoices }, { data: ready }, { data: tasks }, { data: submitted }, { data: clearedPays }, { data: allocs }] = await Promise.all([
     sb.from("invoices").select("total_cents, paid_cents, due_date").in("status", ["sent","viewed","partially_paid","overdue"]),
+    sb.from("payments").select("id, amount_cents").eq("status", "cleared"),
+    sb.from("payment_allocations").select("payment_id"),
     sb.from("payments").select("amount_cents").in("status", ["authorized","scheduled"]).or(`scheduled_for.is.null,scheduled_for.lte.${today}`),
     sb.from("tasks").select("id, title, due_on").is("completed_at", null).order("due_on").limit(10),
     sb.from("orders").select("id, po_number, clients(dba, legal_name)").eq("status", "submitted"),
   ]);
-  const ar = (invoices ?? []).reduce((s, i) => s + BigInt(i.total_cents) - BigInt(i.paid_cents), 0n);
+  const grossAr = (invoices ?? []).reduce((s, i) => s + BigInt(i.total_cents) - BigInt(i.paid_cents), 0n);
+  const allocated = new Set((allocs ?? []).map(a => a.payment_id));
+  const unappliedCash = (clearedPays ?? []).filter(p2 => !allocated.has(p2.id))
+    .reduce((s, p2) => s + BigInt(p2.amount_cents), 0n);
+  const ar = grossAr - unappliedCash;
   const overdue = (invoices ?? []).filter(i => i.due_date && i.due_date < today).length;
   const batchTotal = (ready ?? []).reduce((s, p) => s + BigInt(p.amount_cents), 0n);
 
@@ -29,6 +35,7 @@ export default async function Command() {
       <div className="grid grid-cols-3 gap-2 mt-4">
         {[
           ["AR OUT", formatUSD(ar), overdue ? "#E63946" : "#181818"],
+          ...(unappliedCash > 0n ? [["UNAPPLIED CASH", formatUSD(unappliedCash), "#0D9488"] as [string, string, string]] : []),
           ["OVERDUE", String(overdue), overdue ? "#E63946" : "#0D9488"],
           ["BATCH READY", formatUSD(batchTotal), batchTotal > 0n ? "#0D9488" : "#5C574A"],
         ].map(([label, value, color]) => (

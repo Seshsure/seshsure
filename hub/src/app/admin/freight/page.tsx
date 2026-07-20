@@ -1,18 +1,20 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import { LaneTarget } from "@/components/LaneTarget";
+import { CopyLink } from "@/components/CopyLink";
 
 export const dynamic = "force-dynamic";
 
 export default async function Freight() {
   const sb = supabaseServer();
   const ninety = new Date(Date.now() - 90 * 864e5).toISOString();
-  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: awarded }] = await Promise.all([
+  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: quoteLinks }, { data: awarded }] = await Promise.all([
     sb.from("freight_rfqs").select("id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
     sb.from("logistics_exceptions").select("id, kind, detail, opened_at, shipments(id)").is("resolved_at", null).order("opened_at"),
     sb.from("shipments").select("id, status, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
     sb.from("freight_bids").select("all_in_cents, created_at, freight_rfqs(mode, cargo_summary)").gte("created_at", ninety),
     sb.from("lane_targets").select("lane_key, target_cents"),
+    sb.from("forwarder_quote_links").select("rfq_id, token, expires_at, forwarders(name)").gt("expires_at", new Date().toISOString()),
     sb.from("freight_rfqs").select("id, awarded_forwarder_id, awarded_at, freight_bids(all_in_cents, forwarder_id)").not("awarded_at", "is", null).gte("awarded_at", ninety),
   ]);
 
@@ -78,6 +80,8 @@ export default async function Freight() {
           const lane = lanes.get(lk);
           const laneAvg = lane && lane.n >= 3 ? lane.sum / BigInt(lane.n) : null;
           const laneTarget = targetMap.get(lk) ?? null;
+          type QL = { rfq_id: string; token: string; forwarders: { name: string } };
+          const myLinks = ((quoteLinks ?? []) as unknown as QL[]).filter(q => q.rfq_id === r.id);
           const bids = ((r.freight_bids ?? []) as unknown as B[]).sort((a, b) => a.all_in_cents - b.all_in_cents);
           return (
             <div key={r.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
@@ -91,6 +95,13 @@ export default async function Freight() {
                 {laneAvg && <span style={{ color: "#3E3A30" }}> · 90D AVG {formatUSD(laneAvg)}</span>}
                 {!lane && !laneTarget && <span style={{ color: "#C77800" }}> NO HISTORY YET — SET A TARGET SO BIDS HAVE A BAR</span>}
               </span>
+              {myLinks.length > 0 && (
+                <span className="flex flex-wrap gap-2 mb-2">
+                  {myLinks.map(q => (
+                    <CopyLink key={q.token} label={q.forwarders?.name ?? "forwarder"} url={`https://hub.seshsure.com/quote/${q.token}`} />
+                  ))}
+                </span>
+              )}
               {bids.map(b => (
                 <div key={b.id} className="flex items-center mt-1.5 pl-2">
                   <span className="flex-1 text-[13px]" style={{ color: "#181818" }}>{b.forwarders?.name}
