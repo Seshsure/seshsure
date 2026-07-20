@@ -5,14 +5,16 @@ import { ControlsPanel } from "@/components/ControlsPanel";
 import { DemandLetterPanel } from "@/components/DemandLetterPanel";
 import { AiDraftPanel } from "@/components/AiDraftPanel";
 import { InterestControl } from "@/components/InterestControl";
+import { InvitePanel } from "@/components/InvitePanel";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientDetail({ params }: { params: { id: string } }) {
   const sb = supabaseServer();
-  const [{ data: client }, { data: invoices }, { data: letters }] = await Promise.all([
+  const [{ data: client }, { data: invoices }, { data: contacts }, { data: letters }] = await Promise.all([
     sb.from("clients").select("*").eq("id", params.id).single(),
     sb.from("invoices").select("id, invoice_number, legacy_number, total_cents, paid_cents, due_date, interest_frozen").eq("client_id", params.id).in("status", ["sent","viewed","partially_paid","overdue"]),
+    sb.from("client_contacts").select("email").eq("client_id", params.id).limit(1),
     sb.from("demand_letters").select("id, status, total_demanded_cents, draft_text, created_at").eq("client_id", params.id).order("created_at", { ascending: false }).limit(3),
   ]);
   if (!client) return <p className="p-8 text-sm text-neutral-400">Client not found.</p>;
@@ -62,6 +64,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
         ))}
       </div>
 
+      <InvitePanel clientId={client.id} defaultEmail={contacts?.[0]?.email ?? undefined} held={client.hold_active} />
       <AiDraftPanel tasks={["collections_note", "supplier_message"]} entityId={client.id} />
       {(letters?.length ?? 0) > 0 && <DemandLetterPanel letters={(letters ?? []).map(l => ({
         id: l.id, status: l.status, totalCents: String(l.total_demanded_cents), draftText: l.draft_text, createdAt: l.created_at,

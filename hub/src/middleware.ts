@@ -55,7 +55,24 @@ export async function middleware(req: NextRequest) {
   }
 
   const { data: prof } = await supabase
-    .from("profiles").select("role,is_active").eq("id", user.id).single();
+    .from("profiles").select("role,is_active,client_id").eq("id", user.id).single();
+
+  // ————— ONBOARDING GATE —————
+  // Clients don't enter the portal until their company has a signed, current
+  // Master Sales Agreement. The wizard at /signup collects it with evidence.
+  if (prof?.role === "client" && prof.client_id && !pathname.startsWith("/signup") && !pathname.startsWith("/api/onboarding")) {
+    const { data: signed } = await supabase
+      .from("signatures")
+      .select("id, agreement_versions!inner(doc_key)")
+      .eq("client_id", prof.client_id)
+      .eq("agreement_versions.doc_key", "master_sales")
+      .limit(1);
+    if (!signed?.length) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/signup";
+      return NextResponse.redirect(url);
+    }
+  }
 
   if (!prof?.is_active) {
     const url = req.nextUrl.clone();
