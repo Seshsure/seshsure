@@ -14,6 +14,9 @@ export function CubeCalc() {
   const [L, setL] = useState("60"); const [W, setW] = useState("40"); const [H, setH] = useState("40");
   const [units, setUnits] = useState("1000"); const [kg, setKg] = useState("");
   const [freightUsd, setFreightUsd] = useState("");
+  const [airRate, setAirRate] = useState("");        // $/kg chargeable
+  const [divisor, setDivisor] = useState<5000 | 6000>(6000);
+  const [airCartons, setAirCartons] = useState("10");
   const [presets, setPresets] = useState<Preset[]>([]);
   const [saveName, setSaveName] = useState("");
 
@@ -106,6 +109,59 @@ export function CubeCalc() {
             </div>
           );
         })}
+        {(() => {
+          const volKg = l && w && h ? (l * w * h) / divisor : 0;           // volumetric kg per carton
+          const chargeKg = Math.max(volKg, ckg || 0);
+          const dimBilled = volKg > (ckg || 0);
+          const nC = parseInt(airCartons) || 0;
+          const rate = parseFloat(airRate) || 0;
+          const shipKg = chargeKg * nC;
+          const cost = rate > 0 ? shipKg * rate : null;
+          const cones = nC * u;
+          const perK = cost !== null && cones > 0 ? (cost / cones) * 1000 : null;
+          return (
+            <div className="rounded-xl border-2 bg-white p-4" style={{ borderColor: "#181818" }}>
+              <div className="flex items-center justify-between">
+                <p className="display text-[15px]" style={{ color: "#181818" }}>AIR — CHARGEABLE WEIGHT</p>
+                <div className="flex gap-1">
+                  {([6000, 5000] as const).map(d => (
+                    <button key={d} onClick={() => setDivisor(d)} className="font-mono text-[10px] font-bold px-2 py-1 rounded border-2"
+                      style={divisor === d ? { background: "#181818", color: "#fff", borderColor: "#181818" } : { borderColor: "#E7DFCE", color: "#5C574A" }}>
+                      ÷{d} {d === 6000 ? "AIRLINE" : "COURIER"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 mt-3">
+                <div><label className="eyebrow block" style={{ color: "#5C574A" }}>CARTONS</label>
+                  <input inputMode="numeric" className="w-full mt-1 px-3 py-2 rounded-lg text-[14px] border-2 outline-none" style={{ borderColor: "#E7DFCE" }}
+                    value={airCartons} onChange={e => setAirCartons(e.target.value.replace(/\D/g, ""))} /></div>
+                <div className="col-span-2"><label className="eyebrow block" style={{ color: "#5C574A" }}>AIR RATE ($/KG CHARGEABLE)</label>
+                  <input inputMode="decimal" className="w-full mt-1 px-3 py-2 rounded-lg text-[14px] border-2 outline-none" style={{ borderColor: "#E7DFCE" }}
+                    placeholder="5.50" value={airRate} onChange={e => setAirRate(e.target.value.replace(/[^\d.]/g, ""))} /></div>
+              </div>
+              {volKg > 0 && (
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div><span className="eyebrow" style={{ color: "#5C574A" }}>CHARGEABLE / CARTON</span>
+                    <p className="font-mono text-[16px] font-bold" style={{ color: "#181818" }}>{chargeKg.toFixed(1)} kg</p>
+                    <p className="font-mono text-[10px]" style={{ color: dimBilled ? "#D62839" : "#0D9488" }}>
+                      {dimBilled ? `DIM-BILLED (${volKg.toFixed(1)} vol vs ${(ckg || 0).toFixed(1)} actual)` : "ACTUAL-WEIGHT BILLED"}</p></div>
+                  <div><span className="eyebrow" style={{ color: "#5C574A" }}>SHIPMENT</span>
+                    <p className="font-mono text-[16px] font-bold" style={{ color: "#181818" }}>{shipKg.toFixed(0)} kg</p>
+                    <p className="font-mono text-[10px]" style={{ color: "#5C574A" }}>{cones.toLocaleString()} CONES</p></div>
+                  <div><span className="eyebrow" style={{ color: "#5C574A" }}>AIR / 1,000 CONES</span>
+                    <p className="font-mono text-[16px] font-bold" style={{ color: perK !== null ? "#0D9488" : "#9B9484" }}>
+                      {perK !== null ? `$${perK.toFixed(2)}` : "—"}</p>
+                    {cost !== null && <p className="font-mono text-[10px]" style={{ color: "#5C574A" }}>${cost.toFixed(0)} ALL-IN EST</p>}</div>
+                </div>
+              )}
+              <p className="font-mono text-[10px] mt-3 leading-relaxed" style={{ color: "#5C574A" }}>
+                UNDER ~150 KG CHARGEABLE: EXPRESS COURIER USUALLY WINS. OVER: FORWARDER AIR CONSOLIDATION WINS — RFQ IT.
+                COMPARE THE $/1,000 HERE AGAINST THE OCEAN NUMBER ABOVE BEFORE ANYONE PANICS INTO AIR.
+              </p>
+            </div>
+          );
+        })()}
         <p className="font-mono text-[10px] leading-relaxed" style={{ color: "#5C574A" }}>
           INTERIOR DIMS ARE INDUSTRY-WORKABLE FIGURES; REAL LOADS LOSE A FEW % TO PALLETS/DUNNAGE IF NOT FLOOR-LOADED.
           FLOOR-LOADED CARTONS (NO PALLETS) IS THE CHEAPEST WAY TO SHIP CONES — LABOR AT DESTINATION IS THE TRADE.
