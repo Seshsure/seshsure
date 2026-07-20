@@ -110,7 +110,7 @@ export async function reminderLadder(sb: SupabaseClient) {
   const today = new Date().toISOString().slice(0, 10);
   const { data: open } = await sb.from("invoices")
     .select("id, invoice_number, client_id, due_date, status, dispute_paused, promise_to_pay_date")
-    .in("status", ["sent", "viewed", "partially_paid", "overdue"]).not("due_date", "is", null);
+    .in("status", ["sent", "viewed", "partially_paid", "overdue"]).eq("dunning_paused", false).not("due_date", "is", null);
 
   for (const inv of open ?? []) {
     if (inv.dispute_paused) continue;
