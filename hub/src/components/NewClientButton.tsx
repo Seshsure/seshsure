@@ -39,7 +39,7 @@ export function NewClientButton() {
               <div><label className={lbl} style={{ color: "#6E6A5E" }}>PHONE</label>
                 <input className={inp} style={{ borderColor: "#E7DFCE" }} value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></div>
             </div>
-            <label className={lbl} style={{ color: "#6E6A5E" }}>HOW'D THEY FIND YOU? *</label>
+            <label className={lbl} style={{ color: "#6E6A5E" }}>HOW&apos;D THEY FIND YOU? *</label>
             <input className={inp} style={{ borderColor: "#E7DFCE" }} placeholder="referral — Grizzly / MJBizCon / Instagram…" value={f.leadSource} onChange={e => setF({ ...f, leadSource: e.target.value })} />
             <button onClick={() => setF({ ...f, invite: !f.invite })} className="flex items-center gap-2 mt-4">
               <span className="text-[14px]">{f.invite ? "☑" : "☐"}</span>
