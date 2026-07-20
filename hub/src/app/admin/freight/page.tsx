@@ -1,16 +1,19 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
+import { LaneTarget } from "@/components/LaneTarget";
 
 export const dynamic = "force-dynamic";
 
 export default async function Freight() {
   const sb = supabaseServer();
   const ninety = new Date(Date.now() - 90 * 864e5).toISOString();
-  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }] = await Promise.all([
+  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: awarded }] = await Promise.all([
     sb.from("freight_rfqs").select("id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
     sb.from("logistics_exceptions").select("id, kind, detail, opened_at, shipments(id)").is("resolved_at", null).order("opened_at"),
     sb.from("shipments").select("id, status, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
     sb.from("freight_bids").select("all_in_cents, created_at, freight_rfqs(mode, cargo_summary)").gte("created_at", ninety),
+    sb.from("lane_targets").select("lane_key, target_cents"),
+    sb.from("freight_rfqs").select("id, awarded_forwarder_id, awarded_at, freight_bids(all_in_cents, forwarder_id)").not("awarded_at", "is", null).gte("awarded_at", ninety),
   ]);
 
   // self-generating market index: every quote ever received teaches the lane
@@ -24,6 +27,19 @@ export default async function Freight() {
     v.sum += BigInt(h.all_in_cents); v.n += 1;
     if (BigInt(h.all_in_cents) < v.best) v.best = BigInt(h.all_in_cents);
     lanes.set(k, v);
+  }
+  const targetMap = new Map((targets ?? []).map(t => [t.lane_key, Number(t.target_cents)]));
+
+  // scoreboard: on every awarded RFQ, what we paid vs the average quote received
+  let captured = 0n, awardsN = 0;
+  type AW = { awarded_forwarder_id: string; freight_bids: { all_in_cents: number; forwarder_id: string }[] };
+  for (const a of (awarded ?? []) as unknown as AW[]) {
+    const bs = a.freight_bids ?? [];
+    if (bs.length < 2) continue;
+    const win = bs.find(x => x.forwarder_id === a.awarded_forwarder_id);
+    if (!win) continue;
+    const avg = bs.reduce((sm, x) => sm + BigInt(x.all_in_cents), 0n) / BigInt(bs.length);
+    captured += avg - BigInt(win.all_in_cents); awardsN += 1;
   }
 
   return (
@@ -42,6 +58,14 @@ export default async function Freight() {
         </div>
       )}
 
+      {awardsN > 0 && (
+        <div className="mt-4 rounded-lg punch-sm px-4 py-3 flex items-center justify-between" style={{ background: "#FFFFFF" }}>
+          <span className="eyebrow" style={{ color: "#3E3A30" }}>CAPTURED BY BIDDING — LAST 90 DAYS ({awardsN} AWARD{awardsN === 1 ? "" : "S"})</span>
+          <span className="font-mono text-[16px] font-bold" style={{ color: captured >= 0n ? "#0D9488" : "#D62839" }}>
+            {captured >= 0n ? "" : "-"}{formatUSD(captured < 0n ? -captured : captured)} VS AVG QUOTE</span>
+        </div>
+      )}
+
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
           <span className="text-[12px] font-mono font-bold" style={{ color: "#3E3A30" }}>OPEN RFQS — THE DESK</span>
@@ -50,14 +74,23 @@ export default async function Freight() {
           const c = r.cargo_summary as Record<string, string | number>;
           type B = { id: string; all_in_cents: number; transit_days: number | null; valid_until: string | null; eta_delivery: string | null; notes: string | null; forwarders: { name: string } };
           const today = new Date().toISOString().slice(0, 10);
-          const lane = lanes.get(laneKey(r.mode, c as Record<string, unknown>));
+          const lk = laneKey(r.mode, c as Record<string, unknown>);
+          const lane = lanes.get(lk);
           const laneAvg = lane && lane.n >= 3 ? lane.sum / BigInt(lane.n) : null;
+          const laneTarget = targetMap.get(lk) ?? null;
           const bids = ((r.freight_bids ?? []) as unknown as B[]).sort((a, b) => a.all_in_cents - b.all_in_cents);
           return (
             <div key={r.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
               <p className="text-[14px] font-bold" style={{ color: "#181818" }}>
                 {String(r.mode).toUpperCase()} · {c.cartons} ctns · {c.originPort} → {c.destination}
               </p>
+              <span className="block font-mono text-[11px] mt-1 mb-1">
+                <span style={{ color: "#3E3A30" }}>SHOULD BE → </span>
+                <LaneTarget laneKey={lk} targetCents={laneTarget} />
+                {lane && <span style={{ color: "#3E3A30" }}> · BEST EVER {formatUSD(lane.best)}</span>}
+                {laneAvg && <span style={{ color: "#3E3A30" }}> · 90D AVG {formatUSD(laneAvg)}</span>}
+                {!lane && !laneTarget && <span style={{ color: "#C77800" }}> NO HISTORY YET — SET A TARGET SO BIDS HAVE A BAR</span>}
+              </span>
               {bids.map(b => (
                 <div key={b.id} className="flex items-center mt-1.5 pl-2">
                   <span className="flex-1 text-[13px]" style={{ color: "#181818" }}>{b.forwarders?.name}
