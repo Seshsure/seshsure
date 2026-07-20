@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const NAV = [
-  ["/admin/goals", "GOALS"], ["/admin/clients", "CLIENTS"], ["/admin/pipeline", "PIPELINE"],
+  ["/admin/goals", "GOALS"], ["/admin/middle", "MIDDLE"], ["/admin/clients", "CLIENTS"], ["/admin/pipeline", "PIPELINE"],
   ["/admin/batches", "BATCH"], ["/admin/disputes", "DISPUTES"], ["/admin/board", "BOARD"],
   ["/admin/factories", "FACTORIES"], ["/admin/freight", "FREIGHT"], ["/admin/freight/cube", "CUBE"], ["/admin/factory-ledger", "LEDGER"],
 ] as const;
