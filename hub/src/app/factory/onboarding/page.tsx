@@ -7,8 +7,9 @@ export const dynamic = "force-dynamic";
 export default async function FactoryOnboarding() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
-  const { data: prof } = await sb.from("profiles").select("factory_id").eq("id", user!.id).single();
-  const factoryId = prof!.factory_id!;
+  const { resolveFactory } = await import("@/lib/factory-context");
+  const { factoryId } = await resolveFactory(sb, user!.id);
+  if (!factoryId) return null;
 
   const [{ data: sigs }, { data: acks }, { data: agreements }, { data: specs }, { data: fac }, { data: fdocs }] = await Promise.all([
     sb.from("signatures").select("id").eq("factory_id", factoryId).limit(1),

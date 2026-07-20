@@ -12,5 +12,5 @@ export const HOME_BY_ROLE: Record<Role, string> = {
 export const AREA_ALLOWED: Record<string, Role[]> = {
   "/admin": ["owner", "staff"],
   "/portal": ["client_admin", "client_ap"],
-  "/factory": ["factory_admin", "factory_user"],
+  "/factory": ["factory_admin", "factory_user", "owner"],  // owner = preview mode
 };

@@ -6,8 +6,11 @@ export const dynamic = "force-dynamic";
 export default async function FactoryBoard() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
-  const { data: prof } = await sb.from("profiles").select("factory_id").eq("id", user!.id).single();
-  const { data: factory } = await sb.from("factories").select("board_eligible").eq("id", prof!.factory_id!).single();
+  const { resolveFactory } = await import("@/lib/factory-context");
+  const { factoryId } = await resolveFactory(sb, user!.id);
+  const { data: factory } = factoryId
+    ? await sb.from("factories").select("board_eligible").eq("id", factoryId).single()
+    : { data: null };
   const { data: posts } = await sb.from("run_board_posts")
     .select("id, specs, bid_deadline, run_board_bids(id, price_per_cone_microcents, declined)")
     .eq("status", "open").order("created_at", { ascending: false });
