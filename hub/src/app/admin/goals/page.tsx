@@ -15,9 +15,11 @@ export default async function Goals() {
   const yearAgo = new Date(Date.now() - 365 * 864e5).toISOString();
   const d90 = new Date(Date.now() - 90 * 864e5).toISOString();
 
-  const [{ data: monthOrders }, { data: yearInvoices }, { data: recentItems }, { data: runs90 }] = await Promise.all([
+  const [{ data: monthOrders }, { data: yearInvoices }, { data: monthInvoices }, { data: monthCollected }, { data: recentItems }, { data: runs90 }] = await Promise.all([
     sb.from("orders").select("order_items(quantity)").gte("created_at", monthStart.toISOString()).not("status", "in", '("draft","expired","cancelled")'),
     sb.from("invoices").select("total_cents").gte("created_at", yearAgo).in("status", ["sent","viewed","partially_paid","paid","overdue"]),
+    sb.from("invoices").select("total_cents").gte("created_at", monthStart.toISOString()).in("status", ["sent","viewed","partially_paid","paid","overdue"]),
+    sb.from("payments").select("amount_cents").eq("status", "cleared").gte("cleared_at", monthStart.toISOString()),
     sb.from("order_items").select("quantity, price_per_cone_microcents, product_id, orders!inner(created_at, status)").gte("orders.created_at", d90),
     sb.from("production_runs").select("factory_id, run_orders(orders(order_items(quantity)))").gte("created_at", d90),
   ]);
@@ -27,6 +29,12 @@ export default async function Goals() {
   const unitsThisMonth = ((monthOrders ?? []) as unknown as OI[])
     .flatMap(o => o.order_items ?? []).reduce((s, i) => s + Number(i.quantity), 0);
   const unitsPct = Math.min(100, Math.round(100 * unitsThisMonth / UNITS_GOAL));
+
+  // ————— INCOME — the goal (invoiced + collected) —————
+  const incomeMonth = (monthInvoices ?? []).reduce((s2, i) => s2 + BigInt(i.total_cents), 0n);
+  const collectedMonth = (monthCollected ?? []).reduce((s2, p) => s2 + BigInt(p.amount_cents), 0n);
+  const MONTH_INCOME_GOAL = 83_333_333n; // $10M/yr ÷ 12 in cents
+  const incomePct = Math.min(100, Number((incomeMonth * 100n) / MONTH_INCOME_GOAL));
 
   // revenue run-rate (trailing 12mo invoiced)
   const revenue12 = (yearInvoices ?? []).reduce((s, i) => s + BigInt(i.total_cents), 0n);
@@ -71,7 +79,22 @@ export default async function Goals() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
-      <h1 className="text-[15px] font-bold mt-4" style={{ color: "#181818" }}>The exit math — live</h1>
+      <h1 className="text-[15px] font-bold mt-4" style={{ color: "#181818" }}>Income goals — live</h1>
+
+      <div className="mt-3 rounded-lg punch-sm p-4" style={{ background: "#FFFFFF" }}>
+        <div className="flex items-baseline justify-between">
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>INCOME THIS MONTH (INVOICED)</span>
+          <span className="font-mono text-[16px] font-bold" style={{ color: "#181818" }}>
+            {formatUSD(incomeMonth)} <span className="text-[11px]" style={{ color: "#5C574A" }}>/ {formatUSD(MONTH_INCOME_GOAL)} MO PACE</span>
+          </span>
+        </div>
+        <Bar pct={incomePct} color="#0D9488" />
+        <div className="flex items-baseline justify-between mt-3">
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>COLLECTED THIS MONTH (CLEARED CASH)</span>
+          <span className="font-mono text-[16px] font-bold" style={{ color: collectedMonth > 0n ? "#0D9488" : "#5C574A" }}>{formatUSD(collectedMonth)}</span>
+        </div>
+        <p className="font-mono text-[10px] mt-2" style={{ color: "#5C574A" }}>INVOICED IS THE SCOREBOARD · COLLECTED IS THE TRUTH · THE GAP IS THE COLLECTIONS JOB</p>
+      </div>
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
@@ -95,7 +118,7 @@ export default async function Goals() {
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#FFFFFF", borderColor: blendedMicro !== null && blendedMicro < MARGIN_TARGET_MICRO ? "#E6394655" : "#E7DFCE" }}>
         <div className="flex items-baseline justify-between">
-          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>BLENDED MARGIN (90D, VOLUME-WEIGHTED)</span>
+          <span className="font-mono text-[11px] font-bold" style={{ color: "#3E3A30" }}>GUARDRAIL — BLENDED MARGIN (90D)</span>
           <span className="font-mono text-[15px] font-bold" style={{ color: blendedMicro === null ? "#5C574A" : blendedMicro < MARGIN_TARGET_MICRO ? "#E63946" : "#0D9488" }}>
             {blendedMicro === null ? "—" : `${(blendedMicro / 10000).toFixed(2)}¢`}
             <span className="text-[11px]" style={{ color: "#5C574A" }}> / 2.50¢ TARGET</span>
@@ -117,7 +140,7 @@ export default async function Goals() {
       </div>
 
       <p className="font-mono text-[10px] mt-3 px-1" style={{ color: "#5C574A" }}>
-        THESE FOUR NUMBERS ARE THE ACQUISITION STORY: VOLUME, REVENUE, MARGIN, RESILIENCE.
+        GOALS ARE INCOME: MONTHLY INVOICED, CASH COLLECTED, RUN-RATE, UNITS. MARGIN AND CONCENTRATION RIDE BELOW AS GUARDRAILS — FLOORS, NOT TARGETS.
       </p>
     </div>
   );
