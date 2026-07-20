@@ -43,5 +43,10 @@ export async function POST(req: NextRequest) {
     action: "freight.rfq_opened", entity_table: "freight_rfqs", entity_id: rfq.id,
     after: { mode: b.mode, invited: b.forwarderIds.length },
   });
-  return NextResponse.json({ ok: true, rfqId: rfq.id });
+  const links: { forwarder: string; url: string }[] = [];
+  for (const fid of b.forwarderIds ?? []) {
+    const { data: l } = await sb.from("forwarder_quote_links").insert({ rfq_id: rfq.id, forwarder_id: fid }).select("token, forwarders:forwarder_id(name)").single();
+    if (l) links.push({ forwarder: (l.forwarders as unknown as { name: string })?.name ?? "", url: `${process.env.HUB_URL ?? "https://hub.seshsure.com"}/quote/${l.token}` });
+  }
+  return NextResponse.json({ ok: true, links, rfqId: rfq.id });
 }
