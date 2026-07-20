@@ -11,6 +11,8 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
   const [listPath, setListPath] = useState<string | null>(null);
   const [listName, setListName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [reading, setReading] = useState(false);
+  const [readNote, setReadNote] = useState("");
   const [err, setErr] = useState("");
   const router = useRouter();
 
@@ -23,6 +25,23 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
     const put = await fetch(url, { method: "PUT", headers: { "content-type": file.type }, body: file });
     if (!put.ok) { setErr("Upload failed — try again"); return; }
     setListPath(path); setListName(file.name);
+
+    // hand the sheet to the hub — it does the typing, you confirm
+    setReading(true); setReadNote("");
+    const ex = await fetch("/api/factory/extract-packing", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ storagePath: path }) });
+    setReading(false);
+    if (ex.ok) {
+      const { extracted } = await ex.json();
+      setF(prev => ({ ...prev,
+        cartons: extracted.cartons ? String(extracted.cartons) : prev.cartons,
+        grossKg: extracted.gross_kg ? String(extracted.gross_kg) : prev.grossKg,
+        dims: extracted.carton_dims ?? prev.dims }));
+      setReadNote(`AUTO-READ (${String(extracted.confidence ?? "").toUpperCase()} CONFIDENCE)${extracted.notes ? ` — ${extracted.notes}` : ""} — CHECK THE NUMBERS, THEN CONFIRM`);
+    } else {
+      const j = await ex.json().catch(() => ({}));
+      setReadNote(typeof j.error === "string" ? j.error.toUpperCase() : "AUTO-READ UNAVAILABLE — ENTER MANUALLY");
+    }
   }
 
   async function save() {
@@ -62,11 +81,13 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
           <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) uploadList(file); }} />
         </label>
         {listName && <span className="font-mono text-[10px]" style={{ color: "#0D9488" }}>✓ {listName}</span>}
+        {reading && <span className="font-mono text-[10px]" style={{ color: "#C77800" }}>READING SHEET…</span>}
         <button onClick={save} disabled={busy || !f.date || !f.cartons || !f.grossKg || f.dims.length < 3}
           className="punch-sm ml-auto px-4 py-1.5 rounded-lg font-bold text-[12px] disabled:opacity-40" style={{ background: "#0D9488", color: "#fff" }}>
           {busy ? "…" : "Confirm ready"}
         </button>
       </div>
+      {readNote && <p className="font-mono text-[10px] mt-2 font-bold" style={{ color: "#0D9488" }}>{readNote}</p>}
       <p className="font-mono text-[10px] mt-2" style={{ color: "#5C574A" }}>SESHSURE ARRANGES PICKUP FROM THESE FIGURES — THEY MUST MATCH THE PHYSICAL PACKING SHEET.</p>
       {err && <p className="font-mono text-[10px] mt-1" style={{ color: "#D62839" }}>{err}</p>}
     </div>
