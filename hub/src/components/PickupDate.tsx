@@ -1,33 +1,74 @@
 "use client";
+// ————— PACKING & PICKUP — the factory's numbers are the cargo truth —————
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function PickupDate({ runId, current }: { runId: string; current: string | null }) {
-  const [val, setVal] = useState(current ?? "");
+type Props = { runId: string; current: string | null; cartons: number | null; grossKg: number | null; dims: string | null; hasList: boolean };
+
+export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: Props) {
+  const [open, setOpen] = useState(!current);
+  const [f, setF] = useState({ date: current ?? "", cartons: cartons ? String(cartons) : "", grossKg: grossKg ? String(grossKg) : "", dims: dims ?? "" });
+  const [listPath, setListPath] = useState<string | null>(null);
+  const [listName, setListName] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const router = useRouter();
 
+  async function uploadList(file: File) {
+    setErr("");
+    const signRes = await fetch("/api/uploads/sign", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ bucket: "factory-docs", filename: file.name, contentType: file.type, sizeBytes: file.size }) });
+    if (!signRes.ok) { setErr("Upload not authorized — PDF/JPG/PNG, 25MB max"); return; }
+    const { url, path } = await signRes.json();
+    const put = await fetch(url, { method: "PUT", headers: { "content-type": file.type }, body: file });
+    if (!put.ok) { setErr("Upload failed — try again"); return; }
+    setListPath(path); setListName(file.name);
+  }
+
   async function save() {
     setBusy(true); setErr("");
     const r = await fetch("/api/factory/pickup", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ runId, pickupReadyDate: val }) });
+      body: JSON.stringify({ runId, pickupReadyDate: f.date, cartons: parseInt(f.cartons), grossKg: parseFloat(f.grossKg), dimsNote: f.dims, packingListPath: listPath ?? undefined }) });
     setBusy(false);
-    if (!r.ok) { const j = await r.json().catch(() => ({})); setErr(j.error ?? "failed"); return; }
-    router.refresh();
+    if (!r.ok) { const j = await r.json().catch(() => ({})); setErr(typeof j.error === "string" ? j.error : "Check all fields"); return; }
+    setOpen(false); router.refresh();
   }
 
+  if (current && !open) return (
+    <div className="mt-2 flex items-center gap-2 flex-wrap">
+      <span className="font-mono text-[11px] font-bold" style={{ color: "#0D9488" }}>
+        ✓ READY {current} · {cartons} CTNS · {grossKg} KG{hasList ? " · PACKING LIST ON FILE" : ""}</span>
+      <button onClick={() => setOpen(true)} className="font-mono text-[10px] font-bold underline decoration-dotted" style={{ color: "#3E3A30" }}>edit</button>
+    </div>
+  );
+
+  const inp = "px-2 py-1.5 rounded border-2 font-mono text-[12px] outline-none bg-white";
   return (
-    <div className="mt-2 flex items-center gap-2">
-      <span className="eyebrow" style={{ color: "#5C574A" }}>CARGO READY FOR PICKUP:</span>
-      <input type="date" className="px-2 py-1 rounded border-2 font-mono text-[12px] outline-none bg-white" style={{ borderColor: "#E7DFCE" }}
-        value={val} onChange={e => setVal(e.target.value)} />
-      <button onClick={save} disabled={busy || !val || val === current}
-        className="font-mono text-[10px] font-bold px-2.5 py-1.5 rounded disabled:opacity-40" style={{ background: "#0D9488", color: "#fff" }}>
-        {busy ? "…" : current ? "UPDATE" : "SET"}
-      </button>
-      {current && <span className="font-mono text-[10px]" style={{ color: "#0D9488" }}>✓ {current} — SESHSURE ARRANGES PICKUP</span>}
-      {err && <span className="font-mono text-[10px]" style={{ color: "#D62839" }}>{err}</span>}
+    <div className="mt-2 rounded-lg border-2 p-3" style={{ borderColor: "#E7DFCE" }}>
+      <p className="eyebrow" style={{ color: "#3E3A30" }}>PACKING & PICKUP — FROM YOUR PACKING SHEET</p>
+      <div className="flex flex-wrap gap-2 mt-2 items-end">
+        <div><label className="eyebrow block" style={{ color: "#5C574A" }}>READY DATE *</label>
+          <input type="date" className={inp} style={{ borderColor: "#E7DFCE" }} value={f.date} onChange={e => setF({ ...f, date: e.target.value })} /></div>
+        <div><label className="eyebrow block" style={{ color: "#5C574A" }}>CARTONS *</label>
+          <input inputMode="numeric" className={inp + " w-20"} style={{ borderColor: "#E7DFCE" }} value={f.cartons} onChange={e => setF({ ...f, cartons: e.target.value.replace(/\D/g, "") })} /></div>
+        <div><label className="eyebrow block" style={{ color: "#5C574A" }}>GROSS KG *</label>
+          <input inputMode="decimal" className={inp + " w-24"} style={{ borderColor: "#E7DFCE" }} value={f.grossKg} onChange={e => setF({ ...f, grossKg: e.target.value.replace(/[^\d.]/g, "") })} /></div>
+        <div className="grow"><label className="eyebrow block" style={{ color: "#5C574A" }}>CARTON DIMS *</label>
+          <input className={inp + " w-full"} style={{ borderColor: "#E7DFCE" }} placeholder="60×40×40 cm" value={f.dims} onChange={e => setF({ ...f, dims: e.target.value })} /></div>
+      </div>
+      <div className="flex items-center gap-2 mt-2">
+        <label className="punch-sm px-3 py-1.5 rounded-lg font-bold text-[11px] cursor-pointer" style={{ background: listPath ? "#E7DFCE" : "#181818", color: listPath ? "#3E3A30" : "#fff" }}>
+          {listPath ? "Replace packing list" : "Upload packing list (PDF)"}
+          <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) uploadList(file); }} />
+        </label>
+        {listName && <span className="font-mono text-[10px]" style={{ color: "#0D9488" }}>✓ {listName}</span>}
+        <button onClick={save} disabled={busy || !f.date || !f.cartons || !f.grossKg || f.dims.length < 3}
+          className="punch-sm ml-auto px-4 py-1.5 rounded-lg font-bold text-[12px] disabled:opacity-40" style={{ background: "#0D9488", color: "#fff" }}>
+          {busy ? "…" : "Confirm ready"}
+        </button>
+      </div>
+      <p className="font-mono text-[10px] mt-2" style={{ color: "#5C574A" }}>SESHSURE ARRANGES PICKUP FROM THESE FIGURES — THEY MUST MATCH THE PHYSICAL PACKING SHEET.</p>
+      {err && <p className="font-mono text-[10px] mt-1" style={{ color: "#D62839" }}>{err}</p>}
     </div>
   );
 }

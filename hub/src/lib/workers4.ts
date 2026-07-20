@@ -360,8 +360,8 @@ export async function bidChase(sb: SupabaseClient) {
 // winner only, post-award.
 export async function autoRfq(sb: SupabaseClient) {
   const { data: runs } = await sb.from("production_runs")
-    .select("id, run_number, factory_id, pickup_ready_date, run_orders_rfq_id, factories(city, country), run_orders(order_id, orders(id, client_id, freight_mode, seshsure_arranged_freight, ship_to_address_id, need_by))")
-    .not("pickup_ready_date", "is", null).is("run_orders_rfq_id", null);
+    .select("id, run_number, factory_id, pickup_ready_date, packing_cartons, packing_gross_kg, packing_dims_note, packing_list_path, run_orders_rfq_id, factories(city, country), run_orders(order_id, orders(id, client_id, freight_mode, seshsure_arranged_freight, ship_to_address_id, need_by))")
+    .not("pickup_ready_date", "is", null).not("packing_cartons", "is", null).not("packing_gross_kg", "is", null).is("run_orders_rfq_id", null);
 
   for (const r of runs ?? []) {
     type RO = { order_id: string; orders: { id: string; client_id: string; freight_mode: string | null; seshsure_arranged_freight: boolean; ship_to_address_id: string | null; need_by: string | null } };
@@ -375,21 +375,12 @@ export async function autoRfq(sb: SupabaseClient) {
       .select("id, total_cents, paid_cents").eq("order_id", o.id).eq("kind", "deposit").maybeSingle();
     if (dep && BigInt(dep.paid_cents) < BigInt(dep.total_cents)) continue;
 
-    // cargo math from real line items × catalog carton specs
-    const { data: items } = await sb.from("order_items")
-      .select("quantity, products(cones_per_carton, carton_weight_g, carton_l_mm, carton_w_mm, carton_h_mm)")
-      .eq("order_id", o.id);
-    let cartons = 0, weightKg = 0, units = 0; let dims = "";
-    for (const it of (items ?? []) as unknown as { quantity: number; products: { cones_per_carton: number | null; carton_weight_g: number | null; carton_l_mm: number | null; carton_w_mm: number | null; carton_h_mm: number | null } }[]) {
-      const pr = it.products;
-      units += it.quantity;
-      if (pr?.cones_per_carton) {
-        const c = Math.ceil(it.quantity / pr.cones_per_carton);
-        cartons += c;
-        if (pr.carton_weight_g) weightKg += (c * pr.carton_weight_g) / 1000;
-        if (pr.carton_l_mm && !dims) dims = `${(pr.carton_l_mm/10).toFixed(0)}×${(pr.carton_w_mm!/10).toFixed(0)}×${(pr.carton_h_mm!/10).toFixed(0)} cm cartons`;
-      }
-    }
+    // cargo truth = the factory's packing sheet, entered with the pickup date
+    const cartons = Number(r.packing_cartons);
+    const weightKg = Number(r.packing_gross_kg);
+    const dims = r.packing_dims_note ?? "";
+    const { data: items } = await sb.from("order_items").select("quantity").eq("order_id", o.id);
+    const units = (items ?? []).reduce((s2, it) => s2 + Number(it.quantity), 0);
 
     // destination: city-level from the ship-to
     let destination = "Denver, CO area";
@@ -403,7 +394,7 @@ export async function autoRfq(sb: SupabaseClient) {
     const { data: rfq } = await sb.from("freight_rfqs").insert({
       run_id: r.id, mode: o.freight_mode ?? "sea", status: "open", auto_created: true,
       units_count: units || null,
-      cargo_summary: { origin, destination, cartons: cartons || null, weight_kg: weightKg ? Math.round(weightKg) : null, ready_date: r.pickup_ready_date, need_by: o.need_by },
+      cargo_summary: { origin, destination, cartons, weight_kg: Math.round(weightKg), ready_date: r.pickup_ready_date, need_by: o.need_by, packing_list_path: r.packing_list_path ?? null },
       dims_note: dims || null,
       bid_deadline: new Date(Date.now() + 4 * 864e5).toISOString().slice(0, 10),
     }).select("id").single();
@@ -417,7 +408,7 @@ export async function autoRfq(sb: SupabaseClient) {
     }
     await sb.from("tasks").insert({
       kind: "freight", title: `Auto-RFQ posted — run ${r.run_number} ready ${r.pickup_ready_date}`,
-      detail: `Deposit cleared and factory set pickup. Sheet built: ${cartons || "?"} cartons, ${Math.round(weightKg) || "?"} kg, ${origin} → ${destination}. Quote links minted for ${(fwds ?? []).length} forwarders — copy links from the desk and send.`,
+      detail: `Deposit cleared; factory confirmed packing. Sheet: ${cartons} cartons, ${Math.round(weightKg)} kg, ${origin} → ${destination}. Quote links minted for ${(fwds ?? []).length} forwarders — copy links from the desk and send.`,
       dedupe_key: `autorfq:${r.id}`, due_date: new Date().toISOString().slice(0, 10),
     });
     await sb.from("activity_log").insert({
