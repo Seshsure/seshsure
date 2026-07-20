@@ -408,7 +408,7 @@ export async function autoRfq(sb: SupabaseClient) {
     }
     await sb.from("tasks").insert({
       kind: "freight", title: `Auto-RFQ posted — run ${r.run_number} ready ${r.pickup_ready_date}`,
-      detail: `Deposit cleared; factory confirmed packing. Sheet: ${cartons} cartons, ${Math.round(weightKg)} kg, ${origin} → ${destination}. Quote links minted for ${(fwds ?? []).length} forwarders — copy links from the desk and send.`,
+      detail: `Deposit cleared; factory confirmed packing. Sheet: ${cartons} cartons, ${Math.round(weightKg)} kg, ${origin} → ${destination}. Quote links minted for ${(fwds ?? []).length} forwarders — copy links from the desk and send. ISF REMINDER: file 24h before container loading (broker needs manufacturer name/address, stuffing location, HTS 4813.10.0000).`,
       dedupe_key: `autorfq:${r.id}`, due_date: new Date().toISOString().slice(0, 10),
     });
     await sb.from("activity_log").insert({
