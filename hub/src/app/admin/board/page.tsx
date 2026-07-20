@@ -11,7 +11,7 @@ export default async function AdminBoard() {
   const scoreByName = new Map((scores ?? []).map(s => [s.name, s]));
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#8B949C" }}>RUN BOARD — SEALED BIDS · VALUE BESIDE PRICE</span>

@@ -1,4 +1,5 @@
 // ————— PIPELINE COMMAND: stages, sources, samples, dormancy —————
+import { Empty } from "@/components/Empty";
 import { supabaseServer } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export default async function Pipeline() {
   const active = (prospects ?? []).filter(p => !["won", "lost"].includes(p.stage));
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       {/* stage strip */}
       <div className="grid grid-cols-6 gap-1.5 mt-4">
         {STAGES.map(s => (
@@ -70,6 +71,7 @@ export default async function Pipeline() {
         <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#8B949C" }}>ACTIVE PIPELINE</span>
         </div>
+        {active.length === 0 && <div className="px-4 py-4"><Empty title="Pipeline is empty" hint="LEADS FROM /START, TRADE-SHOW QR CODES, AND YOUR OWN ENTRIES FILL THIS BOARD" /></div>}
         {active.map(p => (
           <div key={p.id} className="px-3 py-2.5 border-b" style={{ borderColor: "#262C31" }}>
             <div className="flex items-center justify-between">

@@ -12,7 +12,7 @@ export default async function NewOrder() {
     sb.from("client_addresses").select("id, label, address").eq("client_id", prof!.client_id!),
   ]);
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-3" style={{ color: "#15181A" }}>New order</h1>
       <OrderForm
         products={(products ?? []).filter(p => !p.is_flagship).map(p => ({ id: p.id, sku: p.sku, description: p.description }))}

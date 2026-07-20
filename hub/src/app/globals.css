@@ -2,26 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ————— SESHSURE HUB TOKENS — one truth, no OS mode flipping ————— */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* command (dark) world */
+  --ink-0: #0C0F11;   /* floor */
+  --ink-1: #14181B;   /* card */
+  --ink-2: #1B2126;   /* raised */
+  --line-d: #262C31;
+  --text-d: #E8EAEC;
+  --mute-d: #8B949C;
+  --dim-d: #5C666D;
+  /* portal (paper) world */
+  --paper-0: #F4F2ED;
+  --paper-1: #FFFFFF;
+  --line-l: #E4E1DA;
+  --text-l: #15181A;
+  --mute-l: #6E756B;
+  --dim-l: #9B9F98;
+  /* shared voice */
+  --teal: #2DD4BF;
+  --teal-deep: #0D9488;
+  --red: #E5484D;
+  --red-l: #B4231F;
+  --amber: #F5B84B;
+  --blue: #4B9BFF;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { color-scheme: dark; }
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink-0);
+  color: var(--text-d);
+  font-family: var(--font-geist-sans), -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* money and codes always align */
+.font-mono { font-family: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; }
+
+/* quiet scrollbars in the command world */
+::-webkit-scrollbar { height: 8px; width: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line-d); border-radius: 99px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::selection { background: var(--teal); color: var(--ink-0); }
+
+a { transition: opacity .12s ease, color .12s ease; }
+a:hover { opacity: 1; }
+
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* micro-label — the hub's signature voice */
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 }

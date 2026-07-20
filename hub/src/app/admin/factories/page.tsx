@@ -29,7 +29,7 @@ export default async function Factories() {
   const concentration = top && totalUnits ? Math.round(100 * top[1] / totalUnits) : null;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       {concentration !== null && (
         <div className="mt-4 p-3 rounded-lg border" style={{ background: "#14181B", borderColor: concentration >= 80 ? "#E5484D55" : "#262C31" }}>
           <p className="text-[9px] font-semibold" style={{ color: "#8B949C" }}>CONCENTRATION RISK — TRAILING 90 DAYS</p>

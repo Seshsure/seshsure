@@ -70,7 +70,7 @@ export default async function Goals() {
   );
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <h1 className="text-[13px] font-bold mt-4" style={{ color: "#E8EAEC" }}>The exit math — live</h1>
 
       <div className="mt-3 rounded-lg border p-4" style={{ background: "#14181B", borderColor: "#262C31" }}>

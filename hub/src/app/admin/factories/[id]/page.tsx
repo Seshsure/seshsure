@@ -24,7 +24,7 @@ export default async function FactoryDetail({ params }: { params: { id: string }
   ];
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border p-3" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <p className="text-[14px] font-bold" style={{ color: "#E8EAEC" }}>{f.name}</p>
         <p className="font-mono text-[8px] mt-0.5" style={{ color: "#5C666D" }}>{f.country ?? "COUNTRY TBD"} · {f.currency}</p>

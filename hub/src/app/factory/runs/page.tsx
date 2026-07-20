@@ -10,7 +10,7 @@ export default async function Runs() {
     .not("status", "in", '("closed")').order("created_at", { ascending: false });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-1" style={{ color: "#15181A" }}>Production runs</h1>
       <p className="text-[10px] font-mono mb-3" style={{ color: "#6E756B" }}>CONFIRM WITHIN 48H · PROMISE-DATE CHANGES REQUIRE SESHSURE ACKNOWLEDGMENT</p>
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E4E1DA" }}>

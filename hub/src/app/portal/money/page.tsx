@@ -13,7 +13,7 @@ export default async function Money() {
     sb.from("entities").select("checks_payable_to, remit_check_address, wire_instructions").eq("is_default", true).single(),
   ]);
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-3" style={{ color: "#15181A" }}>Money</h1>
       <MoneySettings
         accepted={client?.accepted_methods ?? ["ach"]}

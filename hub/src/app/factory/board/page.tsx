@@ -13,14 +13,14 @@ export default async function FactoryBoard() {
     .eq("status", "open").order("created_at", { ascending: false });
 
   if (!factory?.board_eligible) return (
-    <div className="max-w-2xl mx-auto px-4 py-8 text-center">
+    <div className="max-w-3xl mx-auto px-4 py-8 text-center">
       <p className="text-[13px] font-bold" style={{ color: "#15181A" }}>Board opens after your qualification run</p>
       <p className="text-[10px] mt-1" style={{ color: "#6E756B" }}>Complete your first scored run and this page fills with open work.</p>
     </div>
   );
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-1" style={{ color: "#15181A" }}>Open runs — bid to produce</h1>
       <p className="text-[10px] font-mono mb-3" style={{ color: "#6E756B" }}>YOUR BID IS SEALED · AWARD NOTIFICATIONS COME FROM SESHSURE</p>
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E4E1DA" }}>

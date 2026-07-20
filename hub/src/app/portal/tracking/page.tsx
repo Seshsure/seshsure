@@ -18,7 +18,7 @@ export default async function Tracking() {
     .order("created_at", { ascending: false }).limit(10);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-1" style={{ color: "#15181A" }}>Where&apos;s my order</h1>
       <p className="text-[10px] font-mono mb-3" style={{ color: "#6E756B" }}>TRACKING BEGINS AT US ARRIVAL · ETAS UPDATE LIVE</p>
       <div className="space-y-3">

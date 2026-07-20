@@ -16,7 +16,7 @@ export default async function Invoices() {
     .neq("status", "draft").order("sent_at", { ascending: false });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <h1 className="font-bold text-[16px] mb-3" style={{ color: "#15181A" }}>Invoices</h1>
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
         {(invoices ?? []).map(inv => {

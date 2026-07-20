@@ -29,7 +29,7 @@ export default async function DisputeDetail({ params }: { params: { id: string }
   );
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border p-3" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <div className="flex items-center justify-between">
           <p className="font-mono text-[13px] font-bold" style={{ color: "#E8EAEC" }}>

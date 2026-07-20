@@ -1,3 +1,4 @@
+import { Empty } from "@/components/Empty";
 import { supabaseServer } from "@/lib/supabase-server";
 import Link from "next/link";
 
@@ -10,11 +11,12 @@ export default async function DisputesDesk() {
     .not("status", "in", '("resolved","denied")').order("filed_at", { ascending: false });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#8B949C" }}>RESOLUTION DESK — SLA CLOCKS ARE INTERNAL ONLY</span>
         </div>
+        {(disputes ?? []).length === 0 && <div className="px-4 py-4"><Empty title="No open disputes" hint="WHEN A CLIENT FILES A CLAIM IT APPEARS HERE WITH ITS SLA CLOCK RUNNING" /></div>}
         {(disputes ?? []).map(d => {
           const ackLate = d.ack_due_at && new Date(d.ack_due_at) < new Date() && d.status === "submitted";
           return (

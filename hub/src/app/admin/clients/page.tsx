@@ -1,4 +1,5 @@
 // ————— CLIENT ROSTER + HEALTH GRADES: computed, never typed, basis shown —————
+import { Empty } from "@/components/Empty";
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import Link from "next/link";
@@ -46,11 +47,12 @@ export default async function Clients() {
   }).sort((a, b) => (a.g === "—" ? "Z" : a.g) < (b.g === "—" ? "Z" : b.g) ? 1 : -1).reverse();
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#8B949C" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
         </div>
+        {rows.length === 0 && <div className="px-4 py-4"><Empty title="No clients yet" hint="IMPORT YOUR QUICKBOOKS HISTORY OR ONBOARD YOUR FIRST CLIENT — GRADES START COMPUTING AFTER THREE PAID INVOICES" /></div>}
         {rows.map(({ c, g, basis, exposure, openOverdue }) => (
           <Link key={c.id} href={`/admin/clients/${c.id}`} className="flex items-center px-3 py-3 border-b" style={{ borderColor: "#262C31" }}>
             <span className="w-8 h-8 rounded-lg flex items-center justify-center font-mono text-[14px] font-bold mr-3"

@@ -12,7 +12,7 @@ export default async function Freight() {
   ]);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       {(exceptions?.length ?? 0) > 0 && (
         <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#14181B", borderColor: "#E5484D55" }}>
           <div className="px-3 py-2 border-b" style={{ borderColor: "#262C31" }}>

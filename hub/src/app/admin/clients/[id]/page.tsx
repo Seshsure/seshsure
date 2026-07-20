@@ -20,7 +20,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
   const overdue = (invoices ?? []).filter(i => i.due_date && i.due_date < today).length;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pb-8">
+    <div className="max-w-5xl mx-auto px-4 pb-8">
       <div className="mt-4 rounded-lg border p-4" style={{ background: "#14181B", borderColor: "#262C31" }}>
         <p className="text-[14px] font-bold" style={{ color: "#E8EAEC" }}>{client.dba ?? client.legal_name}</p>
         <p className="font-mono text-[9px] mt-1" style={{ color: overdue ? "#E5484D" : "#8B949C" }}>

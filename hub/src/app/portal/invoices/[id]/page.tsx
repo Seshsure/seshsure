@@ -18,7 +18,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
   const payable = !["paid", "void", "draft"].includes(inv.status) && remaining > 0n;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-5">
+    <div className="max-w-3xl mx-auto px-4 py-5">
       <div className="rounded-xl border overflow-hidden" style={{ background: "#fff", borderColor: "#E4E1DA" }}>
         <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "#E4E1DA" }}>
           <div>

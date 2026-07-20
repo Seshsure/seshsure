@@ -16,7 +16,7 @@ export default async function PortalHome() {
   const overdue = (invoices ?? []).filter(i => i.due_date && i.due_date < today).length;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="max-w-3xl mx-auto px-4 py-6">
       <h1 className="text-[17px] font-bold" style={{ color: "#15181A" }}>
         Welcome back{prof?.full_name ? `, ${prof.full_name.split(" ")[0]}` : ""}
       </h1>
