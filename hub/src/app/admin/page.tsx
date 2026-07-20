@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function Command() {
   const sb = supabaseServer();
   const today = new Date().toISOString().slice(0, 10);
-  const [{ data: invoices }, { data: ready }, { data: tasks }, { data: submitted }, { data: clearedPays }, { data: allocs }] = await Promise.all([
+  const [{ data: invoices }, { data: clearedPays }, { data: allocs }, { data: ready }, { data: tasks }, { data: submitted }] = await Promise.all([
     sb.from("invoices").select("total_cents, paid_cents, due_date").in("status", ["sent","viewed","partially_paid","overdue"]),
     sb.from("payments").select("id, amount_cents").eq("status", "cleared"),
     sb.from("payment_allocations").select("payment_id"),
