@@ -1,4 +1,5 @@
 // ————— CLIENT ROSTER + HEALTH GRADES: computed, never typed, basis shown —————
+import { NewClientButton } from "@/components/NewClientButton";
 import { Empty } from "@/components/Empty";
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
@@ -48,6 +49,7 @@ export default async function Clients() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
+      <div className="flex justify-end mt-4"><NewClientButton /></div>
       <div className="mt-4 rounded-lg border overflow-hidden" style={{ background: "#FFFFFF", borderColor: "#E7DFCE" }}>
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
           <span className="font-mono text-[10px] font-bold" style={{ color: "#6E6A5E" }}>CLIENTS — GRADES COMPUTED FROM PAYMENT BEHAVIOR, NEVER TYPED</span>
