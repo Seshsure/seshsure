@@ -59,6 +59,8 @@ export default async function ClientDetail({ params }: { params: { id: string } 
             <div>
               <span className="font-mono text-[13px] font-bold" style={{ color: "#181818" }}>{i.invoice_number ?? i.legacy_number}</span>
               <span className="font-mono text-[11px] ml-2" style={{ color: i.due_date && i.due_date < new Date().toISOString().slice(0,10) ? "#D62839" : "#5C574A" }}>DUE {i.due_date ?? "—"}</span>
+              {i.dunning_paused && <span className="font-mono text-[10px] font-bold ml-2 px-1.5 py-0.5 rounded" style={{ background: "#E7DFCE", color: "#3E3A30" }}>RESOLVED — NO REMINDERS</span>}
+              <span className="block mt-0.5"><FactoryCost invoiceId={i.id} factoryCents={i.factory_cost_cents !== null ? Number(i.factory_cost_cents) : null} totalCents={Number(i.total_cents)} /></span>
             </div>
             <div className="flex items-center gap-3">
               <span className="font-mono text-[13px] font-bold" style={{ color: "#181818" }}>
