@@ -41,7 +41,7 @@ export default async function Runs() {
                 <PickupDate runId={r.id} current={r.pickup_ready_date} cartons={r.packing_cartons} grossKg={r.packing_gross_kg ? Number(r.packing_gross_kg) : null} dims={r.packing_dims_note} hasList={!!r.packing_list_path} />}
               {["confirmed","in_production","qc_submitted","qc_approved"].includes(String(r.status)) &&
                 <RunDocs runId={r.id} existing={(r.run_documents as {doc_type:string;filename:string}[] | null) ?? []}
-                  mode={(((r.run_orders as {orders:{freight_mode:string|null}}[] | null)?.[0]?.orders?.freight_mode) === "air" ? "air" : "sea")} />}
+                  mode={(((r.run_orders as unknown as {orders:{freight_mode:string|null}}[] | null)?.[0]?.orders?.freight_mode) === "air" ? "air" : "sea")} />}
             </div>
           );
         })}
