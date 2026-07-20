@@ -1,5 +1,6 @@
 // Factory command: scorecards + concentration risk + onboarding states
 import { FactoryInvitePanel } from "@/components/FactoryInvitePanel";
+import { NewFactoryButton } from "@/components/NewFactoryButton";
 import { supabaseServer } from "@/lib/supabase-server";
 import Link from "next/link";
 
@@ -31,6 +32,7 @@ export default async function Factories() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
+      <div className="flex justify-end mt-4"><NewFactoryButton /></div>
       {concentration !== null && (
         <div className="mt-4 p-3 rounded-lg border" style={{ background: "#FFFFFF", borderColor: concentration >= 80 ? "#E6394655" : "#E7DFCE" }}>
           <p className="text-[11px] font-semibold" style={{ color: "#3E3A30" }}>CONCENTRATION RISK — TRAILING 90 DAYS</p>

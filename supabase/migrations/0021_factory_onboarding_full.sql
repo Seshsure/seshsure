@@ -49,3 +49,5 @@ create policy fdocs_factory_rw on storage.objects for all
 create policy fdocs_internal on storage.objects for all
   using (bucket_id = 'factory-docs' and is_internal())
   with check (bucket_id = 'factory-docs' and is_internal());
+-- addendum: factories read published specs
+create policy ps_read_factory on product_specs for select using (exists (select 1 from profiles where id = auth.uid() and factory_id is not null));
