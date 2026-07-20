@@ -3,24 +3,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const DOCS: [string, string, string][] = [
-  ["commercial_invoice", "Commercial Invoice", "Values must match the actual transaction; state Incoterms + currency"],
-  ["packing_list", "Packing List", "Auto-read fills the cargo sheet"],
-  ["certificate_of_origin", "Certificate of Origin", "Substantiates India origin for tariff purposes"],
-  ["vgm", "VGM Certificate", "Verified Gross Mass — required before vessel loading (SOLAS)"],
-  ["ispm15", "ISPM-15 Pallet Cert", "ONLY if palletized — heat-treatment stamp; floor-loaded cartons skip this"],
-  ["coa", "Certificates of Analysis", "Per-lot CoAs for the compliance file"],
+// [key, label, hint, modes] — some documents only exist for certain travel
+const DOCS: [string, string, string, ("sea" | "air")[]][] = [
+  ["commercial_invoice", "Commercial Invoice", "Values must match the actual transaction; state Incoterms + currency", ["sea", "air"]],
+  ["packing_list", "Packing List", "Auto-read fills the cargo sheet", ["sea", "air"]],
+  ["certificate_of_origin", "Certificate of Origin", "Substantiates India origin for tariff purposes", ["sea", "air"]],
+  ["vgm", "VGM Certificate", "Verified Gross Mass before vessel loading (SOLAS) — ocean only", ["sea"]],
+  ["ispm15", "ISPM-15 Pallet Cert", "ONLY if palletized — wood-packaging rule applies to ocean AND air", ["sea", "air"]],
+  ["coa", "Certificates of Analysis", "Per-lot CoAs for the compliance file", ["sea", "air"]],
 ];
 
 type Doc = { doc_type: string; filename: string };
 
-export function RunDocs({ runId, existing }: { runId: string; existing: Doc[] }) {
+export function RunDocs({ runId, existing, mode }: { runId: string; existing: Doc[]; mode: "sea" | "air" }) {
+  const docs = DOCS.filter(d => d[3].includes(mode));
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
   const [busyType, setBusyType] = useState("");
   const router = useRouter();
   const have = new Map(existing.map(d => [d.doc_type, d.filename]));
-  const count = DOCS.filter(([k]) => have.has(k)).length;
+  const count = docs.filter(([k]) => have.has(k)).length;
 
   async function upload(docType: string, file: File) {
     setErr(""); setBusyType(docType);
@@ -41,11 +43,11 @@ export function RunDocs({ runId, existing }: { runId: string; existing: Doc[] })
     <div className="mt-2">
       <button onClick={() => setOpen(!open)} className="font-mono text-[11px] font-bold"
         style={{ color: count >= 4 ? "#0D9488" : "#C77800" }}>
-        EXPORT DOCS {count}/6 {open ? "▴" : "▾"}
+        EXPORT DOCS {count}/{docs.length} · {mode === "air" ? "AIR" : "OCEAN"} {open ? "▴" : "▾"}
       </button>
       {open && (
         <div className="mt-2 rounded-lg border-2 p-3" style={{ borderColor: "#E7DFCE" }}>
-          {DOCS.map(([key, label, hint]) => (
+          {docs.map(([key, label, hint]) => (
             <div key={key} className="flex items-center justify-between gap-3 py-2 border-b last:border-0" style={{ borderColor: "#E7DFCE" }}>
               <div className="min-w-0">
                 <p className="text-[12px] font-semibold" style={{ color: "#181818" }}>{label}</p>

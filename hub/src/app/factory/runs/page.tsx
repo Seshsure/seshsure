@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function Runs() {
   const sb = supabaseServer();
   const { data: runs } = await sb.from("production_runs")
-    .select("id, run_number, status, promise_date, pickup_ready_date, run_documents(doc_type, filename), packing_cartons, packing_gross_kg, packing_dims_note, packing_list_path, created_at, run_orders(orders(order_number, clients(dba, legal_name), order_items(quantity, products(description))))")
+    .select("id, run_number, status, promise_date, pickup_ready_date, run_documents(doc_type, filename), packing_cartons, packing_gross_kg, packing_dims_note, packing_list_path, created_at, run_orders(orders(order_number, freight_mode, clients(dba, legal_name), order_items(quantity, products(description))))")
     .not("status", "in", '("closed")').order("created_at", { ascending: false });
 
   return (
@@ -40,7 +40,8 @@ export default async function Runs() {
               {["confirmed","in_production","qc_submitted","qc_approved"].includes(String(r.status)) &&
                 <PickupDate runId={r.id} current={r.pickup_ready_date} cartons={r.packing_cartons} grossKg={r.packing_gross_kg ? Number(r.packing_gross_kg) : null} dims={r.packing_dims_note} hasList={!!r.packing_list_path} />}
               {["confirmed","in_production","qc_submitted","qc_approved"].includes(String(r.status)) &&
-                <RunDocs runId={r.id} existing={(r.run_documents as {doc_type:string;filename:string}[] | null) ?? []} />}
+                <RunDocs runId={r.id} existing={(r.run_documents as {doc_type:string;filename:string}[] | null) ?? []}
+                  mode={(((r.run_orders as {orders:{freight_mode:string|null}}[] | null)?.[0]?.orders?.freight_mode) === "air" ? "air" : "sea")} />}
             </div>
           );
         })}
