@@ -12,6 +12,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           <Link href="/portal/orders/new">ORDER</Link>
           <Link href="/portal/tracking">TRACKING</Link>
           <Link href="/portal/money">MONEY</Link>
+          <Link href="/portal/disputes">CLAIMS</Link>
         </nav>
       </header>
       {children}
