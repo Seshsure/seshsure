@@ -2,7 +2,7 @@
 import { supabaseServer } from "./supabase-server";
 
 export async function priceForClient(clientId: string, productId: string, monthlyVolume: bigint) {
-  const sb = supabaseServer();
+  const sb = pricingDb();
   const { data: ovr } = await sb.from("client_price_overrides")
     .select("price_per_cone_microcents")
     .eq("client_id", clientId).eq("product_id", productId)
