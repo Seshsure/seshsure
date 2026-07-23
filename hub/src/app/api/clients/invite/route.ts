@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   const uid = invited?.user?.id;
   if (uid) {
     await admin.from("profiles").upsert({
-      id: uid, email, full_name: name ?? email.split("@")[0], role: "client", client_id: clientId,
+      id: uid, email, full_name: name ?? email.split("@")[0], role: "client_admin", client_id: clientId,
     }, { onConflict: "id" });
   }
   await sb.from("activity_log").insert({

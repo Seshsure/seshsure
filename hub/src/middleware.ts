@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   // ————— ONBOARDING GATE —————
   // Clients don't enter the portal until their company has a signed, current
   // Master Sales Agreement. The wizard at /signup collects it with evidence.
-  if (prof?.role === "client" && prof.client_id && !pathname.startsWith("/signup") && !pathname.startsWith("/api/onboarding")) {
+  if (String(prof?.role ?? "").startsWith("client") && prof.client_id && !pathname.startsWith("/signup") && !pathname.startsWith("/api/onboarding")) {
     const { data: signed } = await supabase
       .from("signatures")
       .select("id, agreement_versions!inner(doc_key)")
