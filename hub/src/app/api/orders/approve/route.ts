@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "bad request" }, { status: 400 });
 
   const { data: order } = await sb.from("orders")
-    .select("id, client_id, status, deposit_pct, order_items(product_id, quantity, price_per_cone_microcents, products(sku, is_flagship, description))")
+    .select("id, client_id, status, deposit_pct, is_sample, order_items(product_id, quantity, price_per_cone_microcents, products(sku, is_flagship, description))")
     .eq("id", parsed.data.orderId).single();
   if (!order) return NextResponse.json({ error: "order not found" }, { status: 404 });
   if (order.status !== "submitted") return NextResponse.json({ error: `order is ${order.status}` }, { status: 400 });
@@ -92,6 +92,19 @@ export async function POST(req: NextRequest) {
     if (flagged) {
       const { data: fac } = await sb.from("factories").select("flagship_approved").eq("id", parsed.data.factoryId).single();
       if (!fac?.flagship_approved) return NextResponse.json({ error: "that factory is not flagship-approved" }, { status: 422 });
+
+    // ————— SAMPLE IP GATE — flagship samples ship only against a signed
+    // Sample Evaluation & IP Protection Agreement. The patent doesn't leave
+    // the building on a handshake.
+    if (order.is_sample) {
+      const { data: sig } = await sb.from("signatures")
+        .select("id, agreement_versions!inner(doc_key)")
+        .eq("client_id", order.client_id)
+        .eq("agreement_versions.doc_key", "sample_eval")
+        .limit(1);
+      if (!sig?.length)
+        return NextResponse.json({ error: "flagship sample blocked — no signed Sample Evaluation & IP Protection Agreement on file for this client. Mint a signing link from their page first." }, { status: 422 });
+    }
     }
     await sb.from("orders").update({ routed_factory_id: parsed.data.factoryId }).eq("id", order.id);
   }

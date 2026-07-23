@@ -7,6 +7,7 @@ import { AiDraftPanel } from "@/components/AiDraftPanel";
 import { InterestControl } from "@/components/InterestControl";
 import { InvitePanel } from "@/components/InvitePanel";
 import { FactoryCost } from "@/components/FactoryCost";
+import { SignLinkPanel } from "@/components/SignLinkPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,7 @@ export default async function ClientDetail({ params }: { params: { id: string } 
         ))}
       </div>
 
+      <SignLinkPanel clientId={client.id} defaultEmail={contacts?.[0]?.email ?? undefined} />
       <InvitePanel clientId={client.id} defaultEmail={contacts?.[0]?.email ?? undefined} held={client.hold_active} />
       <AiDraftPanel tasks={["collections_note", "supplier_message"]} entityId={client.id} />
       {(letters?.length ?? 0) > 0 && <DemandLetterPanel letters={(letters ?? []).map(l => ({
