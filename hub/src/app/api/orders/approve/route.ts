@@ -107,6 +107,16 @@ export async function POST(req: NextRequest) {
     }
     }
     await sb.from("orders").update({ routed_factory_id: parsed.data.factoryId }).eq("id", order.id);
+
+    // Direct routing materializes the run immediately — the factory sees the
+    // work the moment the order is approved (board path creates runs on award).
+    const runNumber = `R-D-${1000 + Math.floor(Date.now() / 1000) % 90000}`;
+    const { data: newRun, error: runErr } = await sb.from("production_runs").insert({
+      run_number: runNumber, factory_id: parsed.data.factoryId, status: "placed",
+    }).select("id").single();
+    if (runErr || !newRun)
+      return NextResponse.json({ error: `approved but run creation failed: ${runErr?.message}` }, { status: 500 });
+    await sb.from("run_orders").insert({ run_id: newRun.id, order_id: order.id });
   }
 
   // ——— DEPOSIT DIAL ———
