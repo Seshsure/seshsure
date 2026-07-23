@@ -2,6 +2,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { supabaseServer } from "@/lib/supabase-server";
+import { createClient } from "@supabase/supabase-js";
+
+// Factories have no UPDATE policy on their row (it carries owner-only levers).
+// The route authenticates + scopes to the caller's own factoryId, then writes
+// service-role with an explicit column whitelist — RLS stays tight, data lands.
+const adminDb = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } });
 
 const Terms = z.object({
   step: z.literal("terms"),
@@ -128,7 +135,7 @@ export async function POST(req: NextRequest) {
   
   if (b.step === "company") {
     if (!isOwner && !isThisFactory) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    await sb.from("factories").update({
+    await adminDb().from("factories").update({
       legal_name: b.legalName, name: b.legalName,
       address_line1: b.addressLine1, address_line2: b.addressLine2 ?? null,
       city: b.city, region: b.region ?? null, postal_code: b.postalCode ?? null, country: b.country,
@@ -142,9 +149,9 @@ export async function POST(req: NextRequest) {
   }
   if (b.step === "banking") {
     if (!isOwner && !isThisFactory) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    const { data: f } = await sb.from("factories").select("wire_details_enc").eq("id", b.factoryId).single();
+    const { data: f } = await adminDb().from("factories").select("wire_details_enc").eq("id", b.factoryId).single();
     const firstSet = !f?.wire_details_enc;
-    await sb.from("factories").update({
+    await adminDb().from("factories").update({
       wire_details_enc: JSON.stringify({ beneficiary: b.beneficiaryName, bank: b.bankName, branch: b.branchAddress, account: b.accountNumber, swift: b.swift, ifsc: b.ifsc ?? null }),
       wire_change_pending: firstSet ? false : true,   // changes after first set freeze payments pending voice-confirm
     }).eq("id", b.factoryId);
@@ -153,7 +160,7 @@ export async function POST(req: NextRequest) {
   }
   if (b.step === "capabilities") {
     if (!isOwner && !isThisFactory) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    await sb.from("factories").update({
+    await adminDb().from("factories").update({
       monthly_capacity_units: b.monthlyCapacityUnits, moq_units: b.moqUnits, lead_time_days: b.leadTimeDays,
     }).eq("id", b.factoryId);
     return NextResponse.json({ ok: true });
