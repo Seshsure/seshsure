@@ -77,7 +77,9 @@ export async function POST(req: NextRequest) {
 
   const isOwner = prof?.role === "owner";
   const isThisFactory = prof?.factory_id === b.factoryId;
-  if (b.step === "terms" || b.step === "spec_ack") {
+  const FACTORY_STEPS = ["company", "banking", "capabilities", "terms", "spec_ack"];
+  if (FACTORY_STEPS.includes(b.step)) {
+    // the factory tells us who they are; commercial terms stay owner-side
     if (!isThisFactory && !isOwner) return NextResponse.json({ error: "factory member only" }, { status: 403 });
   } else if (!isOwner) return NextResponse.json({ error: "owner only" }, { status: 403 });
 
