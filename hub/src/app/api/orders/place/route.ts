@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
   const { data: order, error } = await sb.from("orders").insert({
     client_id: prof.client_id, status: "submitted",
-    ship_address_id: b.shipAddressId, po_number: b.poNumber,
+    ship_to_address_id: b.shipAddressId, po_number: b.poNumber,
     brand_id: b.brandId ?? null, special_instructions: b.specialInstructions ?? null,
     weeks_of_supply: b.weeksOfSupply ?? null, weekly_usage: b.weeklyUsage ?? null,
     placed_by: user.id,

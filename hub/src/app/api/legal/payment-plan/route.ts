@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   for (const [i, inst] of b.installments.entries()) {
     await sb.from("plan_installments").insert({
-      plan_id: plan.id, seq: i + 1, due_on: inst.dueOn, amount_cents: inst.amountCents,
+      plan_id: plan.id, seq: i + 1, due_date: inst.dueOn, amount_cents: inst.amountCents,
     });
   }
   await sb.from("invoices").update({ interest_frozen: true })

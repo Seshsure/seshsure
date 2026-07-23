@@ -1,0 +1,20 @@
+-- Migration 0028 — E2E sweep: every column server code writes, now real
+alter table orders add column if not exists placed_by uuid references profiles(id);
+alter table orders add column if not exists weekly_usage bigint;
+alter table orders add column if not exists weeks_of_supply int;
+alter table tasks add column if not exists dedupe_key text;
+create unique index if not exists tasks_dedupe_key_idx on tasks(dedupe_key) where dedupe_key is not null;
+alter table tasks add column if not exists detail text;
+alter table payment_plans add column if not exists status text not null default 'active';
+alter table payment_plans add column if not exists total_cents bigint;
+alter table plan_installments add column if not exists seq int;
+alter table shipments add column if not exists status text not null default 'created';
+alter table notification_log add column if not exists error text;
+alter table notification_log add column if not exists failed_at timestamptz;
+alter table notification_log add column if not exists provider_id text;
+alter table payments add column if not exists return_processed boolean not null default false;
+alter table account_credits add column if not exists created_by uuid references profiles(id);
+alter table ach_batches add column if not exists nacha_content text;
+alter table ach_batches add column if not exists released_by uuid references profiles(id);
+alter table art_assets add column if not exists label text;
+alter table clients add column if not exists watch_flag boolean not null default false;
