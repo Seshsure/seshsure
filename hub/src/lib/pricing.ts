@@ -1,5 +1,14 @@
 // Client price resolution: per-client override → volume tier → error (never guesses).
-import { supabaseServer } from "./supabase-server";
+// Pricing tables are internal-only under RLS (prices are never client-readable).
+// The lookup runs service-role: it returns exactly one computed price for one
+// client+product — the table stays sealed, the answer flows.
+import { createClient } from "@supabase/supabase-js";
+
+const pricingDb = () => createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
+);
 
 export async function priceForClient(clientId: string, productId: string, monthlyVolume: bigint) {
   const sb = pricingDb();
