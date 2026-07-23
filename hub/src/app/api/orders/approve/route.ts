@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
   // ——— FLAGSHIP 15¢ PROFIT FLOOR (price − landed cost ≥ 15¢) ———
   for (const it of items) {
     if (!it.products?.is_flagship) continue;
+    if (order.is_sample) continue;  // samples are deliberately underwater — the floor guards production pricing
     const price = BigInt(it.price_per_cone_microcents);
     const { data: rate } = await sb.from("factory_rate_card")
       .select("cost_per_cone_microcents, freight_per_cone_microcents, duty_per_cone_microcents")
