@@ -16,7 +16,12 @@ export async function POST(req: NextRequest) {
   const raw = await req.text();
 
   const secret = process.env.EASYPOST_WEBHOOK_SECRET;
-  if (secret) {
+  if (!secret) {
+    // Fail closed: without a configured secret we cannot authenticate the
+    // sender, so we reject rather than ingest unverified tracking events.
+    return new Response("webhook secret not configured", { status: 503 });
+  }
+  {
     const sig = req.headers.get("x-hmac-signature") ?? "";
     const expected = "hmac-sha256-hex=" + crypto.createHmac("sha256", secret)
       .update(raw, "utf8").digest("hex");
