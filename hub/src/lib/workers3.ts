@@ -13,7 +13,27 @@ export async function flushNotifications(sb: SupabaseClient) {
       let to: string | null = null;
       let vars: Record<string, string> = {};
 
-      if (n.template_key.startsWith("reminder.") || n.template_key === "invoice.sent" || n.template_key === "payment.receipt") {
+      if (n.template_key === "payment.receipt") {
+        // related_id is the PAYMENT id: a receipt is about a payment, and the
+        // amount must be what was received — never the invoice's open balance.
+        const { data: pay } = await sb.from("payments")
+          .select("id, amount_cents, invoice_id").eq("id", n.related_id).single();
+        if (!pay) throw new Error("payment gone");
+        const { data: inv } = await sb.from("invoices")
+          .select("id, invoice_number, client_id").eq("id", pay.invoice_id).single();
+        if (!inv) throw new Error("invoice gone");
+        const { data: ap } = await sb.from("client_contacts")
+          .select("name, email").eq("client_id", inv.client_id).eq("role", "ap").limit(1).maybeSingle();
+        const { data: anyC } = ap ? { data: null } : await sb.from("client_contacts")
+          .select("name, email").eq("client_id", inv.client_id).limit(1).maybeSingle();
+        const c = ap ?? anyC;
+        if (!c?.email) throw new Error("no contact email");
+        to = c.email;
+        vars = {
+          id: inv.id, number: inv.invoice_number, name: (c.name ?? "there").split(" ")[0],
+          amount: formatUSD(BigInt(pay.amount_cents)),
+        };
+      } else if (n.template_key.startsWith("reminder.") || n.template_key === "invoice.sent") {
         const { data: inv } = await sb.from("invoices")
           .select("id, invoice_number, total_cents, paid_cents, due_date, client_id").eq("id", n.related_id).single();
         if (!inv) throw new Error("invoice gone");
@@ -45,10 +65,10 @@ export async function flushNotifications(sb: SupabaseClient) {
 
       if (!to) throw new Error("no recipient resolved");
       const msgId = await sendTemplate({ to, templateKey: n.template_key, vars });
-      await sb.from("notification_log").update({ sent_at: new Date().toISOString(), provider_id: msgId, recipient: to }).eq("id", n.id);
+      await sb.from("notification_log").update({ sent_at: new Date().toISOString(), provider_id: msgId, recipient: to, status: "sent" }).eq("id", n.id);
     } catch (e) {
       await sb.from("notification_log").update({
-        failed_at: new Date().toISOString(),
+        failed_at: new Date().toISOString(), status: "failed",
         error: e instanceof Error ? e.message : "send failed",
       }).eq("id", n.id);
     }

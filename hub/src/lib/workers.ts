@@ -27,6 +27,12 @@ export async function settleAndClear(sb: SupabaseClient) {
   for (const p of settled ?? []) {
     if (p.settled_at && addBusinessDays(new Date(p.settled_at), 2) <= now) {
       await sb.from("payments").update({ status: "cleared", cleared_at: now.toISOString() }).eq("id", p.id);
+      // Receipt rides the clearing transition: this branch runs exactly once
+      // per payment (status leaves "settled"), so no dedupe guard is needed.
+      await sb.from("notification_log").insert({
+        recipient: "client-ap", template_key: "payment.receipt",
+        related_id: p.id, subject: "Payment received — thank you", status: "pending",
+      });
       cleared++;
     }
   }
