@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { PickupDate } from "@/components/PickupDate";
 import { RunDocs } from "@/components/RunDocs";
+import { RunShip } from "@/components/RunShip";
 import { RunConfirm } from "@/components/RunConfirm";
 
 export const dynamic = "force-dynamic";
@@ -42,6 +43,7 @@ export default async function Runs() {
               {["confirmed","in_production","qc_submitted","qc_approved"].includes(String(r.status)) &&
                 <RunDocs runId={r.id} existing={(r.run_documents as {doc_type:string;filename:string}[] | null) ?? []}
                   mode={(((r.run_orders as unknown as {orders:{freight_mode:string|null}}[] | null)?.[0]?.orders?.freight_mode) === "air" ? "air" : "sea")} />}
+              {r.status === "qc_approved" && <RunShip runId={r.id} />}
             </div>
           );
         })}

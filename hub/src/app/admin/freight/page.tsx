@@ -3,22 +3,28 @@ import { formatUSD } from "@/lib/money";
 import { LaneTarget } from "@/components/LaneTarget";
 import { CopyLink } from "@/components/CopyLink";
 import { ShipDocs } from "@/components/ShipDocs";
+import { trackingUrl } from "@/lib/freight-tracking";
 
 export const dynamic = "force-dynamic";
 
 export default async function Freight() {
   const sb = supabaseServer();
   const ninety = new Date(Date.now() - 90 * 864e5).toISOString();
-  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: quoteLinks }, { data: runDocs }, { data: awarded }] = await Promise.all([
+  const [{ data: rfqs }, { data: exceptions }, { data: moving }, { data: laneHistory }, { data: targets }, { data: quoteLinks }, { data: runDocs }, { data: awarded }, { data: shippedRuns }] = await Promise.all([
     sb.from("freight_rfqs").select("id, run_id, mode, cargo_summary, status, bid_deadline, units_count, freight_bids(id, all_in_cents, transit_days, valid_until, eta_delivery, notes, forwarders(name))").eq("status", "open").order("created_at", { ascending: false }),
     sb.from("logistics_exceptions").select("id, kind, detail, opened_at, shipments(id)").is("resolved_at", null).order("opened_at"),
-    sb.from("shipments").select("id, status, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
+    sb.from("shipments").select("id, status, mode, carrier, awb, container_no, bl_no, intl_tracking, etd, eta, last_scan_at, free_days, arrived_port_at").is("delivered_at", null).limit(15),
     sb.from("freight_bids").select("all_in_cents, created_at, freight_rfqs(mode, cargo_summary)").gte("created_at", ninety),
     sb.from("lane_targets").select("lane_key, target_cents"),
     sb.from("forwarder_quote_links").select("rfq_id, token, expires_at, forwarders(name)").gt("expires_at", new Date().toISOString()),
     sb.from("run_documents").select("run_id, doc_type, filename"),
     sb.from("freight_rfqs").select("id, awarded_forwarder_id, awarded_at, freight_bids(all_in_cents, forwarder_id)").not("awarded_at", "is", null).gte("awarded_at", ninety),
+    sb.from("production_runs").select("id, run_number, shipped_at, factories(name), shipments(id)").eq("status", "shipped").order("shipped_at", { ascending: false }).limit(30),
   ]);
+
+  // Shipped-blind: runs marked shipped with no shipment record — the exact
+  // failure mode that produced $182K of untracked POs. Stares until filled.
+  const blind = (shippedRuns ?? []).filter(r => !(r.shipments as { id: string }[] | null)?.length);
 
   // self-generating market index: every quote ever received teaches the lane
   type LH = { all_in_cents: number; freight_rfqs: { mode: string; cargo_summary: Record<string, unknown> | null } };
@@ -140,12 +146,28 @@ export default async function Freight() {
         <div className="px-3 py-2 border-b" style={{ borderColor: "#E7DFCE" }}>
           <span className="text-[12px] font-mono font-bold" style={{ color: "#3E3A30" }}>IN MOTION</span>
         </div>
+        {blind.length > 0 && (
+          <div className="mx-3 mt-2 rounded-lg border-2 p-2.5" style={{ borderColor: "#D62839", background: "#D6283910" }}>
+            <p className="font-mono text-[10px] font-bold" style={{ color: "#D62839" }}>SHIPPED BLIND — NO TRACKING ON FILE</p>
+            {blind.map(r => (
+              <p key={r.id} className="font-mono text-[11px] mt-1" style={{ color: "#181818" }}>
+                {r.run_number} · {(r.factories as unknown as { name: string } | null)?.name ?? "?"} · shipped {r.shipped_at ? String(r.shipped_at).slice(0, 10) : "?"}
+              </p>
+            ))}
+          </div>
+        )}
         {(moving ?? []).map(s => (
           <div key={s.id} className="flex items-center px-3 py-2.5 border-b" style={{ borderColor: "#E7DFCE" }}>
             <span className="flex-1 text-[13px]" style={{ color: "#181818" }}>{String(s.status).replace(/_/g," ").toUpperCase()}</span>
             <span className="font-mono text-[10px]" style={{ color: "#5C574A" }}>
               {s.eta ? `ETA ${s.eta}` : ""}{s.arrived_port_at && s.free_days ? ` · FREE DAYS BURNING` : ""}
             </span>
+            {(s.awb || s.container_no || s.bl_no || s.intl_tracking) && (
+              <a href={trackingUrl(s)} target="_blank" rel="noreferrer" className="ml-2 shrink-0 px-2 py-0.5 rounded font-mono text-[10px] font-bold"
+                style={{ background: "#181818", color: "#fff" }}>
+                {s.awb ?? s.container_no ?? s.bl_no ?? "TRACK"} ↗
+              </a>
+            )}
           </div>
         ))}
         {!moving?.length && <p className="px-3 py-4 text-[13px]" style={{ color: "#5C574A" }}>Nothing on the water.</p>}
