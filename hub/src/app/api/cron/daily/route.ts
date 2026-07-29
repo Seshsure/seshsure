@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { settleAndClear, applyClearedToInvoices, placeRuns, expireStaleDeposits, reminderLadder, accrueInterest } from "@/lib/workers";
 import { deliveryClock, reorderRadar, expireQuotes, complianceAlerts } from "@/lib/workers2";
 import { flushNotifications, dailyBrief } from "@/lib/workers3";
+import { reportError } from "@/lib/report-error";
 import { runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements, planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits, demandLetterDrafts, bidChase, autoRfq } from "@/lib/workers4";
 
 export const maxDuration = 60;
@@ -23,6 +24,10 @@ export async function GET(req: NextRequest) {
   for (const job of jobs) {
     try { await job(sb); results[job.name] = "ok"; }
     catch (e) { results[job.name] = e instanceof Error ? e.message : "failed"; }
+  }
+  // Failures were caught per-job above; now they alert instead of vanishing.
+  for (const [name, outcome] of Object.entries(results)) {
+    if (outcome !== "ok") await reportError(sb, `cron.${name}`, new Error(outcome));
   }
   await sb.from("activity_log").insert({ actor_label: "system", action: "cron.daily.completed", after: results });
   return NextResponse.json(results);

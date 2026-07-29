@@ -140,6 +140,14 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p("It's on your docket with a task.")}
       ${btn("Open Docket", `${HUB}/admin/legal`, PURPLE)}`),
   }),
+  "system.error": (v) => ({
+    subject: `🔴 HUB ERROR — ${v.source}`,
+    html: wrap(RED, "final-notice", "SYSTEM", `Hub error — ${v.source}`, `
+      ${p(`<b>${v.message}</b>`)}
+      ${p(`Source: <code>${v.source}</code> · ${v.time}`)}
+      ${p(`Full detail is in the error_log table. Repeats of this exact error are throttled for the next hour.`)}
+      ${btn("Open Admin", `${HUB}/admin`, RED)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `
