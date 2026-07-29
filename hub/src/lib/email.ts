@@ -170,6 +170,13 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p("Approving requires attaching the counsel-reviewed sweepstakes rules doc and picking their arcade slug — the compliance gate lives at approval, never at launch.")}
       ${btn("Review in Admin", `${HUB}/admin/arcade`, PURPLE)}`),
   }),
+  "arcade.order": (v) => ({
+    subject: `🕹️ Arcade order ${v.number} — ${v.packs}×800 (${v.total} peels)`,
+    html: wrap(PURPLE, "docket", "ARCADE ORDER", `${v.number} in for review`, `
+      ${p(`Submitted by <b>${v.name}</b> — ${v.packs} master packs, ${v.total} peels. Validation already passed print-fit, tier math, and sentence checks.`)}
+      ${p("One consolidated decision: approve, or a single revision list. ≤2 business days per SOP.")}
+      ${btn("Review Order", `${HUB}/admin/arcade`, PURPLE)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `

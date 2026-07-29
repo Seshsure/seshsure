@@ -1,11 +1,15 @@
 // ————— ARCADE ADMIN — access decisions, compliance gate at approval —————
 import { supabaseServer } from "@/lib/supabase-server";
 import { ArcadeAccessCard } from "@/components/ArcadeAccessCard";
+import { ArcadeOrderReview } from "@/components/ArcadeOrderReview";
 
 export const dynamic = "force-dynamic";
 
 export default async function ArcadeAdmin() {
   const sb = supabaseServer();
+  const { data: orders } = await sb.from("arcade_orders")
+    .select("id, order_number, status, qty_packs, retail_format, custom_words, tiers, hunt_sentence, use_standard_mix, ship_to, needed_by, sale_states, notes, artwork_path, submitted_at, clients(legal_name, dba)")
+    .eq("status", "submitted").order("submitted_at", { ascending: true }).limit(20);
   const { data: rows } = await sb.from("arcade_access")
     .select("client_id, status, applied_at, application_note, arcade_slug, rules_doc_path, clients(legal_name, dba)")
     .order("applied_at", { ascending: false }).limit(50);
@@ -18,6 +22,12 @@ export default async function ArcadeAdmin() {
       <p className="font-mono text-[10px] mt-1 mb-4" style={{ color: "#5C574A" }}>
         APPROVAL REQUIRES THE COUNSEL-REVIEWED SWEEPSTAKES RULES DOC + A SLUG · SUSPEND STOPS NEW ORDERS/HUNTS, LIVE HUNTS FINISH
       </p>
+      {(orders ?? []).length > 0 && (
+        <div className="mb-5">
+          <p className="font-mono text-[10px] font-bold" style={{ color: "#3E3A30" }}>ORDERS IN REVIEW</p>
+          {(orders ?? []).map(o => <ArcadeOrderReview key={o.id} order={o as never} />)}
+        </div>
+      )}
       {pending.length ? pending.map(r => <ArcadeAccessCard key={r.client_id} row={r as never} />) :
         <p className="text-[13px] py-2" style={{ color: "#5C574A" }}>No pending applications.</p>}
       {rest.length > 0 && (
