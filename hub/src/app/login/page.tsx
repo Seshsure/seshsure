@@ -75,6 +75,9 @@ export default function Login() {
         {msg && <p className="font-mono mt-3 text-[12px]" style={{ color: "#C77800" }}>{msg}</p>}
       </div>
       <p className="font-mono text-[11px] mt-6" style={{ color: "#5C574A" }}>SUPPORT@SESHSURE.COM</p>
+      <p className="font-mono text-[9px] text-center mt-6" style={{ color: "#8B857A" }}>
+        <a href="/terms" style={{ color: "#8B857A" }}>TERMS</a> · <a href="/privacy" style={{ color: "#8B857A" }}>PRIVACY</a> · © VIDO MANUFACTURING AND DISTRIBUTION CORP
+      </p>
     </main>
   );
 }

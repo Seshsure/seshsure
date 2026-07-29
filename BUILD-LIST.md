@@ -13,8 +13,8 @@
 1. **Supabase Pro + PITR** — pitr_enabled:false, backups:[] as of audit. No restore point exists. ($25/mo — Rob, on new debit card arrival)
 2. **Attorney engagement** — seven agreement docs carry draft banners; the MSA every client signs is unreviewed. TM entity fix same engagement.
 3. **Verify NEXT_PUBLIC_SUPABASE_* env values are real** — stored sensitive-type so unpullable; three other "sensitive" vars turned out to be literal placeholders. PROOF: owner login walk on hub.seshsure.com. If login works, close this.
-4. **Error monitoring (Sentry free tier)** — currently a 2am 500 is invisible. One commit. (Claude)
-5. **Public /terms + /privacy pages** — surface Hub TOU, draft privacy policy for attorney pile. Vendor reviews and CCPA expect them. (Claude drafts, attorney blesses)
+4. ~~Error monitoring~~ ✓ DONE — in-house (error_log + throttled alerts + /admin/errors dashboard)
+5. ~~Public /terms + /privacy~~ ✓ DONE — live, linked from login, MSA-precedence clause; ON ATTORNEY REVIEW PILE with the seven agreements
 
 ## P1 — OPERATING GAPS (money touching, this month)
 6. **Forwarders table is EMPTY** — the RFQ flow can't invite anyone. Enter NTG/Kerry (+ 1–2 competitors for real sealed bids). 5-min data entry, owner or Claude with details.
