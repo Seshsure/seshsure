@@ -15,11 +15,13 @@ const RED = "#E63946";
 const DISPLAY = "'Archivo Black','Arial Black',Arial,sans-serif";
 const BODYF = "-apple-system,'Segoe UI',Inter,Helvetica,Arial,sans-serif";
 
-const FOOTER = `
-<div style="margin-top:26px;padding-top:14px;border-top:2px solid ${INK};font-family:'Courier New',monospace;font-size:10px;color:#6b6f6a;line-height:1.7">
+const footer = (kind: "transactional" | "marketing") => `
+<div style="margin-top:26px;padding-top:14px;border-top:2px solid ${INK};font-family:'Courier New',monospace;font-size:10px;color:#6b6f6a;line-height:1.8">
+${kind === "transactional"
+  ? "This is a transactional message regarding your SeshSure account."
+  : `You're receiving this because your account has reorder alerts on. <a href="mailto:support@seshsure.com?subject=Unsubscribe%20reorder%20alerts" style="color:#6b6f6a">Unsubscribe from reorder alerts</a>.`}<br/>
 Vido Manufacturing and Distribution Corp d/b/a SeshSure<br/>
 10940 S. Parker Rd, Suite 788, Parker, CO 80134<br/>
-You're receiving this because you have an account or open business with SeshSure.<br/>
 Questions? Reply here or write support@seshsure.com — a human reads everything.
 </div>`;
 
@@ -33,7 +35,7 @@ const stripes = (accent: string) => `
 
 const band = (label: string, accent: string, textOnAccent = INK) => `
   <div style="background:${accent};padding:20px 24px 14px">
-    <div style="font-family:${DISPLAY};font-size:38px;line-height:0.95;letter-spacing:-1px;text-transform:uppercase;color:${textOnAccent};text-shadow:4px 4px 0 ${textOnAccent === INK ? "#FFFDF6" : INK}">${label}</div>
+    <div style="font-family:${DISPLAY};font-size:36px;line-height:1;letter-spacing:0;text-transform:uppercase;color:${textOnAccent};text-shadow:3px 3px 0 ${textOnAccent === INK ? "#FFFDF6" : INK}">${label}</div>
   </div>
   ${stripes(accent)}`;
 
@@ -42,30 +44,29 @@ const hero = (main: string, accent: string, sub?: string) => `
   <div style="margin:18px 0 2px">
     <span style="font-family:${DISPLAY};font-size:54px;line-height:1;color:${INK};letter-spacing:-2px;background-image:linear-gradient(${accent},${accent});background-repeat:no-repeat;background-size:100% 16px;background-position:0 82%">${main}</span>
   </div>
-  ${sub ? `<div style="font-family:${BODYF};font-style:italic;font-size:14px;color:#5a5e59;margin:6px 0 2px">${sub}</div>` : ""}`;
+  ${sub ? `<div style="font-family:${BODYF};font-size:14px;color:#4a4e49;margin:8px 0 2px">${sub}</div>` : ""}`;
 
 // Receipt ticket: monospace ledger rows between perforation dashes.
 const ticket = (rows: [string, string][]) => `
-  <div style="margin:16px 0 4px;border-top:2px dashed ${INK};border-bottom:2px dashed ${INK};padding:10px 2px">
-    ${rows.map(([k, v]) => `<div style="font-family:'Courier New',monospace;font-size:12px;color:${INK};line-height:1.9"><span style="display:inline-block;min-width:46%;font-weight:bold">${k}</span> ${v}</div>`).join("")}
+  <div style="margin:16px 0 4px;border-top:2px dashed ${INK};border-bottom:2px dashed ${INK};padding:12px 2px;margin:18px 0 6px">
+    ${rows.map(([k, v]) => `<div style="font-family:'Courier New',monospace;font-size:13px;color:${INK};line-height:2.1"><span style="display:inline-block;min-width:46%;font-weight:bold">${k}</span> ${v}</div>`).join("")}
   </div>`;
 
-const barcode = `<div style="margin-top:14px;font-family:'Courier New',monospace;font-size:22px;line-height:1;letter-spacing:-1px;color:${INK}">▌▎▊▏▍▎▉▏▎▊▍▏▌▎▊▏▍▎▌▏▊▎▍▉▏▎▌</div>`;
+const barcode = `<div style="margin-top:16px;font-family:'Courier New',monospace;font-size:15px;line-height:1;letter-spacing:-1px;color:#B9B4A6">▌▎▊▏▍▎▉▏▎▊▍▏▌▎▊▏▍▎▌▏▊▎▍▉▏▎▌</div>`;
 
-const wrap = (accent: string, badgeLabel: string, title: string, body: string, badgeText = INK) => `
+const wrap = (accent: string, badgeLabel: string, title: string, body: string, badgeText = INK, kind: "transactional" | "marketing" = "transactional") => `
 <div style="background:${PAPER};padding:26px 12px;font-family:${BODYF}">
   <div style="max-width:560px;margin:0 auto">
     <div style="padding:0 2px 14px">
       <span style="font-family:${DISPLAY};font-weight:900;font-size:20px;color:${INK};letter-spacing:1px">SESHSURE<span style="color:${accent}"> HUB</span></span>
-      <span style="float:right;font-family:${DISPLAY};font-size:18px;color:${accent}">✱✱✱</span>
     </div>
     <div style="background:#FFFDF6;border:4px solid ${INK};box-shadow:8px 8px 0 ${accent}, 16px 16px 0 ${INK}">
       ${band(badgeLabel, accent, badgeText)}
-      <div style="padding:20px 24px 24px;color:${INK}">
-        <h1 style="font-family:${DISPLAY};font-size:18px;line-height:1.25;margin:0 0 2px;color:${INK}">${title}</h1>
+      <div style="padding:24px 26px 26px;color:${INK}">
+        <h1 style="font-family:${DISPLAY};font-size:20px;line-height:1.3;margin:0 0 4px;color:${INK}">${title}</h1>
         ${body}
         ${barcode}
-        ${FOOTER}
+        ${footer(kind)}
       </div>
     </div>
     <div style="padding:18px 2px 0;font-family:${DISPLAY};font-size:13px;letter-spacing:1px;color:${INK}">PUFF<span style="color:${accent}">.</span> PEEL<span style="color:${accent}">.</span> PASS<span style="color:${accent}">.</span>™</div>
@@ -75,7 +76,7 @@ const wrap = (accent: string, badgeLabel: string, title: string, body: string, b
 const btn = (label: string, href: string, accent: string) =>
   `<a href="${href}" style="display:block;text-align:center;margin:18px 0 4px;padding:17px 26px;background:${INK};color:#FFFDF6;border:3px solid ${INK};box-shadow:6px 6px 0 ${accent};text-decoration:none;font-family:${DISPLAY};font-weight:900;font-size:16px;letter-spacing:2.5px;text-transform:uppercase">${label} →</a>`;
 
-const p = (t: string) => `<p style="font-size:14px;line-height:1.65;margin:10px 0;color:${INK}">${t}</p>`;
+const p = (t: string) => `<p style="font-size:15px;line-height:1.7;margin:12px 0;color:${INK}">${t}</p>`;
 
 type Vars = Record<string, string>;
 const HUB = process.env.HUB_URL ?? "https://hub.seshsure.com";
@@ -128,14 +129,14 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
     html: wrap(TEAL, "REORDER RADAR", "Running low soon?", `
       ${hero(`~${v.runway} WKS`, TEAL, "of cones left at your usual pace")}
       ${p(`Hi ${v.name} — with current production + transit times, ordering this week keeps you seamless:`)}
-      ${btn("Start a Reorder", `${HUB}/portal/orders`, TEAL)}`, "#FFFDF6"),
+      ${btn("Start a Reorder", `${HUB}/portal/orders`, TEAL)}`, "#FFFDF6", "marketing"),
   }),
   "radar.nudge.red": (v) => ({
     subject: "Heads up — cone runway is short",
     html: wrap(ORANGE, "RUNNING LOW", "Let's not run out", `
       ${hero(`~${v.runway} WKS`, ORANGE, "of supply — inside the danger zone given transit times")}
       ${p(`Hi ${v.name} — reorder now (or call Rob directly) and we'll fast-track what we can:`)}
-      ${btn("Reorder Now", `${HUB}/portal/orders`, ORANGE)}`),
+      ${btn("Reorder Now", `${HUB}/portal/orders`, ORANGE)}`, INK, "marketing"),
   }),
   "compliance.alert": (v) => ({
     subject: `⚖️ ${v.title} — ${v.days} days out`,
