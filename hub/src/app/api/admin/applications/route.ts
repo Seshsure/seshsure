@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { supabaseServer } from "@/lib/supabase-server";
 import { createClient } from "@supabase/supabase-js";
+import { sendTemplate } from "@/lib/email";
 
 const Body = z.object({ applicationId: z.string().uuid(), action: z.enum(["approve", "deny"]) });
 
@@ -38,13 +39,22 @@ export async function POST(req: NextRequest) {
 
   await svc.from("client_contacts").insert({ client_id: client.id, name: app.contact_name, email: app.email, role: "ap" });
 
-  const { data: invited, error: invErr } = await svc.auth.admin.inviteUserByEmail(app.email, {
-    redirectTo: `${process.env.HUB_URL ?? "https://hub.seshsure.com"}/auth/callback?next=/auth/set-password`,
+  // Invite link generated but NOT sent by Supabase — the approval email is
+  // ours: branded, onboarding-framed, and specific to what just happened.
+  const { data: linkData, error: invErr } = await svc.auth.admin.generateLink({
+    type: "invite", email: app.email,
+    options: { redirectTo: `${process.env.HUB_URL ?? "https://hub.seshsure.com"}/auth/callback?next=/auth/set-password` },
   });
-  if (invErr || !invited?.user) return NextResponse.json({ error: invErr?.message ?? "invite failed" }, { status: 400 });
+  if (invErr || !linkData?.user || !linkData?.properties?.action_link)
+    return NextResponse.json({ error: invErr?.message ?? "invite failed" }, { status: 400 });
   await svc.from("profiles").insert({
-    id: invited.user.id, role: "client_admin", full_name: app.contact_name,
+    id: linkData.user.id, role: "client_admin", full_name: app.contact_name,
     email: app.email, client_id: client.id, is_active: true,
+  });
+  await sendTemplate({
+    to: app.email, templateKey: "application.approved",
+    vars: { company: app.company, name: (app.contact_name as string).split(" ")[0], link: linkData.properties.action_link },
+    systemOverride: true, bccOwner: true,
   });
 
   await svc.from("access_applications").update({ status: "approved", decided_by: user.id, decided_at: new Date().toISOString() }).eq("id", app.id);
