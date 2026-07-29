@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SeshSure Arcade</title>
+<style>
+  :root{
+    --kraft:#c8a878; --kraft-deep:#a5825a; --paper:#f2ead9; --ink:#22301f;
+    --leaf:#4f7a3a; --leaf-bright:#7fb35a; --ember:#e0862e;
+    --sky-top:#1d2a1a; --sky-bot:#39512e; --tile:#2b3b25;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:var(--sky-top)}
+  body{font-family:'Trebuchet MS',system-ui,sans-serif;color:var(--paper);user-select:none;-webkit-user-select:none}
+  #wrap{position:relative;width:100%;height:100%;max-width:520px;margin:0 auto;overflow:hidden;background:linear-gradient(var(--sky-top),var(--sky-bot))}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column}
+  .hidden{display:none!important}
+
+  /* ---------- shared ---------- */
+  .btn{cursor:pointer;border:none;border-radius:999px;padding:15px 40px;font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--leaf-bright);color:var(--ink);box-shadow:0 5px 0 var(--leaf);transition:transform .08s}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--leaf)}
+  .btn.ghost{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px rgba(242,234,217,.4);padding:11px 26px;font-size:13px}
+  .back{position:absolute;top:14px;left:14px;z-index:30;background:rgba(242,234,217,.12);color:var(--paper);border:none;border-radius:999px;padding:9px 16px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  #toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--paper);color:var(--ink);font-size:13px;font-weight:700;padding:10px 18px;border-radius:999px;transition:transform .3s;z-index:50}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* ---------- arcade menu ---------- */
+  #menu{align-items:center;justify-content:center;padding:26px;text-align:center}
+  .marquee{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--kraft)}
+  .powered{margin-top:22px;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:rgba(242,234,217,.4)}
+  .powered b{color:var(--kraft)}
+  .colorRow{display:flex;gap:8px;align-items:center}
+  .colorRow input[type=color]{width:52px;height:44px;padding:4px;border-radius:10px;background:rgba(242,234,217,.12);border:none;cursor:pointer}
+  .colorRow input[type=text]{flex:1}
+  #menu h1{font-size:46px;font-weight:800;margin-top:6px;line-height:1.05}
+  #menu h1 span{color:var(--leaf-bright)}
+  .neonline{width:64px;height:3px;background:var(--ember);border-radius:2px;margin:20px auto}
+  .cards{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;margin-top:4px}
+  .card{cursor:pointer;text-align:left;border:none;border-radius:18px;padding:18px 20px;background:rgba(242,234,217,.08);box-shadow:inset 0 0 0 1.5px rgba(200,168,120,.35);color:var(--paper);display:flex;align-items:center;gap:16px;transition:transform .1s}
+  .card:active{transform:scale(.98)}
+  .card .ico{font-size:30px;width:52px;height:52px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(127,179,90,.18);border-radius:14px}
+  .card h2{font-size:19px;font-weight:800}
+  .card p{font-size:12.5px;color:rgba(242,234,217,.72);margin-top:3px;line-height:1.45}
+  .pill{margin-left:auto;flex:none;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:var(--ember);color:var(--ink);border-radius:999px;padding:4px 9px}
+  #menuDrop{margin-top:26px;width:100%;max-width:340px}
+  #menuDrop p{font-size:12.5px;line-height:1.55;color:rgba(242,234,217,.78);margin-bottom:10px}
+  #menuDrop p b{color:var(--ember)}
+  .field{display:flex;gap:8px}
+  .field input{flex:1;min-width:0;border:none;border-radius:10px;padding:12px 14px;font-size:14px;background:rgba(242,234,217,.12);color:var(--paper);outline:2px solid transparent}
+  .field input:focus{outline:2px solid var(--leaf-bright)}
+  .field input::placeholder{color:rgba(242,234,217,.45)}
+  .field button{border:none;border-radius:10px;padding:12px 16px;font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--ember);color:var(--ink);cursor:pointer}
+  #dropThanks{display:none;font-size:13px;color:var(--leaf-bright);font-weight:700;margin-top:8px}
+
+  /* ---------- stack ---------- */
+  #stackScreen canvas{position:absolute;inset:0;width:100%;height:100%}
+  #hud{position:absolute;top:0;left:0;right:0;padding:14px 18px 0 90px;display:flex;justify-content:flex-end;z-index:5;pointer-events:none}
+  #score{font-size:50px;font-weight:800;line-height:1;text-align:right;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+  #best{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--leaf-bright);text-align:right;margin-top:4px}
+  #combo{position:absolute;top:105px;left:0;right:0;text-align:center;font-size:15px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ember);opacity:0;transition:opacity .25s;z-index:5;pointer-events:none}
+  .panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;z-index:10;background:rgba(20,28,17,.84);backdrop-filter:blur(3px)}
+  .panel h1{font-size:42px;font-weight:800}
+  .panel h1 span{color:var(--leaf-bright)}
+  .tag{margin-top:8px;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--kraft)}
+  .how{font-size:15px;line-height:1.6;color:rgba(242,234,217,.85);max-width:280px;margin-top:20px}
+  .panel .btn{margin-top:24px}
+  #finalScore{font-size:72px;font-weight:800;line-height:1}
+  #finalLabel{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--kraft);margin-top:6px}
+  #newBest{font-size:14px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ember);margin-top:10px;display:none}
+  #board{margin-top:18px;width:100%;max-width:280px}
+  #board h3{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--leaf-bright);margin-bottom:8px}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:6px 10px;border-radius:8px}
+  .row:nth-child(odd){background:rgba(242,234,217,.06)}
+  .row.me{background:rgba(127,179,90,.25);font-weight:800}
+
+  /* ---------- seshle ---------- */
+  #seshleScreen{padding-top:58px;align-items:center}
+  .sHead{text-align:center}
+  .sHead h1{font-size:30px;font-weight:800}
+  .sHead h1 span{color:var(--leaf-bright)}
+  .sHead .sub{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--kraft);margin-top:3px}
+  #streak{font-size:11.5px;color:var(--ember);font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+  #modeRow{display:flex;gap:8px;justify-content:center;margin-top:10px}
+  .mode{border:none;cursor:pointer;border-radius:999px;padding:7px 16px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:rgba(242,234,217,.12);color:rgba(242,234,217,.7)}
+  .mode.active{background:var(--leaf-bright);color:var(--ink)}
+  #grid{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;margin:16px 0 10px;flex:none}
+  .gRow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .tileBox{width:54px;height:54px;border-radius:10px;background:var(--tile);box-shadow:inset 0 0 0 1.5px rgba(200,168,120,.28);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;text-transform:uppercase;transition:transform .1s, background .2s}
+  @media (max-height:700px){ .tileBox{width:46px;height:46px;font-size:22px} }
+  .tileBox.pop{transform:scale(1.08)}
+  .tileBox.hit{background:var(--leaf-bright);color:var(--ink);box-shadow:none}
+  .tileBox.near{background:var(--ember);color:var(--ink);box-shadow:none}
+  .tileBox.miss{background:#1a2416;color:rgba(242,234,217,.4);box-shadow:none}
+  #kb{margin-top:auto;padding:0 6px 16px;width:100%;max-width:500px}
+  .kRow{display:flex;justify-content:center;gap:5px;margin-bottom:6px}
+  .key{flex:1;max-width:42px;height:52px;border:none;border-radius:8px;background:rgba(242,234,217,.16);color:var(--paper);font-size:14px;font-weight:800;text-transform:uppercase;cursor:pointer}
+  .key.wide{max-width:66px;font-size:11px}
+  .key.hit{background:var(--leaf-bright);color:var(--ink)}
+  .key.near{background:var(--ember);color:var(--ink)}
+  .key.miss{background:#1a2416;color:rgba(242,234,217,.35)}
+  #sMsg{min-height:22px;font-size:13.5px;font-weight:700;color:var(--kraft)}
+  #sDone{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;background:rgba(20,28,17,.88);backdrop-filter:blur(3px)}
+  #sDone h2{font-size:34px;font-weight:800}
+  #sDone .word{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--kraft);margin-top:8px}
+  #sDone .word b{color:var(--leaf-bright);font-size:17px}
+  #sDone .streakBig{margin-top:14px;font-size:15px;font-weight:800;color:var(--ember)}
+  #sDone .next{margin-top:8px;font-size:12.5px;color:rgba(242,234,217,.7)}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+  /* ---------- sentence hunt ---------- */
+  #huntScreen{padding:60px 22px 22px;align-items:center;overflow-y:auto}
+  .hHead{text-align:center}
+  .hHead h1{font-size:30px;font-weight:800}
+  .hHead h1 span{color:var(--leaf-bright)}
+  .hHead .sub{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--kraft);margin-top:4px}
+  #prize{margin-top:14px;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--ember);border-radius:12px;padding:10px 16px;text-align:center;max-width:340px}
+  #sentence{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;max-width:360px}
+  .sWord{font-size:15px;font-weight:800;letter-spacing:.12em;padding:10px 12px;border-radius:10px;background:rgba(242,234,217,.08);box-shadow:inset 0 0 0 1.5px rgba(200,168,120,.3);color:rgba(242,234,217,.45)}
+  .sWord.mine{background:var(--leaf-bright);color:var(--ink);box-shadow:none}
+  .sWord.comm{background:rgba(224,134,46,.25);color:var(--ember);box-shadow:inset 0 0 0 1.5px var(--ember)}
+  .sWord.rare::after{content:' ★';font-size:11px}
+  #huntProg{width:100%;max-width:340px;height:10px;border-radius:999px;background:rgba(242,234,217,.1);margin-top:16px;overflow:hidden}
+  #huntBar{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--leaf-bright),var(--ember));transition:width .5s}
+  #huntProgLabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,234,217,.6);margin-top:8px;text-align:center}
+  .hunt-actions{width:100%;max-width:340px;margin-top:18px}
+  #freeWordBtn{width:100%;margin-top:10px}
+  #huntMsg{min-height:20px;margin-top:10px;font-size:13.5px;font-weight:800;text-align:center;color:var(--leaf-bright)}
+  #stash{width:100%;max-width:340px;margin-top:14px}
+  #stash h3{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--leaf-bright);margin-bottom:8px}
+  #stashChips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:999px;background:rgba(242,234,217,.1);color:var(--paper)}
+  .chip.hit{background:var(--leaf-bright);color:var(--ink)}
+  .chip.rare{background:var(--ember);color:var(--ink)}
+  .fineprint{margin-top:18px;font-size:10.5px;line-height:1.5;color:rgba(242,234,217,.45);max-width:340px;text-align:center;padding-bottom:10px}
+
+  /* ---------- hunt manager ---------- */
+  #adminScreen{padding:60px 22px 22px;align-items:center;overflow-y:auto}
+  .admin-body{width:100%;max-width:340px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .admin-body label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--leaf-bright);margin-top:10px}
+  .admin-body textarea,.admin-body input{border:none;border-radius:10px;padding:12px 14px;font-size:14px;background:rgba(242,234,217,.12);color:var(--paper);outline:2px solid transparent;font-family:inherit;resize:none;width:100%}
+  .admin-body textarea:focus,.admin-body input:focus{outline:2px solid var(--leaf-bright)}
+  .admin-body ::placeholder{color:rgba(242,234,217,.4)}
+  #admWords{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}
+  .admChip{cursor:pointer;border:none;font-size:13px;font-weight:800;padding:8px 13px;border-radius:999px;background:rgba(242,234,217,.12);color:var(--paper)}
+  .admChip.rare{background:var(--ember);color:var(--ink)}
+  .admChip.rare::after{content:' \2605'}
+  #admLaunch{margin-top:16px}
+  #adminLink{margin-top:14px;font-size:11px;padding:9px 18px}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <!-- ============ MENU ============ -->
+  <div class="screen" id="menu">
+    <div class="marquee" id="brandName">SeshSure presents</div>
+    <h1>The <span>Arcade</span></h1>
+    <div class="neonline"></div>
+    <div class="cards">
+      <button class="card" id="openStack">
+        <div class="ico">🏗️</div>
+        <div><h2>SeshStack</h2><p>Stack cones sky-high. One tap, endless tilt.</p></div>
+      </button>
+      <button class="card" id="openSeshle">
+        <div class="ico">🟩</div>
+        <div><h2>Seshle</h2><p>The daily word. Six guesses. New puzzle at midnight.</p></div>
+        <div class="pill">Daily</div>
+      </button>
+      <button class="card" id="openHunt">
+        <div class="ico">🧩</div>
+        <div><h2>Sentence Hunt</h2><p>Find words on your cone peels. Build the sentence together. Win the drop.</p></div>
+        <div class="pill" style="background:var(--leaf-bright)">IRL</div>
+      </button>
+    </div>
+    <div id="menuDrop">
+      <p>Something <b>socially-minded</b> is rolling out soon. Join the drop list — arcade regulars get first dibs.</p>
+      <div class="field">
+        <input type="email" id="dropEmail" placeholder="you@email.com" inputmode="email" autocomplete="email">
+        <button id="dropBtn">Join</button>
+      </div>
+      <div id="dropThanks">You're on the list. 🌱</div>
+    </div>
+    <div class="powered" id="poweredBadge">Powered by <b>SeshSure</b></div>
+  </div>
+
+  <!-- ============ SESHSTACK ============ -->
+  <div class="screen hidden" id="stackScreen">
+    <canvas id="cv"></canvas>
+    <button class="back" data-back>← Arcade</button>
+    <div id="hud"><div><div id="score">0</div><div id="best">Best 0</div></div></div>
+    <div id="combo">Perfect roll!</div>
+
+    <div class="panel" id="startPanel">
+      <h1>Sesh<span>Stack</span></h1>
+      <div class="tag">How high can you roll?</div>
+      <p class="how">Tap anywhere to drop the cone. Sloppy drops trim your stack — perfect drops build combos and grow it back.</p>
+      <button class="btn" id="startBtn">Tap to stack</button>
+    </div>
+
+    <div class="panel hidden" id="overPanel">
+      <div id="finalScore">0</div>
+      <div id="finalLabel">Cones stacked</div>
+      <div id="newBest">New personal best</div>
+      <div id="board"><h3>Top stackers</h3><div id="boardRows"></div></div>
+      <button class="btn" id="againBtn">Stack again</button>
+      <button class="btn ghost" id="shareStackBtn" style="margin-top:10px">Share my score</button>
+    </div>
+  </div>
+
+  <!-- ============ SESHLE ============ -->
+  <div class="screen hidden" id="seshleScreen">
+    <button class="back" data-back>← Arcade</button>
+    <div class="sHead">
+      <h1>Sesh<span>le</span></h1>
+      <div class="sub">The cone word game</div>
+      <div id="modeRow">
+        <button class="mode active" id="modeDaily">Daily</button>
+        <button class="mode" id="modeQuick">Quick Sesh</button>
+      </div>
+      <div id="streak"></div>
+    </div>
+    <div id="grid"></div>
+    <div id="sMsg"></div>
+    <div id="kb"></div>
+
+    <div id="sDone" class="hidden">
+      <h2 id="sDoneTitle">Nailed it</h2>
+      <div class="word">Today's word<br><b id="sDoneWord"></b></div>
+      <div class="streakBig" id="sDoneStreak"></div>
+      <div class="next">New puzzle at midnight</div>
+      <button class="btn hidden" id="nextWordBtn" style="margin-top:22px">Next word</button>
+      <button class="btn ghost" id="shareSeshleBtn" style="margin-top:12px">Share result</button>
+      <button class="btn ghost" data-back style="margin-top:10px">Back to arcade</button>
+    </div>
+  </div>
+
+  <!-- ============ SENTENCE HUNT ============ -->
+  <div class="screen hidden" id="huntScreen">
+    <button class="back" data-back>← Arcade</button>
+    <div class="hHead">
+      <h1>Sentence <span>Hunt</span></h1>
+      <div class="sub">Collect words · Team up · Win</div>
+    </div>
+    <div id="prize">🏆 Launch prize: a year of cones + we donate $500 to the cause you pick</div>
+    <div id="sentence"></div>
+    <div id="huntProg"><div id="huntBar"></div></div>
+    <div id="huntProgLabel"></div>
+    <div class="hunt-actions">
+      <div class="field">
+        <input id="wordInput" placeholder="Enter your peel code (e.g. K4XP79)" maxlength="8" autocomplete="off">
+        <button id="addWordBtn">Redeem</button>
+      </div>
+      <button class="btn ghost" id="freeWordBtn">🎁 Claim your free daily word</button>
+      <div id="huntMsg"></div>
+    </div>
+    <div id="stash"><h3>My stash</h3><div id="stashChips"></div></div>
+    <button class="btn ghost" id="adminLink">⚙ Hunt manager</button>
+    <p class="fineprint">Demo mode: any 6-character code redeems (each one only once) so you can test the flow — the live version checks codes against your printed master registry and matches physical peels at claim time. The free daily word is the no-purchase-necessary entry path; run official rules past a lawyer before prizes go live.</p>
+  </div>
+
+  <!-- ============ HUNT MANAGER ============ -->
+  <div class="screen hidden" id="adminScreen">
+    <button class="back" data-back>← Arcade</button>
+    <div class="hHead">
+      <h1>Hunt <span>Manager</span></h1>
+      <div class="sub">Write it · Mark rares · Launch</div>
+    </div>
+    <div class="admin-body">
+      <label>The sentence</label>
+      <textarea id="admSentence" rows="2" placeholder="e.g. GOOD PEOPLE ROLL CHANGE TOGETHER"></textarea>
+      <label>Tap words to mark them rare ★</label>
+      <div id="admWords"></div>
+      <label>Prize banner</label>
+      <input id="admPrize" placeholder="🏆 A year of cones + $500 to the cause you pick" maxlength="120">
+      <button class="btn" id="admLaunch">Save & launch hunt</button>
+      <button class="btn ghost" id="admReset">Reset community progress</button>
+      <p class="fineprint">Launching pushes the new sentence live to every player and clears the old hunt. PIN here is client-side only — the real site needs proper admin login.</p>
+    </div>
+  </div>
+
+  <div id="toast">Copied — paste it anywhere</div>
+</div>
+
+<script>
+(() => {
+  /* ================= shared helpers ================= */
+  const $ = id => document.getElementById(id);
+  const screens = {menu:$('menu'), stack:$('stackScreen'), seshle:$('seshleScreen'), hunt:$('huntScreen'), admin:$('adminScreen')};
+  let active = 'menu';
+  function show(name){
+    Object.values(screens).forEach(s=>s.classList.add('hidden'));
+    screens[name].classList.remove('hidden');
+    active = name;
+    if(name==='stack') resize();
+  }
+  document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click', ()=>{ stackPause(); show('menu'); }));
+  $('openStack').addEventListener('click', ()=>show('stack'));
+  $('openSeshle').addEventListener('click', ()=>{ show('seshle'); seshleInit(); });
+  $('openHunt').addEventListener('click', ()=>{ show('hunt'); huntInit(); });
+
+  function toast(msg){
+    const t=$('toast'); t.textContent=msg;
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800);
+  }
+  async function shareText(txt){
+    try{
+      if(navigator.share){ await navigator.share({text:txt}); return; }
+      await navigator.clipboard.writeText(txt); toast('Copied — paste it anywhere');
+    }catch(e){
+      const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); toast('Copied — paste it anywhere'); }catch(_){}
+      ta.remove();
+    }
+  }
+  const store = {
+    get(k){ try{ return localStorage.getItem(k); }catch(e){ return this._m?.[k] ?? null; } },
+    set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ (this._m ||= {})[k]=v; } }
+  };
+
+  // drop list (front-end only — wire to your email provider)
+  $('dropBtn').addEventListener('click', ()=>{
+    const v=$('dropEmail').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return;
+    // TODO: POST to Mailchimp/Klaviyo endpoint
+    $('dropThanks').style.display='block'; $('dropEmail').value='';
+  });
+
+  /* ================= SESHSTACK ================= */
+  const cv=$('cv'), ctx=cv.getContext('2d'), wrap=$('wrap');
+  let W=0,H=0;
+  function resize(){
+    const DPR=Math.min(window.devicePixelRatio||1,2);
+    W=wrap.clientWidth; H=wrap.clientHeight;
+    cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resize(); window.addEventListener('resize',resize);
+
+  const SEG_H=34, START_W=190, BASE_Y=()=>H-90;
+  let stack=[], moving=null, falling=[], score=0, combo=0;
+  let running=false, over=false, camY=0, camTarget=0, speed=2.6, dir=1;
+  let memBest=parseInt(store.get('seshstack-best')||'0',10)||0;
+  $('best').textContent='Best '+memBest;
+
+  function stackPause(){ running=false; }
+  function newMoving(){
+    const top=stack[stack.length-1], y=top.y-SEG_H, fromLeft=stack.length%2===0;
+    moving={x:fromLeft?-top.w:W, y, w:top.w, hue:stack.length};
+    dir=fromLeft?1:-1; speed=2.6+Math.min(stack.length*0.14,4.2);
+  }
+  function stackReset(){
+    stack=[{x:(W-START_W)/2,y:BASE_Y(),w:START_W,hue:0}];
+    falling=[]; score=0; combo=0; camY=0; camTarget=0; over=false;
+    $('score').textContent='0'; newMoving();
+  }
+  function drop(){
+    if(!running||over||!moving) return;
+    const top=stack[stack.length-1];
+    const left=Math.max(moving.x,top.x), right=Math.min(moving.x+moving.w,top.x+top.w);
+    const overlap=right-left;
+    if(overlap<=6){ falling.push({...moving,vy:0,vr:(Math.random()-.5)*.1,rot:0}); endStack(); return; }
+    const offcut=moving.w-overlap;
+    if(offcut<10){
+      moving.x=top.x; moving.w=top.w; combo++;
+      $('combo').textContent=combo>1?'Perfect ×'+combo:'Perfect roll!';
+      $('combo').style.opacity=1; setTimeout(()=>$('combo').style.opacity=0,700);
+      const grow=Math.min(14,START_W-moving.w); moving.x-=grow/2; moving.w+=grow;
+    }else{
+      combo=0;
+      const cutX=(moving.x<top.x)?moving.x:right;
+      falling.push({x:cutX,y:moving.y,w:offcut,hue:moving.hue,vy:0,vr:(Math.random()-.5)*.15,rot:0});
+      moving.x=left; moving.w=overlap;
+    }
+    stack.push({x:moving.x,y:moving.y,w:moving.w,hue:moving.hue});
+    score++; $('score').textContent=score;
+    camTarget=Math.max(0,(stack.length*SEG_H)-(H*0.45));
+    newMoving();
+  }
+  function endStack(){
+    over=true; running=false;
+    if(score>memBest){ memBest=score; store.set('seshstack-best',String(memBest)); $('newBest').style.display='block'; }
+    else $('newBest').style.display='none';
+    $('best').textContent='Best '+memBest;
+    $('finalScore').textContent=score;
+    setTimeout(()=>{ $('overPanel').classList.remove('hidden'); loadBoard(score); },650);
+  }
+  function conePath(x,y,w,h){
+    const taper=Math.min(8,w*0.06), r=6;
+    ctx.beginPath();
+    ctx.moveTo(x+taper+r,y); ctx.lineTo(x+w-taper-r,y);
+    ctx.quadraticCurveTo(x+w-taper,y,x+w-taper+(taper*0.6),y+h*0.5);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x+taper-(taper*0.6),y+h*0.5);
+    ctx.quadraticCurveTo(x+taper,y,x+taper+r,y); ctx.closePath();
+  }
+  function segColor(i){
+    if(i%7===6) return ['#4f7a3a','#3c5e2c'];
+    return i%2===0?['#c8a878','#a5825a']:['#d9bd93','#b6946a'];
+  }
+  function drawSeg(s,rot){
+    const [fill,edge]=segColor(s.hue);
+    ctx.save();
+    if(rot){ ctx.translate(s.x+s.w/2,s.y+SEG_H/2); ctx.rotate(rot); ctx.translate(-(s.x+s.w/2),-(s.y+SEG_H/2)); }
+    conePath(s.x,s.y,s.w,SEG_H-3);
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=edge; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(s.x+8,s.y+(SEG_H-3)*0.35); ctx.lineTo(s.x+s.w-8,s.y+(SEG_H-3)*0.35);
+    ctx.strokeStyle='rgba(34,48,31,.12)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.restore();
+  }
+  function loop(){
+    if(active==='stack'){
+      ctx.clearRect(0,0,W,H);
+      camY+=(camTarget-camY)*0.08;
+      ctx.save(); ctx.translate(0,camY);
+      ctx.fillStyle='#182412'; ctx.fillRect(0,BASE_Y()+SEG_H-3,W,H);
+      ctx.fillStyle='rgba(127,179,90,.25)'; ctx.fillRect(0,BASE_Y()+SEG_H-3,W,3);
+      for(const s of stack) drawSeg(s,0);
+      for(const f of falling){ f.vy+=0.45; f.y+=f.vy; f.rot+=f.vr; drawSeg(f,f.rot); }
+      for(let i=falling.length-1;i>=0;i--) if(falling[i].y>H+camY+200) falling.splice(i,1);
+      if(moving&&running&&!over){
+        moving.x+=dir*speed;
+        if(moving.x<-30){moving.x=-30;dir=1}
+        if(moving.x+moving.w>W+30){moving.x=W+30-moving.w;dir=-1}
+        drawSeg(moving,0);
+        ctx.fillStyle='rgba(242,234,217,.07)';
+        ctx.fillRect(moving.x,moving.y+SEG_H,moving.w,BASE_Y()-moving.y);
+      }
+      ctx.restore();
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  wrap.addEventListener('pointerdown', e=>{
+    if(active!=='stack') return;
+    if(e.target.closest('.panel')||e.target.closest('.back')) return;
+    drop();
+  });
+  window.addEventListener('keydown', e=>{
+    if(active==='stack' && e.code==='Space'){ e.preventDefault(); drop(); }
+  });
+  $('startBtn').addEventListener('click',()=>{ $('startPanel').classList.add('hidden'); stackReset(); running=true; });
+  $('againBtn').addEventListener('click',()=>{ $('overPanel').classList.add('hidden'); stackReset(); running=true; });
+  $('shareStackBtn').addEventListener('click',()=>shareText(`I stacked ${score} cones in SeshStack 🏗️ Beat me at the SeshSure Arcade: seshsure.com/arcade`));
+
+  // shared leaderboard (works inside Claude artifacts; degrades gracefully on the web until you add a backend)
+  const BOARD_KEY='seshstack-leaderboard';
+  async function loadBoard(myScore){
+    const rowsEl=$('boardRows'); let board=[];
+    try{
+      if(window.storage){
+        try{ const res=await window.storage.get(BOARD_KEY,true); if(res&&res.value) board=JSON.parse(res.value); }catch(e){}
+        if(myScore>0 && (board.length<8 || myScore>board[board.length-1].s)){
+          const name=(prompt('Top stacker! Enter your initials:','')||'YOU').slice(0,3).toUpperCase();
+          board.push({n:name,s:myScore});
+          board.sort((a,b)=>b.s-a.s); board=board.slice(0,8);
+          try{ await window.storage.set(BOARD_KEY,JSON.stringify(board),true); }catch(e){}
+        }
+      }
+    }catch(e){}
+    rowsEl.innerHTML = board.length
+      ? board.map((r,i)=>`<div class="row${r.s===myScore?' me':''}"><span>${i+1}. ${r.n}</span><span>${r.s}</span></div>`).join('')
+      : '<div class="row"><span>Be the first on the board</span></div>';
+  }
+
+  /* ================= SESHLE ================= */
+  // All-cannabis word pool (~70 words). Random draw in Quick Sesh means two friends
+  // side-by-side almost never see the same word.
+  const POOL=['ASHES','BAKED','BLAZE','BLOOM','BLUNT','BONGS','BOWLS','BURNT','BUZZY','CALYX','CHILL','CLONE','CLOUD','CONES','COUCH','CROPS','CURED','DRIED','EMBER','FLAME','FROST','GANJA','GLASS','GRAMS','GREEN','GRIND','GROWS','GUMMY','HAZES','HERBS','HIGHS','HYDRO','JOINT','KUSHY','LEAFY','LIGHT','MATCH','MUNCH','OUNCE','PAPER','PHENO','PIECE','PIPES','PLANT','PUFFS','PURPS','RESIN','ROACH','ROLLS','SEEDS','SKUNK','SMOKE','SNACK','SPARK','STASH','STEMS','STICK','STONY','SUGAR','TERPS','TOKED','TOKER','TOKES','TORCH','TRIMS','TWIST','VAPES','VIBES','WEEDY','WRAPS','WAXES'];
+  const dayIndex=Math.floor((Date.now()-new Date(2026,0,1).getTime())/86400000);
+  const DAILY=POOL[(((dayIndex*7)%POOL.length)+POOL.length)%POOL.length];
+  const todayKey='seshle-'+dayIndex;
+
+  let mode='daily', ANSWER=DAILY;
+  let sRow=0, sCol=0, sOver=false, sGrid=[], guesses=[];
+  let quickWins=parseInt(store.get('seshle-quickwins')||'0',10)||0;
+  let seshleBuilt=false;
+
+  function seshleInit(){
+    if(!seshleBuilt){
+      buildGrid(); buildKB(); seshleBuilt=true;
+      $('modeDaily').onclick=()=>setMode('daily');
+      $('modeQuick').onclick=()=>setMode('quick');
+      $('nextWordBtn').onclick=()=>{ $('sDone').classList.add('hidden'); startRound(); };
+      startRound();
+    }
+    updateStreakLabel();
+  }
+  function setMode(m){
+    if(mode===m) return;
+    mode=m;
+    $('modeDaily').classList.toggle('active',m==='daily');
+    $('modeQuick').classList.toggle('active',m==='quick');
+    $('sDone').classList.add('hidden');
+    startRound();
+  }
+  function clearBoard(){
+    sRow=0; sCol=0; sOver=false; guesses=[];
+    sGrid.flat().forEach(t=>{ t.textContent=''; t.classList.remove('hit','near','miss','pop'); });
+    document.querySelectorAll('.key').forEach(k=>k.classList.remove('hit','near','miss'));
+    $('sMsg').textContent='';
+  }
+  function startRound(){
+    clearBoard();
+    if(mode==='daily'){
+      ANSWER=DAILY;
+      updateStreakLabel();
+      const saved=store.get(todayKey);
+      if(saved){
+        try{ const st=JSON.parse(saved); if(st.done){ replay(st.guesses); return; } }catch(e){}
+      }
+    }else{
+      ANSWER=POOL[Math.floor(Math.random()*POOL.length)];
+      $('streak').textContent='\u26A1 Quick Sesh wins: '+quickWins;
+    }
+  }
+  function buildGrid(){
+    const g=$('grid');
+    for(let r=0;r<6;r++){
+      const row=document.createElement('div'); row.className='gRow';
+      sGrid[r]=[];
+      for(let c=0;c<5;c++){
+        const t=document.createElement('div'); t.className='tileBox';
+        row.appendChild(t); sGrid[r][c]=t;
+      }
+      g.appendChild(row);
+    }
+  }
+  const KB_ROWS=['QWERTYUIOP','ASDFGHJKL','\u23CEZXCVBNM\u232B'];
+  function buildKB(){
+    const kb=$('kb');
+    KB_ROWS.forEach(rw=>{
+      const row=document.createElement('div'); row.className='kRow';
+      [...rw].forEach(ch=>{
+        const k=document.createElement('button'); k.className='key';
+        if(ch==='\u23CE'){ k.classList.add('wide'); k.textContent='Enter'; k.onclick=submitGuess; }
+        else if(ch==='\u232B'){ k.classList.add('wide'); k.textContent='\u232B'; k.onclick=backspace; }
+        else{ k.textContent=ch; k.dataset.k=ch; k.onclick=()=>typeLetter(ch); }
+        row.appendChild(k);
+      });
+      kb.appendChild(row);
+    });
+  }
+  window.addEventListener('keydown', e=>{
+    if(active!=='seshle'||sOver) return;
+    if(e.key==='Enter') submitGuess();
+    else if(e.key==='Backspace') backspace();
+    else if(/^[a-zA-Z]$/.test(e.key)) typeLetter(e.key.toUpperCase());
+  });
+  function typeLetter(ch){
+    if(sOver||sCol>=5||sRow>=6) return;
+    const t=sGrid[sRow][sCol]; t.textContent=ch; t.classList.add('pop');
+    setTimeout(()=>t.classList.remove('pop'),120); sCol++;
+  }
+  function backspace(){
+    if(sOver||sCol===0) return;
+    sCol--; sGrid[sRow][sCol].textContent='';
+  }
+  function scoreGuess(guess){
+    const res=Array(5).fill('miss'), used=Array(5).fill(false);
+    for(let i=0;i<5;i++) if(guess[i]===ANSWER[i]){ res[i]='hit'; used[i]=true; }
+    for(let i=0;i<5;i++){
+      if(res[i]==='hit') continue;
+      for(let j=0;j<5;j++){
+        if(!used[j]&&guess[i]===ANSWER[j]){ res[i]='near'; used[j]=true; break; }
+      }
+    }
+    return res;
+  }
+  function paintRow(r,guess,res,instant){
+    for(let i=0;i<5;i++){
+      const t=sGrid[r][i];
+      const apply=()=>{ t.textContent=guess[i]; t.classList.add(res[i]); bumpKey(guess[i],res[i]); };
+      instant? apply() : setTimeout(apply, i*140);
+    }
+  }
+  function bumpKey(ch,st){
+    const k=document.querySelector('.key[data-k="'+ch+'"]'); if(!k) return;
+    const rank={miss:0,near:1,hit:2};
+    const cur=['miss','near','hit'].find(c=>k.classList.contains(c));
+    if(!cur||rank[st]>rank[cur]){ k.classList.remove('miss','near','hit'); k.classList.add(st); }
+  }
+  function submitGuess(){
+    if(sOver) return;
+    if(sCol<5){ msg('Not enough letters'); return; }
+    const guess=sGrid[sRow].map(t=>t.textContent).join('');
+    guesses.push(guess);
+    const res=scoreGuess(guess);
+    paintRow(sRow,guess,res,false);
+    msg('');
+    const won=guess===ANSWER;
+    setTimeout(()=>{
+      if(won) finish(true);
+      else{
+        sRow++; sCol=0;
+        if(sRow>=6) finish(false);
+      }
+    }, 5*140+180);
+  }
+  function msg(txt){
+    $('sMsg').textContent=txt;
+    if(txt) setTimeout(()=>{ if($('sMsg').textContent===txt) $('sMsg').textContent=''; },1600);
+  }
+  function updateStreakLabel(){
+    if(mode!=='daily'){ $('streak').textContent='\u26A1 Quick Sesh wins: '+quickWins; return; }
+    const st=parseInt(store.get('seshle-streak')||'0',10)||0;
+    $('streak').textContent= st>0? '\uD83D\uDD25 '+st+' day streak' : 'Start your streak today';
+  }
+  function finish(won){
+    sOver=true;
+    if(mode==='daily'){
+      let streak=parseInt(store.get('seshle-streak')||'0',10)||0;
+      const last=parseInt(store.get('seshle-lastday')||'-99',10);
+      if(won) streak=(last===dayIndex-1)? streak+1 : 1; else streak=0;
+      store.set('seshle-streak',String(streak));
+      store.set('seshle-lastday',String(dayIndex));
+      store.set(todayKey, JSON.stringify({done:true,won,guesses}));
+      updateStreakLabel();
+      $('sDoneStreak').textContent = won? '\uD83D\uDD25 Streak: '+streak+' day'+(streak===1?'':'s') : 'Streak reset \u2014 back tomorrow';
+      $('sDone').querySelector('.next').textContent='New daily at midnight';
+      $('nextWordBtn').classList.add('hidden');
+    }else{
+      if(won){ quickWins++; store.set('seshle-quickwins',String(quickWins)); }
+      $('sDoneStreak').textContent='\u26A1 Quick Sesh wins: '+quickWins;
+      $('sDone').querySelector('.next').textContent='Endless words \u2014 keep rolling';
+      $('nextWordBtn').classList.remove('hidden');
+      $('streak').textContent='\u26A1 Quick Sesh wins: '+quickWins;
+    }
+    $('sDoneTitle').textContent = won? ['Nailed it','Smooth roll','Big brain sesh'][Math.min(2,Math.floor(sRow/2))] : 'Burned out';
+    $('sDoneWord').textContent=ANSWER;
+    setTimeout(()=>$('sDone').classList.remove('hidden'), 500);
+  }
+  function replay(saved){
+    guesses=saved.slice();
+    saved.forEach((g,r)=>{ paintRow(r,g,scoreGuess(g),true); });
+    sRow=saved.length; sOver=true;
+    const won=saved[saved.length-1]===ANSWER;
+    $('sDoneTitle').textContent = won? 'Already solved' : 'Burned out';
+    $('sDoneWord').textContent=ANSWER;
+    const streak=parseInt(store.get('seshle-streak')||'0',10)||0;
+    $('sDoneStreak').textContent = won? '\uD83D\uDD25 Streak: '+streak+' day'+(streak===1?'':'s') : 'Back tomorrow';
+    $('nextWordBtn').classList.add('hidden');
+    $('sDone').classList.remove('hidden');
+  }
+  $('shareSeshleBtn').addEventListener('click',()=>{
+    const rows=guesses.map(g=>scoreGuess(g).map(r=>r==='hit'?'\uD83D\uDFE9':r==='near'?'\uD83D\uDFE7':'\u2B1B').join('')).join('\n');
+    const solved=guesses.length&&guesses[guesses.length-1]===ANSWER;
+    const head = mode==='daily'
+      ? 'Seshle #'+(dayIndex%POOL.length+1)+' '+(solved?guesses.length:'X')+'/6'
+      : 'Quick Sesh '+(solved?guesses.length:'X')+'/6 \u2014 '+quickWins+' wins and counting';
+    shareText(head+'\n\n'+rows+'\n\nPlay at the SeshSure Arcade: seshsure.com/arcade');
+  });
+
+  /* ================= SENTENCE HUNT ================= */
+  const DEFAULT_CONFIG={
+    s:['GOOD','PEOPLE','ROLL','CHANGE','TOGETHER'],
+    r:['TOGETHER'],
+    p:'\uD83C\uDFC6 Launch prize: a year of cones + we donate $500 to the cause you pick'
+  };
+  let SENTENCE=DEFAULT_CONFIG.s.slice(), RARES=DEFAULT_CONFIG.r.slice();
+  const DECOYS=['COSMIC','MELLOW','GIGGLE','TOASTY','SUNSET','PICKLE','WIZARD','NUGGET','VELVET','DOODLE','GROOVY','BANANA','SPARKY','NOODLE','BREEZY','FUZZY','DISCO','LLAMA','TACO','MOON'];
+  let myWords=[];
+  try{ myWords=JSON.parse(store.get('hunt-words')||'[]'); }catch(e){ myWords=[]; }
+  let commCounts={};
+  let huntBuilt=false;
+  const HUNT_KEY='hunt-community', CONFIG_KEY='hunt-config';
+
+  function huntInit(){
+    if(!huntBuilt){
+      huntBuilt=true;
+      $('addWordBtn').onclick=()=>{ addWord($('wordInput').value); $('wordInput').value=''; };
+      $('wordInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ addWord($('wordInput').value); $('wordInput').value=''; } });
+      $('freeWordBtn').onclick=freeWord;
+      $('adminLink').onclick=adminGate;
+      adminInit();
+    }
+    loadConfig().then(loadCommunity);
+  }
+  function huntMsg(t){
+    $('huntMsg').textContent=t;
+    setTimeout(()=>{ if($('huntMsg').textContent===t) $('huntMsg').textContent=''; },2400);
+  }
+  function saveWords(){ store.set('hunt-words',JSON.stringify(myWords)); }
+
+  function addWord(raw){
+    const code=(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(!/^[A-Z0-9]{6}$/.test(code)){ huntMsg('Codes are 6 letters/numbers, e.g. K4XP79'); return; }
+    redeemCode(code);
+  }
+  // Prototype registry: word is derived from the code itself, so any 6-char code
+  // "works" for demoing. Live version replaces this with a lookup against your
+  // printed master registry. Each code redeems exactly once, community-wide.
+  function codeHash(c){ let h=0; for(let i=0;i<c.length;i++){ h=(h*31+c.charCodeAt(i))>>>0; } return h; }
+  async function redeemCode(code){
+    let usedCodes={};
+    try{
+      if(window.storage){
+        try{ const res=await window.storage.get('hunt-used-codes',true); if(res&&res.value) usedCodes=JSON.parse(res.value); }catch(e){}
+      }
+    }catch(e){}
+    let localUsed=[];
+    try{ localUsed=JSON.parse(store.get('hunt-mycodes')||'[]'); }catch(e){}
+    if(usedCodes[code]||localUsed.includes(code)){ huntMsg('That code has already been redeemed'); return; }
+    const h=codeHash(code)%100;
+    const rares=RARES.length?RARES:SENTENCE.slice(-1);
+    const commons=SENTENCE.filter(x=>!RARES.includes(x));
+    let w;
+    if(h<4) w=rares[codeHash(code+'r')%rares.length];
+    else if(h<40&&commons.length) w=commons[codeHash(code+'c')%commons.length];
+    else w=DECOYS[codeHash(code+'d')%DECOYS.length];
+    usedCodes[code]=w;
+    localUsed.push(code);
+    store.set('hunt-mycodes',JSON.stringify(localUsed));
+    try{
+      if(window.storage){
+        try{ await window.storage.set('hunt-used-codes',JSON.stringify(usedCodes),true); }catch(e){}
+      }
+    }catch(e){}
+    grantWord(w,true);
+  }
+  function grantWord(w,typed){
+    myWords.push(w); saveWords(); renderHunt(); pushCommunity(w);
+    if(RARES.includes(w)) huntMsg('\u2605 RARE FIND \u2014 that\u2019s a golden word!');
+    else if(SENTENCE.includes(w)) huntMsg('Sentence word! \uD83D\uDFE9');
+    else huntMsg(typed? 'Added to your stash' : 'A wild '+w+' appears \u2014 added to your stash');
+  }
+  function freeWord(){
+    const today=new Date().toDateString();
+    if(store.get('hunt-freeday')===today){ huntMsg('Free word claimed \u2014 back tomorrow \uD83C\uDF81'); return; }
+    store.set('hunt-freeday',today);
+    const r=Math.random();
+    let w;
+    const rares=RARES.length?RARES:SENTENCE.slice(-1);
+    const commons=SENTENCE.filter(x=>!RARES.includes(x));
+    if(r<0.04) w=rares[Math.floor(Math.random()*rares.length)];
+    else if(r<0.32&&commons.length) w=commons[Math.floor(Math.random()*commons.length)];
+    else w=DECOYS[Math.floor(Math.random()*DECOYS.length)];
+    grantWord(w,false);
+  }
+  function renderHunt(){
+    const sEl=$('sentence');
+    sEl.innerHTML=SENTENCE.map(w=>{
+      const mine=myWords.includes(w);
+      const comm=!mine && (commCounts[w]>0);
+      const cls='sWord'+(mine?' mine':'')+(comm?' comm':'')+(RARES.includes(w)?' rare':'');
+      return '<div class="'+cls+'">'+w+'</div>';
+    }).join('');
+    const chips=$('stashChips');
+    if(!myWords.length){ chips.innerHTML='<div class="chip">Empty \u2014 peel a cone pack or claim your free word</div>'; }
+    else{
+      const uniq=[...new Set(myWords)];
+      chips.innerHTML=uniq.map(w=>{
+        const cls='chip'+(RARES.includes(w)?' rare':SENTENCE.includes(w)?' hit':'');
+        const n=myWords.filter(x=>x===w).length;
+        return '<div class="'+cls+'">'+w+(n>1?' \u00D7'+n:'')+'</div>';
+      }).join('');
+    }
+    updateProgress();
+  }
+  function updateProgress(){
+    const held=SENTENCE.filter(w=>myWords.includes(w)||commCounts[w]>0).length;
+    const pct=SENTENCE.length? Math.round(held/SENTENCE.length*100) : 0;
+    $('huntBar').style.width=pct+'%';
+    $('huntProgLabel').textContent= pct===100
+      ? '\uD83C\uDFC6 The community has every word \u2014 sentence complete!'
+      : 'Community progress: '+held+' of '+SENTENCE.length+' words found';
+  }
+  async function loadConfig(){
+    try{
+      if(window.storage){
+        try{
+          const res=await window.storage.get(CONFIG_KEY,true);
+          if(res&&res.value){
+            const c=JSON.parse(res.value);
+            if(Array.isArray(c.s)&&c.s.length){ SENTENCE=c.s; RARES=Array.isArray(c.r)?c.r:[]; }
+            if(c.p) $('prize').textContent=c.p;
+          }
+        }catch(e){}
+      }
+    }catch(e){}
+    renderHunt();
+  }
+  async function loadCommunity(){
+    try{
+      if(window.storage){
+        try{
+          const res=await window.storage.get(HUNT_KEY,true);
+          if(res&&res.value) commCounts=JSON.parse(res.value);
+        }catch(e){}
+      }
+    }catch(e){}
+    renderHunt();
+  }
+  async function pushCommunity(w){
+    try{
+      if(window.storage){
+        commCounts[w]=(commCounts[w]||0)+1;
+        try{ await window.storage.set(HUNT_KEY,JSON.stringify(commCounts),true); }catch(e){}
+        updateProgress();
+      }
+    }catch(e){}
+  }
+
+  /* ================= HUNT MANAGER ================= */
+  let admRares=new Set();
+  function adminGate(){
+    let pin=store.get('hunt-pin');
+    if(!pin){
+      const p=prompt('Create a manager PIN (you\u2019ll use it to edit hunts):');
+      if(!p) return;
+      store.set('hunt-pin',p); pin=p;
+      toast('Manager PIN set');
+    }else{
+      const p=prompt('Enter manager PIN:');
+      if(p!==pin){ toast('Wrong PIN'); return; }
+    }
+    // preload current hunt
+    $('admSentence').value=SENTENCE.join(' ');
+    $('admPrize').value=$('prize').textContent;
+    admRares=new Set(RARES);
+    renderAdmWords();
+    show('admin');
+  }
+  function adminInit(){
+    $('admSentence').addEventListener('input',renderAdmWords);
+    $('admLaunch').onclick=launchHunt;
+    $('admReset').onclick=resetCommunity;
+  }
+  function parseAdmWords(){
+    return $('admSentence').value.toUpperCase().split(/[^A-Z]+/).filter(w=>w.length>=2&&w.length<=12).slice(0,12);
+  }
+  function renderAdmWords(){
+    const words=parseAdmWords();
+    admRares=new Set([...admRares].filter(r=>words.includes(r)));
+    $('admWords').innerHTML='';
+    words.forEach(w=>{
+      const b=document.createElement('button');
+      b.className='admChip'+(admRares.has(w)?' rare':'');
+      b.textContent=w;
+      b.onclick=()=>{ admRares.has(w)? admRares.delete(w) : admRares.add(w); renderAdmWords(); };
+      $('admWords').appendChild(b);
+    });
+  }
+  async function launchHunt(){
+    const words=parseAdmWords();
+    if(words.length<2){ toast('Sentence needs at least 2 words'); return; }
+    SENTENCE=words; RARES=[...admRares];
+    const prize=$('admPrize').value.trim()||DEFAULT_CONFIG.p;
+    $('prize').textContent=prize;
+    try{
+      if(window.storage){
+        try{ await window.storage.set(CONFIG_KEY,JSON.stringify({s:SENTENCE,r:RARES,p:prize}),true); }catch(e){}
+      }
+    }catch(e){}
+    await resetCommunity(true);
+    toast('Hunt is live \uD83D\uDE80');
+    show('hunt'); renderHunt();
+  }
+  async function resetCommunity(silent){
+    commCounts={};
+    try{
+      if(window.storage){
+        try{ await window.storage.set(HUNT_KEY,'{}',true); }catch(e){}
+      }
+    }catch(e){}
+    if(silent!==true) toast('Community progress reset');
+    renderHunt();
+  }
+})();
+</script>
+</body>
+</html>
