@@ -12,7 +12,7 @@ export default async function FreightDesk() {
   const { data: { user } } = await sb.auth.getUser();
   const { data: prof } = await sb.from("profiles").select("forwarder_id, full_name").eq("id", user!.id).single();
   const { data: fwd } = prof?.forwarder_id
-    ? await sb.from("forwarders").select("name").eq("id", prof.forwarder_id).single()
+    ? await sb.from("forwarders").select("name, profile_completed_at").eq("id", prof.forwarder_id).single()
     : { data: null };
   const { data: shipments } = await sb.from("shipments")
     .select("id, status, mode, carrier, awb, container_no, bl_no, etd, eta, arrived_port_at, last_scan_at, delivered_at, production_runs(run_number)")
@@ -24,6 +24,12 @@ export default async function FreightDesk() {
       <p className="font-mono text-[10px] mt-1" style={{ color: "#5C574A" }}>
         {fwd?.name?.toUpperCase() ?? "FORWARDER"} · UPDATE STATUS, ETA &amp; MILESTONES · DELIVERY IS CONFIRMED BY SESHSURE VIA POD
       </p>
+      {fwd && !("profile_completed_at" in fwd && fwd.profile_completed_at) && (
+        <a href="/freightdesk/profile" className="block mt-3 rounded-lg border-2 p-3" style={{ borderColor: "#FF8A3D", background: "#FF8A3D15" }}>
+          <p className="font-mono text-[11px] font-bold" style={{ color: "#181818" }}>COMPLETE YOUR COMPANY PROFILE →</p>
+          <p className="font-mono text-[9px] mt-0.5" style={{ color: "#5C574A" }}>IDENTITY, CREDENTIALS, LANES &amp; REMITTANCE — TAKES 5 MINUTES, REQUIRED BEFORE FIRST PAYMENT</p>
+        </a>
+      )}
       <div className="mt-4">
         {(shipments ?? []).map(s => (
           <div key={s.id} className="rounded-lg border-2 p-3 mb-3 bg-white" style={{ borderColor: "#E7DFCE" }}>
