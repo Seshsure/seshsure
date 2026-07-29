@@ -148,6 +148,13 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p(`Full detail is in the error_log table. Repeats of this exact error are throttled for the next hour.`)}
       ${btn("Open Errors Dashboard", `${HUB}/admin/errors`, RED)}`),
   }),
+  "application.received": (v) => ({
+    subject: `🟡 New wholesale application — ${v.company}`,
+    html: wrap(YELLOW, "due-today", "APPLICATION", `${v.company} wants in`, `
+      ${p(`<b>${v.name}</b> · ${v.email} · via ${v.ref}`)}
+      ${p("Review the signals and decide in one tap.")}
+      ${btn("Review Application", `${HUB}/admin/applications`, YELLOW)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `
