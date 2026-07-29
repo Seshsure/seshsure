@@ -6,10 +6,11 @@ export const dynamic = "force-dynamic";
 
 export default async function Invites() {
   const sb = supabaseServer();
-  const [{ data: clients }, { data: factories }, { data: forwarders }, { data: recent }] = await Promise.all([
+  const [{ data: clients }, { data: factories }, { data: forwarders }, { data: converters }, { data: recent }] = await Promise.all([
     sb.from("clients").select("id, legal_name, dba").order("legal_name").limit(100),
     sb.from("factories").select("id, name").order("name").limit(50),
     sb.from("forwarders").select("id, name").order("name").limit(50),
+    sb.from("converters").select("id, name").order("name").limit(50),
     sb.from("activity_log").select("created_at, after").eq("action", "invite.sent")
       .order("created_at", { ascending: false }).limit(10),
   ]);
@@ -22,7 +23,8 @@ export default async function Invites() {
       <AdminInvite
         clients={(clients ?? []).map(c => [c.id, c.dba ?? c.legal_name] as [string, string])}
         factories={(factories ?? []).map(f => [f.id, f.name] as [string, string])}
-        forwarders={(forwarders ?? []).map(f => [f.id, f.name] as [string, string])} />
+        forwarders={(forwarders ?? []).map(f => [f.id, f.name] as [string, string])}
+        converters={(converters ?? []).map(f => [f.id, f.name] as [string, string])} />
       {!!recent?.length && (
         <div className="mt-6">
           <p className="font-mono text-[10px] font-bold" style={{ color: "#3E3A30" }}>RECENT INVITES</p>

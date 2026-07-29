@@ -1,4 +1,4 @@
-export type Role = "owner" | "staff" | "client_admin" | "client_ap" | "factory_admin" | "factory_user" | "forwarder_admin";
+export type Role = "owner" | "staff" | "client_admin" | "client_ap" | "factory_admin" | "factory_user" | "forwarder_admin" | "converter_admin";
 
 export const HOME_BY_ROLE: Record<Role, string> = {
   owner: "/admin",
@@ -8,6 +8,7 @@ export const HOME_BY_ROLE: Record<Role, string> = {
   factory_admin: "/factory",
   factory_user: "/factory",
   forwarder_admin: "/freightdesk",
+  converter_admin: "/printdesk",
 };
 
 export const AREA_ALLOWED: Record<string, Role[]> = {
@@ -15,4 +16,5 @@ export const AREA_ALLOWED: Record<string, Role[]> = {
   "/portal": ["client_admin", "client_ap"],
   "/factory": ["factory_admin", "factory_user", "owner"],  // owner = preview mode
   "/freightdesk": ["forwarder_admin", "owner"],             // owner = preview mode
+  "/printdesk": ["converter_admin", "owner"],               // owner = preview mode
 };

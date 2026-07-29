@@ -12,14 +12,15 @@ import { createClient } from "@supabase/supabase-js";
 const Body = z.object({
   email: z.string().email(),
   fullName: z.string().min(2).max(120),
-  role: z.enum(["staff", "client_admin", "client_ap", "factory_admin", "factory_user", "forwarder_admin"]),
+  role: z.enum(["staff", "client_admin", "client_ap", "factory_admin", "factory_user", "forwarder_admin", "converter_admin"]),
   // existing org…
   clientId: z.string().uuid().optional(),
   factoryId: z.string().uuid().optional(),
   forwarderId: z.string().uuid().optional(),
+  converterId: z.string().uuid().optional(),
   // …or create one inline
   newOrg: z.object({
-    type: z.enum(["client", "factory", "forwarder"]),
+    type: z.enum(["client", "factory", "forwarder", "converter"]),
     name: z.string().min(2).max(160),
   }).optional(),
 });
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
   const svc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
   // Resolve or create the org binding. Role and org type must agree.
-  let clientId = b.clientId ?? null, factoryId = b.factoryId ?? null, forwarderId = b.forwarderId ?? null;
+  let clientId = b.clientId ?? null, factoryId = b.factoryId ?? null, forwarderId = b.forwarderId ?? null, converterId = b.converterId ?? null;
   if (b.newOrg) {
     if (b.newOrg.type === "client") {
       const { data } = await svc.from("clients").insert({ legal_name: b.newOrg.name, status: "active" }).select("id").single();
@@ -46,12 +47,15 @@ export async function POST(req: NextRequest) {
     } else if (b.newOrg.type === "factory") {
       const { data } = await svc.from("factories").insert({ name: b.newOrg.name, contact_email: b.email, is_active: true }).select("id").single();
       factoryId = data?.id ?? null;
-    } else {
+    } else if (b.newOrg.type === "forwarder") {
       const { data } = await svc.from("forwarders").insert({ name: b.newOrg.name, contact_email: b.email }).select("id").single();
       forwarderId = data?.id ?? null;
+    } else {
+      const { data } = await svc.from("converters").insert({ name: b.newOrg.name, contact_email: b.email }).select("id").single();
+      converterId = data?.id ?? null;
     }
   }
-  const roleNeeds = b.role.startsWith("client") ? !!clientId : b.role.startsWith("factory") ? !!factoryId : b.role === "forwarder_admin" ? !!forwarderId : true;
+  const roleNeeds = b.role.startsWith("client") ? !!clientId : b.role.startsWith("factory") ? !!factoryId : b.role === "forwarder_admin" ? !!forwarderId : b.role === "converter_admin" ? !!converterId : true;
   if (!roleNeeds) return NextResponse.json({ error: "role needs an org (pick existing or create one)" }, { status: 400 });
 
   // Invite: creates the auth user and emails a set-your-password link.
@@ -62,7 +66,7 @@ export async function POST(req: NextRequest) {
 
   await svc.from("profiles").insert({
     id: invited.user.id, role: b.role, full_name: b.fullName, email: b.email,
-    client_id: clientId, factory_id: factoryId, forwarder_id: forwarderId, is_active: true,
+    client_id: clientId, factory_id: factoryId, forwarder_id: forwarderId, converter_id: converterId, is_active: true,
   });
   await svc.from("activity_log").insert({
     actor_profile_id: user.id, actor_label: "owner", action: "invite.sent",

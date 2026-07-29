@@ -177,6 +177,19 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p("One consolidated decision: approve, or a single revision list. ≤2 business days per SOP.")}
       ${btn("Review Order", `${HUB}/admin/arcade`, PURPLE)}`),
   }),
+  "arcade.print_assigned": (v) => ({
+    subject: `New print run ${v.run} — ${v.peels} peels`,
+    html: wrap(PURPLE, "docket", "PRINT RUN", `${v.run} assigned to you`, `
+      ${p(`<b>${v.peels} peels</b> (order ${v.order}). Sequence: proof 100 peels → SeshSure verifies → print → declare counts → log overage with signed destruction doc.`)}
+      ${p("SeshSure stock and adhesive only. No rolls ship anywhere except SeshSure's facility. Any variance stops the run.")}
+      ${btn("Open Print Desk", `${HUB}/printdesk`, PURPLE)}`),
+  }),
+  "arcade.print_update": (v) => ({
+    subject: `🖨️ ${v.run}: ${v.event}`,
+    html: wrap(PURPLE, "docket", "PRINT GATE", `${v.run}`, `
+      ${p(v.event)}
+      ${btn("Open Arcade Admin", `${HUB}/admin/arcade`, PURPLE)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `

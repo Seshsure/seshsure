@@ -3,14 +3,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const INK = "#181818", TEAL = "#0D9488", LINE = "#E7DFCE", RED = "#D62839";
-const ROLES: [string, string, "client" | "factory" | "forwarder" | null][] = [
+const ROLES: [string, string, "client" | "factory" | "forwarder" | "converter" | null][] = [
   ["client_admin", "Client Admin", "client"], ["client_ap", "Client AP", "client"],
   ["factory_admin", "Factory Admin", "factory"], ["factory_user", "Factory User", "factory"],
-  ["forwarder_admin", "Forwarder", "forwarder"], ["staff", "Staff (internal)", null],
+  ["forwarder_admin", "Forwarder", "forwarder"], ["converter_admin", "Print Partner", "converter"], ["staff", "Staff (internal)", null],
 ];
 
-export function AdminInvite({ clients, factories, forwarders }: {
-  clients: [string, string][]; factories: [string, string][]; forwarders: [string, string][];
+export function AdminInvite({ clients, factories, forwarders, converters = [] }: {
+  clients: [string, string][]; factories: [string, string][]; forwarders: [string, string][]; converters?: [string, string][];
 }) {
   const [name, setName] = useState(""); const [email, setEmail] = useState("");
   const [role, setRole] = useState("client_admin");
@@ -19,7 +19,7 @@ export function AdminInvite({ clients, factories, forwarders }: {
   const router = useRouter();
 
   const orgType = ROLES.find(r => r[0] === role)?.[2] ?? null;
-  const orgList = orgType === "client" ? clients : orgType === "factory" ? factories : orgType === "forwarder" ? forwarders : [];
+  const orgList = orgType === "client" ? clients : orgType === "factory" ? factories : orgType === "forwarder" ? forwarders : orgType === "converter" ? converters : [];
 
   async function send() {
     setMsg(null); setBusy(true);
@@ -28,7 +28,8 @@ export function AdminInvite({ clients, factories, forwarders }: {
       if (orgId === "__new__") body.newOrg = { type: orgType, name: newOrgName };
       else if (orgType === "client") body.clientId = orgId;
       else if (orgType === "factory") body.factoryId = orgId;
-      else body.forwarderId = orgId;
+      else if (orgType === "forwarder") body.forwarderId = orgId;
+      else body.converterId = orgId;
     }
     const res = await fetch("/api/admin/invite", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     setBusy(false);
