@@ -27,10 +27,10 @@ export async function POST(req: NextRequest) {
   }).eq("id", rfq.id);
 
   if (rfq.shipment_id) {
-    await sb.from("shipments").update({ awarded_freight_cents: bid.all_in_cents }).eq("id", rfq.shipment_id);
+    await sb.from("shipments").update({ awarded_freight_cents: bid.all_in_cents, forwarder_id: bid.forwarder_id }).eq("id", rfq.shipment_id);
   } else if (rfq.run_id) {
     await sb.from("shipments").insert({
-      run_id: rfq.run_id, status: "booking", awarded_freight_cents: bid.all_in_cents,
+      run_id: rfq.run_id, status: "booking", awarded_freight_cents: bid.all_in_cents, forwarder_id: bid.forwarder_id,
     });
   }
   await sb.from("activity_log").insert({
