@@ -146,7 +146,7 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p(`<b>${v.message}</b>`)}
       ${p(`Source: <code>${v.source}</code> · ${v.time}`)}
       ${p(`Full detail is in the error_log table. Repeats of this exact error are throttled for the next hour.`)}
-      ${btn("Open Admin", `${HUB}/admin`, RED)}`),
+      ${btn("Open Errors Dashboard", `${HUB}/admin/errors`, RED)}`),
   }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
