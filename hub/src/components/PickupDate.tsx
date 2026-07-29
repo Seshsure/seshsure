@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Props = { runId: string; current: string | null; cartons: number | null; grossKg: number | null; dims: string | null; hasList: boolean };
+type Props = { runId: string; current: string | null; cartons: number | null; grossKg: number | null; dims: string | null; hasList: boolean; port?: string | null };
 
-export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: Props) {
+export function PickupDate({ runId, current, cartons, grossKg, dims, hasList, port }: Props) {
   const [open, setOpen] = useState(!current);
-  const [f, setF] = useState({ date: current ?? "", cartons: cartons ? String(cartons) : "", grossKg: grossKg ? String(grossKg) : "", dims: dims ?? "" });
+  const [f, setF] = useState({ date: current ?? "", cartons: cartons ? String(cartons) : "", grossKg: grossKg ? String(grossKg) : "", dims: dims ?? "", port: port ?? "" });
   const [listPath, setListPath] = useState<string | null>(null);
   const [listName, setListName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -47,7 +47,7 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
   async function save() {
     setBusy(true); setErr("");
     const r = await fetch("/api/factory/pickup", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ runId, pickupReadyDate: f.date, cartons: parseInt(f.cartons), grossKg: parseFloat(f.grossKg), dimsNote: f.dims, packingListPath: listPath ?? undefined }) });
+      body: JSON.stringify({ runId, pickupReadyDate: f.date, cartons: parseInt(f.cartons), grossKg: parseFloat(f.grossKg), dimsNote: f.dims, originPort: f.port, packingListPath: listPath ?? undefined }) });
     setBusy(false);
     if (!r.ok) { const j = await r.json().catch(() => ({})); setErr(typeof j.error === "string" ? j.error : "Check all fields"); return; }
     setOpen(false); router.refresh();
@@ -74,6 +74,14 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
           <input inputMode="decimal" className={inp + " w-24"} style={{ borderColor: "#E7DFCE" }} value={f.grossKg} onChange={e => setF({ ...f, grossKg: e.target.value.replace(/[^\d.]/g, "") })} /></div>
         <div className="grow"><label className="eyebrow block" style={{ color: "#5C574A" }}>CARTON DIMS *</label>
           <input className={inp + " w-full"} style={{ borderColor: "#E7DFCE" }} placeholder="60×40×40 cm" value={f.dims} onChange={e => setF({ ...f, dims: e.target.value })} /></div>
+        <div className="grow"><label className="eyebrow block" style={{ color: "#5C574A" }}>PICKUP / ORIGIN PORT *</label>
+          <input className={inp + " w-full"} style={{ borderColor: "#E7DFCE" }} list="origin-ports" placeholder="city or port"
+            value={f.port} onChange={e => setF({ ...f, port: e.target.value })} />
+          <datalist id="origin-ports">
+            <option value="New Delhi (DEL)" /><option value="Mumbai (BOM)" />
+            <option value="Nhava Sheva (INNSA)" /><option value="Mundra (INMUN)" />
+            <option value="Chennai (INMAA)" /><option value="Kolkata (INCCU)" />
+          </datalist></div>
       </div>
       <div className="flex items-center gap-2 mt-2">
         <label className="punch-sm px-3 py-1.5 rounded-lg font-bold text-[11px] cursor-pointer" style={{ background: listPath ? "#E7DFCE" : "#181818", color: listPath ? "#3E3A30" : "#fff" }}>
@@ -82,7 +90,7 @@ export function PickupDate({ runId, current, cartons, grossKg, dims, hasList }: 
         </label>
         {listName && <span className="font-mono text-[10px]" style={{ color: "#0D9488" }}>✓ {listName}</span>}
         {reading && <span className="font-mono text-[10px]" style={{ color: "#C77800" }}>READING SHEET…</span>}
-        <button onClick={save} disabled={busy || !f.date || !f.cartons || !f.grossKg || f.dims.length < 3}
+        <button onClick={save} disabled={busy || !f.date || !f.cartons || !f.grossKg || f.dims.length < 3 || f.port.length < 3}
           className="punch-sm ml-auto px-4 py-1.5 rounded-lg font-bold text-[12px] disabled:opacity-40" style={{ background: "#0D9488", color: "#fff" }}>
           {busy ? "…" : "Confirm ready"}
         </button>

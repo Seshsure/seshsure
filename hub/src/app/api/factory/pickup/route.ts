@@ -9,6 +9,7 @@ const Body = z.object({
   cartons: z.number().int().positive(),
   grossKg: z.number().positive(),
   dimsNote: z.string().min(3).max(200),
+  originPort: z.string().min(3).max(80),
   packingListPath: z.string().min(3).optional(),
 });
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "auth" }, { status: 401 });
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "bad request" }, { status: 400 });
-  const { runId, pickupReadyDate, cartons, grossKg, dimsNote, packingListPath } = parsed.data;
+  const { runId, pickupReadyDate, cartons, grossKg, dimsNote, originPort, packingListPath } = parsed.data;
   if (pickupReadyDate < new Date().toISOString().slice(0, 10))
     return NextResponse.json({ error: "pickup date can't be in the past" }, { status: 400 });
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
   const { createClient } = await import("@supabase/supabase-js");
   const svc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const { data: runCtx } = await svc.from("production_runs")
-    .select("run_number, factory_id, factories(origin_port), run_orders(orders(freight_mode, order_items(quantity)))")
+    .select("run_number, factory_id, run_orders(orders(freight_mode, order_items(quantity)))")
     .eq("id", runId).single();
   if (runCtx) {
     type RO = { orders: { freight_mode: string | null; order_items: { quantity: number }[] | null } | null };
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     const mode = ros.some(ro => ro.orders?.freight_mode === "air") ? "air" : "sea";
     const cargo = {
       cartons, weightKg: grossKg, dims: dimsNote,
-      originPort: (runCtx.factories as unknown as { origin_port: string | null } | null)?.origin_port ?? "TBD",
+      originPort,
       destination: "Denver, CO (DEN)", readyDate: pickupReadyDate,
       runNumber: runCtx.run_number,
     };
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
 
   await sb.from("activity_log").insert({
     actor_profile_id: user.id, actor_label: "factory", action: "run.pickup_ready_set",
-    entity_table: "production_runs", entity_id: runId, after: { pickup_ready_date: pickupReadyDate, cartons, gross_kg: grossKg },
+    entity_table: "production_runs", entity_id: runId, after: { pickup_ready_date: pickupReadyDate, cartons, gross_kg: grossKg, origin_port: originPort },
   });
   return NextResponse.json({ ok: true });
 }

@@ -23,31 +23,36 @@ You're receiving this because you have an account or open business with SeshSure
 Questions? Reply here or write support@seshsure.com — a human reads everything.
 </div>`;
 
-// Small uppercase badge chip: bordered, accent-filled, letterspaced.
-const badge = (label: string, accent: string, textOnAccent = INK) =>
-  `<span style="display:inline-block;padding:5px 12px;background:${accent};color:${textOnAccent};border:2px solid ${INK};font-family:${DISPLAY};font-size:11px;letter-spacing:2px;text-transform:uppercase;box-shadow:3px 3px 0 ${INK}">${label}</span>`;
+// Full-bleed accent band: the status word IS the design. Huge, ink-shadowed,
+// impossible to miss in a preview pane.
+const band = (label: string, accent: string, textOnAccent = INK) => `
+  <div style="background:${accent};border-bottom:4px solid ${INK};padding:18px 24px 14px">
+    <div style="font-family:${DISPLAY};font-size:34px;line-height:1;letter-spacing:-0.5px;text-transform:uppercase;color:${textOnAccent};text-shadow:3px 3px 0 ${textOnAccent === INK ? "#FFFDF6" : INK}">${label}</div>
+  </div>`;
 
-// Hero number: the one thing the reader must see.
+// Hero number: 54px. The one thing the reader must see, unmissable.
 const hero = (main: string, sub?: string) => `
-  <div style="margin:18px 0 6px;font-family:${DISPLAY};font-size:40px;line-height:1.05;color:${INK};letter-spacing:-1px">${main}</div>
-  ${sub ? `<div style="font-family:${BODYF};font-style:italic;font-size:13px;color:#5a5e59;margin:0 0 4px">${sub}</div>` : ""}`;
+  <div style="margin:16px 0 4px;font-family:${DISPLAY};font-size:54px;line-height:1;color:${INK};letter-spacing:-2px">${main}</div>
+  ${sub ? `<div style="font-family:${BODYF};font-style:italic;font-size:14px;color:#5a5e59;margin:2px 0 6px">${sub}</div>` : ""}`;
 
 const wrap = (accent: string, badgeLabel: string, title: string, body: string, badgeText = INK) => `
-<div style="background:${PAPER};padding:28px 14px;font-family:${BODYF}">
+<div style="background:${PAPER};padding:26px 12px;font-family:${BODYF}">
   <div style="max-width:560px;margin:0 auto">
-    <div style="padding:0 2px 16px;font-family:${DISPLAY};font-weight:900;font-size:18px;color:${INK};letter-spacing:1px">SESHSURE<span style="color:${accent}"> HUB</span></div>
-    <div style="background:#FFFDF6;border:3px solid ${INK};box-shadow:8px 8px 0 ${INK};padding:26px 24px;color:${INK}">
-      ${badge(badgeLabel, accent, badgeText)}
-      <h1 style="font-family:${DISPLAY};font-size:21px;line-height:1.2;margin:16px 0 4px;color:${INK}">${title}</h1>
-      ${body}
-      ${FOOTER}
+    <div style="padding:0 2px 14px;font-family:${DISPLAY};font-weight:900;font-size:20px;color:${INK};letter-spacing:1px">SESHSURE<span style="color:${accent}"> HUB</span></div>
+    <div style="background:#FFFDF6;border:4px solid ${INK};box-shadow:10px 10px 0 ${INK}">
+      ${band(badgeLabel, accent, badgeText)}
+      <div style="padding:22px 24px 26px;color:${INK}">
+        <h1 style="font-family:${DISPLAY};font-size:19px;line-height:1.25;margin:0 0 2px;color:${INK}">${title}</h1>
+        ${body}
+        ${FOOTER}
+      </div>
     </div>
-    <div style="padding:16px 2px 0;font-family:${BODYF};font-style:italic;font-size:11px;color:#8b8f8a">Puff. Peel. Pass.™</div>
+    <div style="padding:16px 2px 0;font-family:${BODYF};font-style:italic;font-size:12px;color:#8b8f8a">Puff. Peel. Pass.™</div>
   </div>
 </div>`;
 
 const btn = (label: string, href: string, accent: string) =>
-  `<a href="${href}" style="display:inline-block;margin:16px 0 4px;padding:13px 26px;background:${INK};color:#FFFDF6;border:2px solid ${INK};box-shadow:4px 4px 0 ${accent};text-decoration:none;font-family:${DISPLAY};font-weight:900;font-size:13px;letter-spacing:1.5px;text-transform:uppercase">${label}</a>`;
+  `<a href="${href}" style="display:block;text-align:center;margin:18px 0 4px;padding:16px 26px;background:${INK};color:#FFFDF6;border:3px solid ${INK};box-shadow:6px 6px 0 ${accent};text-decoration:none;font-family:${DISPLAY};font-weight:900;font-size:15px;letter-spacing:2px;text-transform:uppercase">${label}</a>`;
 
 const p = (t: string) => `<p style="font-size:14px;line-height:1.65;margin:10px 0;color:${INK}">${t}</p>`;
 
@@ -57,70 +62,70 @@ const HUB = process.env.HUB_URL ?? "https://hub.seshsure.com";
 export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: string }> = {
   "invoice.sent": (v) => ({
     subject: `Invoice ${v.number} — ${v.amount}`,
-    html: wrap(PURPLE, "Invoice", `Invoice ${v.number}`, `
+    html: wrap(PURPLE, "INVOICE", `Invoice ${v.number}`, `
       ${hero(v.amount, v.due ? `due ${v.due}` : undefined)}
       ${p(`Hi ${v.name} — your invoice is ready. View it, download the PDF, or pay in one tap:`)}
       ${btn("View & Pay", `${HUB}/portal/invoices/${v.id}`, PURPLE)}`, "#FFFDF6"),
   }),
   "reminder.due": (v) => ({
     subject: `Invoice ${v.number} is due today — ${v.amount}`,
-    html: wrap(YELLOW, "Due Today", "Due today", `
+    html: wrap(YELLOW, "DUE TODAY", "Due today", `
       ${hero(v.amount, `invoice ${v.number}`)}
       ${p(`Hi ${v.name} — friendly note that this one's due today. One tap settles it:`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, YELLOW)}`),
   }),
   "reminder.plus3": (v) => ({
     subject: `Invoice ${v.number} — 3 days past due`,
-    html: wrap(YELLOW, "3 Days Past Due", "A quick nudge", `
+    html: wrap(YELLOW, "PAST DUE", "A quick nudge", `
       ${hero(v.amount, `invoice ${v.number}`)}
       ${p(`Hi ${v.name} — this went past due 3 days ago. If it's already handled, ignore this; if something's off with the invoice, hit reply and we'll fix it fast.`)}
       ${btn("View Invoice", `${HUB}/portal/invoices/${v.id}`, YELLOW)}`),
   }),
   "reminder.plus7": (v) => ({
     subject: `Invoice ${v.number} — one week past due`,
-    html: wrap(ORANGE, "1 Week Past Due", "One week past due", `
+    html: wrap(ORANGE, "1 WEEK LATE", "One week past due", `
       ${hero(v.amount, `invoice ${v.number}`)}
       ${p(`Hi ${v.name} — this is now a week past due. Per our agreement, past-due balances accrue 1.5%/month. Let's get it settled — or if you need a few days, tell us a date and we'll note it.`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, ORANGE)}`),
   }),
   "reminder.plus14": (v) => ({
     subject: `Invoice ${v.number} — two weeks past due — action needed`,
-    html: wrap(ORANGE, "Action Needed", "Two weeks past due", `
+    html: wrap(ORANGE, "ACTION NEEDED", "Two weeks past due", `
       ${hero(v.amount, `invoice ${v.number} — interest accruing`)}
       ${p(`Hi ${v.name} — we want to keep this easy: pay below, or reply with a firm date.`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, ORANGE)}`),
   }),
   "reminder.final21": (v) => ({
     subject: `FINAL NOTICE — Invoice ${v.number}`,
-    html: wrap(RED, "Final Notice", "Final notice", `
+    html: wrap(RED, "FINAL NOTICE", "Final notice", `
       ${hero(v.amount, `invoice ${v.number} — 21 days past due`)}
       ${p(`${v.name} — new orders are paused on your account until this is resolved, and continued non-payment moves this to formal collection under our agreement. Paying now stops everything:`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, RED)}`, "#FFFDF6"),
   }),
   "radar.nudge.amber": (v) => ({
     subject: "Reorder timing — avoid a gap",
-    html: wrap(TEAL, "Reorder Radar", "Running low soon?", `
+    html: wrap(TEAL, "REORDER RADAR", "Running low soon?", `
       ${hero(`~${v.runway} WEEKS`, "of cones left at your usual pace")}
       ${p(`Hi ${v.name} — with current production + transit times, ordering this week keeps you seamless:`)}
       ${btn("Start a Reorder", `${HUB}/portal/orders`, TEAL)}`, "#FFFDF6"),
   }),
   "radar.nudge.red": (v) => ({
     subject: "Heads up — cone runway is short",
-    html: wrap(ORANGE, "Short Runway", "Let's not run out", `
+    html: wrap(ORANGE, "RUNNING LOW", "Let's not run out", `
       ${hero(`~${v.runway} WEEKS`, "of supply — inside the danger zone given transit times")}
       ${p(`Hi ${v.name} — reorder now (or call Rob directly) and we'll fast-track what we can:`)}
       ${btn("Reorder Now", `${HUB}/portal/orders`, ORANGE)}`),
   }),
   "compliance.alert": (v) => ({
     subject: `⚖️ ${v.title} — ${v.days} days out`,
-    html: wrap(PURPLE, "Docket", v.title, `
+    html: wrap(PURPLE, "DOCKET", v.title, `
       ${hero(`${v.days} DAYS`, `deadline ${v.due}`)}
       ${p("It's on your docket with a task.")}
       ${btn("Open Docket", `${HUB}/admin/legal`, PURPLE)}`, "#FFFDF6"),
   }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
-    html: wrap(TEAL, "Receipt", "Thank you — payment received", `
+    html: wrap(TEAL, "PAID.", "Thank you — payment received", `
       ${hero(v.amount, `toward invoice ${v.number}`)}
       ${p(`Hi ${v.name} — your receipt and updated statement are in your portal.`)}
       ${btn("View Receipt", `${HUB}/portal/invoices/${v.id}`, TEAL)}`, "#FFFDF6"),
