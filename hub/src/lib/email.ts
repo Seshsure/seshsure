@@ -172,6 +172,22 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
   }),
 };
 
+
+// ————— SENDER IDENTITY BY OCCASION —————
+// Billing speaks on money paperwork; the Hub speaks on access, system, and
+// operational nudges. One verified domain, the right voice per email.
+const FROM_BY_PREFIX: [string, string][] = [
+  ["invoice.",     "SeshSure Billing <billing@seshsure.com>"],
+  ["reminder.",    "SeshSure Billing <billing@seshsure.com>"],
+  ["payment.",     "SeshSure Billing <billing@seshsure.com>"],
+  ["application.", "SeshSure Hub <hub@seshsure.com>"],
+  ["system.",      "SeshSure Hub <hub@seshsure.com>"],
+  ["compliance.",  "SeshSure Hub <hub@seshsure.com>"],
+  ["radar.",       "SeshSure <hub@seshsure.com>"],
+];
+const fromFor = (key: string) =>
+  FROM_BY_PREFIX.find(([p]) => key.startsWith(p))?.[1] ?? process.env.EMAIL_FROM ?? "SeshSure Hub <hub@seshsure.com>";
+
 // ————— MASTER SEND SWITCH —————
 // Until EMAILS_ENABLED=true in the environment, client-facing mail is suppressed
 // (logged as skipped). Auth codes bypass this (they go via Supabase SMTP, not here).
@@ -187,7 +203,7 @@ export async function sendTemplate(args: {
   const { subject, html } = t(args.vars);
   const resend = new Resend(process.env.RESEND_API_KEY);
   const res = await resend.emails.send({
-    from: args.from ?? process.env.EMAIL_FROM ?? "SeshSure Billing <billing@seshsure.com>",
+    from: args.from ?? fromFor(args.templateKey),
     to: args.to,
     bcc: args.bccOwner === false ? undefined : "rob@seshsure.com",
     subject, html,
