@@ -1,4 +1,5 @@
 // ————— CLIENT HOME — their account at a glance —————
+import { ArcadeCard } from "@/components/ArcadeCard";
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import Link from "next/link";
@@ -8,6 +9,9 @@ export default async function PortalHome() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   const { data: prof } = await sb.from("profiles").select("client_id, full_name").eq("id", user!.id).single();
+  const { data: arcade } = prof?.client_id
+    ? await sb.from("arcade_access").select("status").eq("client_id", prof.client_id).maybeSingle()
+    : { data: null };
 
   const [{ data: invoices }, { data: orders }, { data: disputes }, { data: shipments }] = await Promise.all([
     sb.from("invoices").select("total_cents, paid_cents, status, due_date").in("status", ["sent","viewed","partially_paid","overdue"]),
@@ -48,6 +52,7 @@ export default async function PortalHome() {
           <p className="text-[16px] font-bold" style={{ color: "#fff" }}>+ New order</p>
         </Link>
       </div>
+      <ArcadeCard status={arcade?.status ?? null} />
     </div>
   );
 }

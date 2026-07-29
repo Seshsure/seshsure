@@ -163,6 +163,13 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p("Takes about ten minutes, saves as you go — leave and come back anytime. The moment the agreement is signed, ordering opens.")}
       ${btn("Start Onboarding", v.link, TEAL)}`),
   }),
+  "arcade.application": (v) => ({
+    subject: `🕹️ Arcade access application — ${v.name}`,
+    html: wrap(PURPLE, "docket", "ARCADE", `${v.name} wants Arcade access`, `
+      ${p(`Their note: <i>${v.note}</i>`)}
+      ${p("Approving requires attaching the counsel-reviewed sweepstakes rules doc and picking their arcade slug — the compliance gate lives at approval, never at launch.")}
+      ${btn("Review in Admin", `${HUB}/admin/arcade`, PURPLE)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `
@@ -183,6 +190,7 @@ const FROM_BY_PREFIX: [string, string][] = [
   ["application.", "SeshSure Hub <hub@seshsure.com>"],
   ["system.",      "SeshSure Hub <hub@seshsure.com>"],
   ["compliance.",  "SeshSure Hub <hub@seshsure.com>"],
+  ["arcade.",      "SeshSure Hub <hub@seshsure.com>"],
   ["radar.",       "SeshSure <hub@seshsure.com>"],
 ];
 const fromFor = (key: string) =>
