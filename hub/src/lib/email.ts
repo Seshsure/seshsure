@@ -23,36 +23,57 @@ You're receiving this because you have an account or open business with SeshSure
 Questions? Reply here or write support@seshsure.com — a human reads everything.
 </div>`;
 
-// Full-bleed accent band: the status word IS the design. Huge, ink-shadowed,
-// impossible to miss in a preview pane.
+// ————— V3 STREET SHELL — drop-poster energy, email-client survivable —————
+// Hazard stripes via repeating-linear-gradient (degrades to solid), stacked
+// double shadows, receipt-perforation dividers, faux barcode, deco glyphs.
+// No transforms (Gmail strips them) — the grit comes from layering.
+
+const stripes = (accent: string) => `
+  <div style="height:10px;background-color:${accent};background-image:repeating-linear-gradient(45deg,${INK} 0,${INK} 8px,${accent} 8px,${accent} 16px);border-bottom:4px solid ${INK}"></div>`;
+
 const band = (label: string, accent: string, textOnAccent = INK) => `
-  <div style="background:${accent};border-bottom:4px solid ${INK};padding:18px 24px 14px">
-    <div style="font-family:${DISPLAY};font-size:34px;line-height:1;letter-spacing:-0.5px;text-transform:uppercase;color:${textOnAccent};text-shadow:3px 3px 0 ${textOnAccent === INK ? "#FFFDF6" : INK}">${label}</div>
+  <div style="background:${accent};padding:20px 24px 14px">
+    <div style="font-family:${DISPLAY};font-size:38px;line-height:0.95;letter-spacing:-1px;text-transform:uppercase;color:${textOnAccent};text-shadow:4px 4px 0 ${textOnAccent === INK ? "#FFFDF6" : INK}">${label}</div>
+  </div>
+  ${stripes(accent)}`;
+
+// Hero: 54px money with an accent underline slab riding under the digits.
+const hero = (main: string, accent: string, sub?: string) => `
+  <div style="margin:18px 0 2px">
+    <span style="font-family:${DISPLAY};font-size:54px;line-height:1;color:${INK};letter-spacing:-2px;background-image:linear-gradient(${accent},${accent});background-repeat:no-repeat;background-size:100% 16px;background-position:0 82%">${main}</span>
+  </div>
+  ${sub ? `<div style="font-family:${BODYF};font-style:italic;font-size:14px;color:#5a5e59;margin:6px 0 2px">${sub}</div>` : ""}`;
+
+// Receipt ticket: monospace ledger rows between perforation dashes.
+const ticket = (rows: [string, string][]) => `
+  <div style="margin:16px 0 4px;border-top:2px dashed ${INK};border-bottom:2px dashed ${INK};padding:10px 2px">
+    ${rows.map(([k, v]) => `<div style="font-family:'Courier New',monospace;font-size:12px;color:${INK};line-height:1.9"><span style="display:inline-block;min-width:46%;font-weight:bold">${k}</span> ${v}</div>`).join("")}
   </div>`;
 
-// Hero number: 54px. The one thing the reader must see, unmissable.
-const hero = (main: string, sub?: string) => `
-  <div style="margin:16px 0 4px;font-family:${DISPLAY};font-size:54px;line-height:1;color:${INK};letter-spacing:-2px">${main}</div>
-  ${sub ? `<div style="font-family:${BODYF};font-style:italic;font-size:14px;color:#5a5e59;margin:2px 0 6px">${sub}</div>` : ""}`;
+const barcode = `<div style="margin-top:14px;font-family:'Courier New',monospace;font-size:22px;line-height:1;letter-spacing:-1px;color:${INK}">▌▎▊▏▍▎▉▏▎▊▍▏▌▎▊▏▍▎▌▏▊▎▍▉▏▎▌</div>`;
 
 const wrap = (accent: string, badgeLabel: string, title: string, body: string, badgeText = INK) => `
 <div style="background:${PAPER};padding:26px 12px;font-family:${BODYF}">
   <div style="max-width:560px;margin:0 auto">
-    <div style="padding:0 2px 14px;font-family:${DISPLAY};font-weight:900;font-size:20px;color:${INK};letter-spacing:1px">SESHSURE<span style="color:${accent}"> HUB</span></div>
-    <div style="background:#FFFDF6;border:4px solid ${INK};box-shadow:10px 10px 0 ${INK}">
+    <div style="padding:0 2px 14px">
+      <span style="font-family:${DISPLAY};font-weight:900;font-size:20px;color:${INK};letter-spacing:1px">SESHSURE<span style="color:${accent}"> HUB</span></span>
+      <span style="float:right;font-family:${DISPLAY};font-size:18px;color:${accent}">✱✱✱</span>
+    </div>
+    <div style="background:#FFFDF6;border:4px solid ${INK};box-shadow:8px 8px 0 ${accent}, 16px 16px 0 ${INK}">
       ${band(badgeLabel, accent, badgeText)}
-      <div style="padding:22px 24px 26px;color:${INK}">
-        <h1 style="font-family:${DISPLAY};font-size:19px;line-height:1.25;margin:0 0 2px;color:${INK}">${title}</h1>
+      <div style="padding:20px 24px 24px;color:${INK}">
+        <h1 style="font-family:${DISPLAY};font-size:18px;line-height:1.25;margin:0 0 2px;color:${INK}">${title}</h1>
         ${body}
+        ${barcode}
         ${FOOTER}
       </div>
     </div>
-    <div style="padding:16px 2px 0;font-family:${BODYF};font-style:italic;font-size:12px;color:#8b8f8a">Puff. Peel. Pass.™</div>
+    <div style="padding:18px 2px 0;font-family:${DISPLAY};font-size:13px;letter-spacing:1px;color:${INK}">PUFF<span style="color:${accent}">.</span> PEEL<span style="color:${accent}">.</span> PASS<span style="color:${accent}">.</span>™</div>
   </div>
 </div>`;
 
 const btn = (label: string, href: string, accent: string) =>
-  `<a href="${href}" style="display:block;text-align:center;margin:18px 0 4px;padding:16px 26px;background:${INK};color:#FFFDF6;border:3px solid ${INK};box-shadow:6px 6px 0 ${accent};text-decoration:none;font-family:${DISPLAY};font-weight:900;font-size:15px;letter-spacing:2px;text-transform:uppercase">${label}</a>`;
+  `<a href="${href}" style="display:block;text-align:center;margin:18px 0 4px;padding:17px 26px;background:${INK};color:#FFFDF6;border:3px solid ${INK};box-shadow:6px 6px 0 ${accent};text-decoration:none;font-family:${DISPLAY};font-weight:900;font-size:16px;letter-spacing:2.5px;text-transform:uppercase">${label} →</a>`;
 
 const p = (t: string) => `<p style="font-size:14px;line-height:1.65;margin:10px 0;color:${INK}">${t}</p>`;
 
@@ -63,7 +84,7 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
   "invoice.sent": (v) => ({
     subject: `Invoice ${v.number} — ${v.amount}`,
     html: wrap(PURPLE, "INVOICE", `Invoice ${v.number}`, `
-      ${hero(v.amount, v.due ? `due ${v.due}` : undefined)}
+      ${hero(v.amount, PURPLE)}\n      ${ticket([["INVOICE", v.number], ["DUE", v.due ?? "on receipt"], ["STATUS", "OPEN"]])}
       ${p(`Hi ${v.name} — your invoice is ready. View it, download the PDF, or pay in one tap:`)}
       ${btn("View & Pay", `${HUB}/portal/invoices/${v.id}`, PURPLE)}`, "#FFFDF6"),
   }),
@@ -91,42 +112,42 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
   "reminder.plus14": (v) => ({
     subject: `Invoice ${v.number} — two weeks past due — action needed`,
     html: wrap(ORANGE, "ACTION NEEDED", "Two weeks past due", `
-      ${hero(v.amount, `invoice ${v.number} — interest accruing`)}
+      ${hero(v.amount, ORANGE)}\n      ${ticket([["INVOICE", v.number], ["STATUS", "14 DAYS PAST DUE"], ["INTEREST", "ACCRUING"]])}
       ${p(`Hi ${v.name} — we want to keep this easy: pay below, or reply with a firm date.`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, ORANGE)}`),
   }),
   "reminder.final21": (v) => ({
     subject: `FINAL NOTICE — Invoice ${v.number}`,
     html: wrap(RED, "FINAL NOTICE", "Final notice", `
-      ${hero(v.amount, `invoice ${v.number} — 21 days past due`)}
+      ${hero(v.amount, RED)}\n      ${ticket([["INVOICE", v.number], ["STATUS", "21 DAYS PAST DUE"], ["ACCOUNT", "NEW ORDERS PAUSED"]])}
       ${p(`${v.name} — new orders are paused on your account until this is resolved, and continued non-payment moves this to formal collection under our agreement. Paying now stops everything:`)}
       ${btn("Pay Now", `${HUB}/portal/invoices/${v.id}`, RED)}`, "#FFFDF6"),
   }),
   "radar.nudge.amber": (v) => ({
     subject: "Reorder timing — avoid a gap",
     html: wrap(TEAL, "REORDER RADAR", "Running low soon?", `
-      ${hero(`~${v.runway} WEEKS`, "of cones left at your usual pace")}
+      ${hero(`~${v.runway} WKS`, TEAL, "of cones left at your usual pace")}
       ${p(`Hi ${v.name} — with current production + transit times, ordering this week keeps you seamless:`)}
       ${btn("Start a Reorder", `${HUB}/portal/orders`, TEAL)}`, "#FFFDF6"),
   }),
   "radar.nudge.red": (v) => ({
     subject: "Heads up — cone runway is short",
     html: wrap(ORANGE, "RUNNING LOW", "Let's not run out", `
-      ${hero(`~${v.runway} WEEKS`, "of supply — inside the danger zone given transit times")}
+      ${hero(`~${v.runway} WKS`, ORANGE, "of supply — inside the danger zone given transit times")}
       ${p(`Hi ${v.name} — reorder now (or call Rob directly) and we'll fast-track what we can:`)}
       ${btn("Reorder Now", `${HUB}/portal/orders`, ORANGE)}`),
   }),
   "compliance.alert": (v) => ({
     subject: `⚖️ ${v.title} — ${v.days} days out`,
     html: wrap(PURPLE, "DOCKET", v.title, `
-      ${hero(`${v.days} DAYS`, `deadline ${v.due}`)}
+      ${hero(`${v.days} DAYS`, PURPLE, `deadline ${v.due}`)}
       ${p("It's on your docket with a task.")}
       ${btn("Open Docket", `${HUB}/admin/legal`, PURPLE)}`, "#FFFDF6"),
   }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "PAID.", "Thank you — payment received", `
-      ${hero(v.amount, `toward invoice ${v.number}`)}
+      ${hero(v.amount, TEAL)}\n      ${ticket([["RECEIVED TOWARD", v.number], ["STATUS", "PAID ✓"], ["RECEIPT", "IN YOUR PORTAL"]])}
       ${p(`Hi ${v.name} — your receipt and updated statement are in your portal.`)}
       ${btn("View Receipt", `${HUB}/portal/invoices/${v.id}`, TEAL)}`, "#FFFDF6"),
   }),
