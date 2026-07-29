@@ -3,6 +3,7 @@
 // sequence allows them; a stopped run shows the stop reason and nothing else.
 import { supabaseServer } from "@/lib/supabase-server";
 import { PrintRunActions } from "@/components/PrintRunActions";
+import { PrintManifest } from "@/components/PrintManifest";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function PrintDesk() {
               <p className="font-mono text-[10px] mt-1" style={{ color: "#5C574A" }}>
                 order {o?.order_number}{o?.needed_by ? ` · needed ${o.needed_by}` : ""} · artwork {o?.artwork_path ? "attached (via SeshSure)" : "pending"}
               </p>
+              <PrintManifest runId={r.id} />
               {r.status === "stopped" ? (
                 <p className="text-[12px] mt-1.5 p-2 rounded" style={{ background: "#D6283910", color: "#D62839" }}>
                   <b>RUN STOPPED:</b> {r.stop_reason} — await SeshSure before any further action.

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { supabaseServer } from "@/lib/supabase-server";
 import { createClient } from "@supabase/supabase-js";
 import { sendTemplate } from "@/lib/email";
+import { generateRegistry } from "@/lib/arcade-registry";
 
 const WordRe = /^[A-Z]{1,12}$/;
 const Tiers = z.object({
@@ -43,6 +44,8 @@ const Body = z.discriminatedUnion("action", [
     revisionNote: z.string().max(1000).optional(),  // required for revise
   }),
 ]);
+
+export const maxDuration = 300; // registry generation for large runs
 
 export async function POST(req: NextRequest) {
   const sb = supabaseServer();
@@ -157,6 +160,23 @@ export async function POST(req: NextRequest) {
     reviewed_by: user.id, reviewed_at: new Date().toISOString(),
     revision_note: b.action === "revise" ? b.revisionNote : null,
   }).eq("id", b.orderId);
+
+  // Approval fires the registry: one row per peel, golden placed by the
+  // system where no human — including the approver — can see it.
+  if (b.action === "approve") {
+    try {
+      const reg = await generateRegistry(svc, b.orderId);
+      await svc.from("activity_log").insert({
+        actor_label: "system", action: "arcade.registry.generated",
+        entity_table: "arcade_orders", entity_id: b.orderId,
+        after: { rows: reg.rows, checksum: reg.checksum.slice(0, 16) },
+      });
+    } catch (e) {
+      const { reportError } = await import("@/lib/report-error");
+      await reportError(svc, "arcade.registry", e);
+      return NextResponse.json({ error: "approved, but registry generation failed — see errors dashboard" }, { status: 500 });
+    }
+  }
   await svc.from("activity_log").insert({
     actor_profile_id: user.id, actor_label: "owner",
     action: `arcade.order.${b.action === "approve" ? "approved" : "revision_requested"}`,
