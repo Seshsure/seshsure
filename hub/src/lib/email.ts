@@ -157,7 +157,7 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
   }),
   "application.approved": (v) => ({
     subject: `You're approved — welcome to SeshSure, ${v.company}`,
-    html: wrap(TEAL, "paid", "APPROVED", `Welcome aboard, ${v.name}`, `
+    html: wrap(TEAL, "approved", "APPROVED", `Welcome aboard, ${v.name}`, `
       ${p(`<b>${v.company}</b> is approved for a verified wholesale account. One button below — here's what happens after you tap it:`)}
       ${ticket([["1. SET PASSWORD", "only you will know it"], ["2. COMPANY DETAILS", "entity, EIN, licenses"], ["3. YOUR TEAM", "add your AP person"], ["4. SHIPPING", "where cones land"], ["5. AGREEMENT", "sign once, order forever"]])}
       ${p("Takes about ten minutes, saves as you go — leave and come back anytime. The moment the agreement is signed, ordering opens.")}
