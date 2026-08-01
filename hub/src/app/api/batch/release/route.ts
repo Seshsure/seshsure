@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { supabaseServer } from "@/lib/supabase-server";
-import { buildNacha } from "@/lib/nacha";
+import { buildNacha, nextBankingDay } from "@/lib/nacha";
 
 const Body = z.object({ confirm: z.literal(true), expectedTotalCents: z.string().regex(/^\d+$/) });
 
@@ -56,14 +56,13 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const effective = new Date();
-  effective.setDate(effective.getDate() + 1);
+  const effectiveYYMMDD = nextBankingDay();
   const nacha = buildNacha({
     entries,
     companyName: "SESHSURE",
     companyId: process.env.ACH_COMPANY_ID ?? "0000000000",
     odfiRouting: process.env.ODFI_ROUTING ?? "053100300",
-    effectiveDate: effective.toISOString().slice(2, 10).replace(/-/g, ""),
+    effectiveDate: effectiveYYMMDD,
     description: "INVOICE",
   });
 

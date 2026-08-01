@@ -54,6 +54,20 @@ export async function POST(req: NextRequest) {
   if (parsed.data.scheduledFor && inv.due_date && parsed.data.scheduledFor > inv.due_date)
     return NextResponse.json({ error: "scheduled date must be on or before the due date" }, { status: 400 });
 
+  // In-flight guard: total of unfinished ACH pulls + this one can never
+  // exceed the client's total open balance — kills double-taps and any
+  // race the button's busy-state misses. Server-side, structural.
+  const { data: inflight } = await sb.from("payments")
+    .select("amount_cents").eq("client_id", prof.client_id).eq("method", "ach")
+    .in("status", ["authorized", "scheduled", "submitted", "settled"]);
+  const inflightTotal = (inflight ?? []).reduce((s, x) => s + BigInt(x.amount_cents), 0n);
+  const { data: openInvs } = await sb.from("invoices")
+    .select("total_cents, paid_cents").eq("client_id", prof.client_id)
+    .in("status", ["sent", "viewed", "partially_paid", "overdue"]);
+  const totalOpen = (openInvs ?? []).reduce((s, x) => s + BigInt(x.total_cents) - BigInt(x.paid_cents), 0n);
+  if (inflightTotal + amount > totalOpen)
+    return NextResponse.json({ error: "a payment covering this balance is already processing — check your Money page" }, { status: 409 });
+
   // 1% ACH discount — earned by rail choice, granted only when the pull
   // CLEARS (a bounced payment earns nothing). Stored here, granted in
   // settleAndClear as a credit_applied payment.

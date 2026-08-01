@@ -22,7 +22,7 @@
 8. **Supplier PO ledger** — PO/invoice/AWB/payment matching for the factory side; kills duplicate-invoice and untracked-PO classes permanently. ($310K balance deserves a ledger, not a spreadsheet.) (Claude)
 9. **Landed-cost actuals** — freight award + duties + goods cost per run → real ¢/cone vs 15¢ floor, auto-flagged. Data exists across shipment_costs/true_cogs; needs the join + surface. (Claude)
 10. **W-8BEN-E checkbox in factory onboarding** — foreign-status paper before first hub-era payment. (Claude, small)
-11. **Wholesale Payments follow-up** — merchant approval is the gate on card rail. (Rob: chase Lee for written terms)
+11. **Wholesale Payments follow-up** — now the CONVENIENCE rail, not the primary: FCB DES/NACHA is the primary rail (built, test file with Amber). (Rob: chase for written terms, lower urgency)
 12. **Marine cargo insurance for the boat shipment** — if it's on the water uninsured, call Kerry TODAY for per-shipment cover. Standing policy before ocean cadence. (Rob)
 
 ## P2 — ENTERPRISE POLISH (before anchor-brand diligence)

@@ -2,6 +2,7 @@ import { Empty } from "@/components/Empty";
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
 import { ReleaseButton } from "@/components/ReleaseButton";
+import { AchOps } from "@/components/AchOps";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,14 @@ export default async function Batches() {
     .in("status", ["authorized", "scheduled"])
     .or(`scheduled_for.is.null,scheduled_for.lte.${today}`);
   const total = (ready ?? []).reduce((s, p) => s + BigInt(p.amount_cents), 0n);
+  const [{ data: batches }, { data: inflight }, { data: prenotes }] = await Promise.all([
+    sb.from("ach_batches").select("id, created_at, entry_count, total_cents, status").order("created_at", { ascending: false }).limit(8),
+    sb.from("payments").select("id, amount_cents, status, created_at, clients(dba, legal_name)")
+      .eq("method", "ach").in("status", ["submitted", "settled", "cleared"])
+      .order("created_at", { ascending: false }).limit(25),
+    sb.from("client_bank_accounts").select("id, account_last4, prenote_sent_at, clients(dba, legal_name)")
+      .eq("prenote_status", "sent").limit(20),
+  ]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-8">
@@ -39,6 +48,12 @@ export default async function Batches() {
       <p className="font-mono text-[10px] mt-3 px-1" style={{ color: "#5C574A" }}>
         RELEASING BUILDS THE NACHA FILE AND MARKS PAYMENTS SUBMITTED · OWNER-ONLY · TWO-TAP CONFIRM
       </p>
+      <AchOps
+        batches={(batches ?? []).map(b => ({ id: b.id, at: String(b.created_at).slice(0, 10), count: b.entry_count, totalCents: String(b.total_cents), status: b.status }))}
+        inflight={(inflight ?? []).map(x => ({ id: x.id, amountCents: String(x.amount_cents), status: x.status, at: String(x.created_at).slice(0, 10),
+          name: ((x.clients as unknown as { dba: string | null })?.dba) ?? ((x.clients as unknown as { legal_name: string })?.legal_name) ?? "?" }))}
+        prenotes={(prenotes ?? []).map(x => ({ id: x.id, last4: x.account_last4, sentAt: String(x.prenote_sent_at ?? "").slice(0, 10),
+          name: ((x.clients as unknown as { dba: string | null })?.dba) ?? ((x.clients as unknown as { legal_name: string })?.legal_name) ?? "?" }))} />
     </div>
   );
 }
