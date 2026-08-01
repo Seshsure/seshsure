@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const INK = "#181818", TEAL = "#0D9488", RED = "#D62839", LINE = "#E7DFCE", ORANGE = "#B45309";
+const INK = "#181818", RED = "#D62839", LINE = "#E7DFCE", ORANGE = "#B45309";
 const RETURN_CODES = ["R01", "R02", "R03", "R04", "R08", "R10", "R16", "R29"];
 
 type Batch = { id: string; at: string; count: number; totalCents: string; status: string };
