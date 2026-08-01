@@ -10,7 +10,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { createClient } from "@supabase/supabase-js";
 import { validRouting } from "@/lib/nacha";
 
-export const AUTH_TEXT_VERSION = "CCD-AUTH-v1-DRAFT";
+const AUTH_TEXT_VERSION = "CCD-AUTH-v1-DRAFT";
 
 const Body = z.object({
   bankName: z.string().min(2).max(80),
