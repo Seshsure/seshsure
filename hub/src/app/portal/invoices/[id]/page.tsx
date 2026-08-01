@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD } from "@/lib/money";
-import { PayPanel } from "@/components/PayPanel";
+import { PayBank } from "@/components/BankPay";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +15,10 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
   await sb.from("invoice_views").insert({ invoice_id: inv.id, viewer_profile_id: user!.id });
 
   const remaining = BigInt(inv.total_cents) - BigInt(inv.paid_cents);
+  const { data: bankAcct } = await sb.from("client_bank_accounts")
+    .select("prenote_status, micro_verified").eq("client_id", inv.client_id).eq("is_active", true).maybeSingle();
+  const bankUnlocked = bankAcct?.prenote_status === "verified" || !!bankAcct?.micro_verified;
+  const bankVerifying = bankAcct?.prenote_status === "sent" || bankAcct?.prenote_status === "queued";
   const payable = !["paid", "void", "draft"].includes(inv.status) && remaining > 0n;
 
   return (
@@ -39,7 +43,7 @@ export default async function InvoiceDetail({ params }: { params: { id: string }
         style={{ borderColor: "#E7DFCE", color: "#3E3A30", background: "#fff" }}>
         ⬇ DOWNLOAD PDF
       </a>
-      {payable && <PayPanel invoiceId={inv.id} remainingCents={remaining.toString()} />}
+      {payable && <PayBank invoiceId={inv.id} remainingCents={remaining.toString()} unlocked={bankUnlocked} verifying={bankVerifying} />}
     </div>
   );
 }

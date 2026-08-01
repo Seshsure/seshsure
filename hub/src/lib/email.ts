@@ -190,6 +190,13 @@ export const TEMPLATES: Record<string, (v: Vars) => { subject: string; html: str
       ${p(v.event)}
       ${btn("Open Arcade Admin", `${HUB}/admin/arcade`, PURPLE)}`),
   }),
+  "payment.bank_verified": () => ({
+    subject: `Bank verified — pay by bank and save 1%`,
+    html: wrap(TEAL, "paid", "VERIFIED", `Your bank account is verified`, `
+      ${p(`The $0 test transaction cleared — bank pay is now live on your account.`)}
+      ${p(`<b>Every bank payment earns a 1% credit</b>, applied automatically when the payment clears. No card fees, no processing delays on our end — just tap PAY on any invoice.`)}
+      ${btn("View Open Invoices", `${HUB}/portal/invoices`, TEAL)}`),
+  }),
   "payment.receipt": (v) => ({
     subject: `Payment received — ${v.amount}`,
     html: wrap(TEAL, "paid", "PAID.", "Thank you — payment received", `

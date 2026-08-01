@@ -12,6 +12,31 @@ function addBusinessDays(d: Date, n: number) {
 }
 
 /** 1 — Settlement clock */
+// ————— ACH PRENOTE VERIFIER — the $0 test matures into an unlocked rail —————
+// A prenote with no return after 3 banking days is a verified account
+// (returns are marked failed manually from the FCB portal for now). On
+// verification the client learns bank pay is live — with the 1% discount
+// as the headline, because that's the message that moves them off cards.
+export async function achPrenoteVerifier(sb: SupabaseClient) {
+  const now = new Date();
+  const { data: sent } = await sb.from("client_bank_accounts")
+    .select("id, client_id, prenote_sent_at").eq("prenote_status", "sent");
+  let verified = 0;
+  for (const b of sent ?? []) {
+    if (b.prenote_sent_at && addBusinessDays(new Date(b.prenote_sent_at), 3) <= now) {
+      await sb.from("client_bank_accounts").update({
+        prenote_status: "verified", prenote_verified_at: now.toISOString(),
+      }).eq("id", b.id);
+      await sb.from("notification_log").insert({
+        recipient: "client-ap", template_key: "payment.bank_verified",
+        related_id: b.id, subject: "Bank verified — pay by bank and save 1%", status: "pending",
+      });
+      verified++;
+    }
+  }
+  return { verified };
+}
+
 export async function settleAndClear(sb: SupabaseClient) {
   const now = new Date();
   const { data: submitted } = await sb.from("payments")
@@ -22,7 +47,7 @@ export async function settleAndClear(sb: SupabaseClient) {
     }
   }
   const { data: settled } = await sb.from("payments")
-    .select("id, settled_at").eq("status", "settled");
+    .select("id, settled_at, client_id, ach_discount_cents, discount_granted_at").eq("status", "settled");
   let cleared = 0;
   for (const p of settled ?? []) {
     if (p.settled_at && addBusinessDays(new Date(p.settled_at), 2) <= now) {
@@ -33,6 +58,16 @@ export async function settleAndClear(sb: SupabaseClient) {
         recipient: "client-ap", template_key: "payment.receipt",
         related_id: p.id, subject: "Payment received — thank you", status: "pending",
       });
+      // 1% ACH discount grant — earned by clearing, once. The credit rides
+      // the payments ledger (credit_applied, pre-cleared) so
+      // applyClearedToInvoices spends it like money.
+      if (Number(p.ach_discount_cents ?? 0) > 0 && !p.discount_granted_at) {
+        await sb.from("payments").insert({
+          client_id: p.client_id, method: "credit_applied", status: "cleared",
+          amount_cents: String(p.ach_discount_cents), cleared_at: now.toISOString(),
+        });
+        await sb.from("payments").update({ discount_granted_at: now.toISOString() }).eq("id", p.id);
+      }
       cleared++;
     }
   }

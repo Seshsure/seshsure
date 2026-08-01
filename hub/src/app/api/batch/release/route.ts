@@ -31,15 +31,28 @@ export async function POST(req: NextRequest) {
   const entries = [];
   for (const [i, p] of ready.entries()) {
     const { data: bank } = await sb.from("client_bank_accounts")
-      .select("routing_number, account_number_enc").eq("id", p.bank_account_id).single();
+      .select("routing_number_enc, account_number_enc").eq("id", p.bank_account_id).single();
     if (!bank) continue;
     entries.push({
-      routing: bank.routing_number,
+      routing: bank.routing_number_enc,
       account: bank.account_number_enc,
       amountCents: BigInt(p.amount_cents),
       name: ((p.clients as unknown as { legal_name: string })?.legal_name ?? "CLIENT").toUpperCase().slice(0, 22),
       txCode: "27" as const,
       traceSeq: i + 1,
+    });
+  }
+
+  // Queued prenotes ride the same file as $0 entries (txCode 28) — free
+  // account verification through the rail itself.
+  const { data: prenotes } = await sb.from("client_bank_accounts")
+    .select("id, routing_number_enc, account_number_enc, name_on_account, auth_signed_at")
+    .eq("prenote_status", "queued").eq("is_active", true).not("auth_signed_at", "is", null).limit(50);
+  for (const [j, pn] of (prenotes ?? []).entries()) {
+    entries.push({
+      routing: pn.routing_number_enc, account: pn.account_number_enc,
+      amountCents: 0n, name: (pn.name_on_account ?? "PRENOTE").toUpperCase().slice(0, 22),
+      txCode: "28" as const, traceSeq: entries.length + j + 1,
     });
   }
 
@@ -53,6 +66,10 @@ export async function POST(req: NextRequest) {
     effectiveDate: effective.toISOString().slice(2, 10).replace(/-/g, ""),
     description: "INVOICE",
   });
+
+  if (prenotes?.length) await sb.from("client_bank_accounts")
+    .update({ prenote_status: "sent", prenote_sent_at: new Date().toISOString() })
+    .in("id", prenotes.map(x => x.id));
 
   const { data: batch } = await sb.from("ach_batches").insert({
     released_by: user.id, entry_count: entries.length,

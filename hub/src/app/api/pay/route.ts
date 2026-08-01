@@ -45,18 +45,24 @@ export async function POST(req: NextRequest) {
   }
 
   const { data: bank } = await sb.from("client_bank_accounts")
-    .select("id, check_verified, micro_verified, account_last4")
+    .select("id, check_verified, micro_verified, prenote_status, account_last4")
     .eq("client_id", prof.client_id).eq("is_active", true).single();
   if (!bank) return NextResponse.json({ error: "no bank account on file — add one from your Money page" }, { status: 400 });
-  if (!bank.micro_verified) return NextResponse.json({ error: "bank verification finishing — enter your micro-deposit amounts first" }, { status: 400 });
+  if (bank.prenote_status !== "verified" && !bank.micro_verified)
+    return NextResponse.json({ error: "bank verification in progress — a $0 test transaction confirms your account (about 3 business days)" }, { status: 400 });
 
   if (parsed.data.scheduledFor && inv.due_date && parsed.data.scheduledFor > inv.due_date)
     return NextResponse.json({ error: "scheduled date must be on or before the due date" }, { status: 400 });
 
+  // 1% ACH discount — earned by rail choice, granted only when the pull
+  // CLEARS (a bounced payment earns nothing). Stored here, granted in
+  // settleAndClear as a credit_applied payment.
+  const achDiscount = amount / 100n;
   const { data: payment, error: pErr } = await sb.from("payments").insert({
     client_id: prof.client_id, method: "ach",
     status: parsed.data.scheduledFor ? "scheduled" : "authorized",
     amount_cents: amount.toString(),
+    ach_discount_cents: achDiscount.toString(),
     scheduled_for: parsed.data.scheduledFor ?? null,
     bank_account_id: bank.id,
   }).select("id").single();
