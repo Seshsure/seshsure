@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { AREA_ALLOWED, HOME_BY_ROLE, type Role } from "@/lib/roles";
 
-const PUBLIC = ["/login", "/auth", "/signup", "/quote", "/sign", "/start", "/_next", "/favicon", "/api/public", "/api/webhooks", "/terms", "/privacy", "/apply"];
+const PUBLIC = ["/login", "/auth", "/signup", "/quote", "/sign", "/start", "/_next", "/favicon", "/api/public", "/api/webhooks", "/api/cron", "/terms", "/privacy", "/apply"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
