@@ -89,6 +89,9 @@ export async function returnsProcessor(sb: SupabaseClient) {
 
 /** 17 — Monthly statements (1st; only clients with open activity) */
 export async function monthlyStatements(sb: SupabaseClient) {
+  // HOLD: statements stay dark until real client accounts exist.
+  // Flip by setting STATEMENTS_ENABLED=true in Vercel env (Rob's call at go-live).
+  if (process.env.STATEMENTS_ENABLED !== "true") return;
   const now = new Date();
   if (now.getDate() !== 1) return;
   const period = now.toISOString().slice(0, 7);
