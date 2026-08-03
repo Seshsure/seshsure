@@ -85,34 +85,82 @@ export async function dailyBrief(sb: SupabaseClient) {
   const { data: dup } = await sb.from("activity_log").select("id").eq("action", marker).maybeSingle();
   if (dup) return;
 
-  const [{ data: openInv }, { data: pays }, { data: tasks }, { data: runs }] = await Promise.all([
-    sb.from("invoices").select("total_cents, paid_cents, due_date, status").in("status", ["sent","viewed","partially_paid","overdue"]),
+  const [{ data: openInv }, { data: pays }, { data: runs }] = await Promise.all([
+    sb.from("invoices").select("total_cents, paid_cents, due_date, status, client_id, clients(dba)").in("status", ["sent","viewed","partially_paid","overdue"]),
     sb.from("payments").select("amount_cents, status").in("status", ["authorized","scheduled","submitted","settled"]),
-    sb.from("tasks").select("title").is("completed_at", null).order("due_on").limit(8),
     sb.from("production_runs").select("run_number, status").not("status", "in", '("closed")').limit(8),
   ]);
   const ar = (openInv ?? []).reduce((s, i) => s + BigInt(i.total_cents) - BigInt(i.paid_cents), 0n);
-  const overdue = (openInv ?? []).filter(i => i.due_date && i.due_date < today);
   const inFlight = (pays ?? []).reduce((s, p) => s + BigInt(p.amount_cents), 0n);
 
+  // ————— per-client rollup: owed / overdue / oldest days late —————
+  type Row = { name: string; owed: bigint; overdue: bigint; days: number };
+  const byClient = new Map<string, Row>();
+  for (const i of openInv ?? []) {
+    const name = ((i as unknown as { clients?: { dba?: string } }).clients?.dba) ?? "—";
+    const key = String(i.client_id ?? name);
+    const bal = BigInt(i.total_cents) - BigInt(i.paid_cents);
+    const row = byClient.get(key) ?? { name, owed: 0n, overdue: 0n, days: 0 };
+    row.owed += bal;
+    if (i.due_date && i.due_date < today) {
+      row.overdue += bal;
+      const late = Math.floor((Date.parse(today) - Date.parse(i.due_date)) / 86400000);
+      if (late > row.days) row.days = late;
+    }
+    byClient.set(key, row);
+  }
+  const rows = [...byClient.values()].sort((a, b) => (b.overdue > a.overdue ? 1 : b.overdue < a.overdue ? -1 : b.owed > a.owed ? 1 : -1));
+  const totalOverdue = rows.reduce((s, r) => s + r.overdue, 0n);
+
+  const ink = "#181818", paper = "#FAF5EA", teal = "#13A89E", red = "#E63946", grey = "#8b8f8a";
+  const stat = (label: string, value: string, color = ink) =>
+    `<td style="padding:14px 12px;border-right:3px solid ${ink}"><div style="font-size:10px;letter-spacing:2px;color:${grey}">${label}</div><div style="font-size:19px;font-weight:900;color:${color};margin-top:2px">${value}</div></td>`;
+  const clientRows = rows.map(r => `
+    <tr style="border-bottom:1px solid #e8e2d4">
+      <td style="padding:10px 12px;font-weight:700;font-size:13px;color:${ink}">${r.name}</td>
+      <td style="padding:10px 12px;text-align:right;font-size:13px;color:${ink}">${formatUSD(r.owed)}</td>
+      <td style="padding:10px 12px;text-align:right;font-size:13px;font-weight:${r.overdue > 0n ? 800 : 400};color:${ink}">${r.overdue > 0n ? formatUSD(r.overdue) : "—"}</td>
+      <td style="padding:10px 12px;text-align:right;font-size:12px;color:${r.days > 0 ? ink : grey}">${r.days > 0 ? r.days + "d" : "—"}</td>
+    </tr>`).join("");
+
   const html = `
-<div style="font-family:-apple-system,Inter,sans-serif;max-width:560px;margin:0 auto;color:#181818">
-<h1 style="font-size:16px">☀️ SeshSure — ${now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</h1>
-<p style="font-family:monospace;font-size:12px;line-height:2">
-AR OUTSTANDING: <b>${formatUSD(ar)}</b><br/>
-OVERDUE: <b style="color:${overdue.length ? "#D62839" : "#0D9488"}">${overdue.length} invoice${overdue.length===1?"":"s"}</b><br/>
-MONEY IN FLIGHT: <b>${formatUSD(inFlight)}</b></p>
-<h2 style="font-size:13px">Your queue</h2>
-<ul style="font-size:12px;line-height:1.9">${(tasks ?? []).map(t => `<li>${t.title}</li>`).join("") || "<li>Clear ✓</li>"}</ul>
-<h2 style="font-size:13px">Production</h2>
-<ul style="font-size:12px;line-height:1.9">${(runs ?? []).map(r => `<li>${r.run_number} — ${r.status.replace("_"," ")}</li>`).join("") || "<li>No open runs</li>"}</ul>
-<p style="font-size:11px;color:#8b8f8a">Full picture: hub.seshsure.com/admin</p></div>`;
+<div style="background:${paper};padding:28px 14px;font-family:-apple-system,'Segoe UI',Inter,Arial,sans-serif;color:${ink}">
+<div style="max-width:600px;margin:0 auto">
+  <div style="font-size:24px;font-weight:900;letter-spacing:-0.5px">SESHSURE <span style="color:${teal}">MORNING</span></div>
+  <div style="font-size:12px;color:${grey};margin:2px 0 18px">${now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</div>
+
+  <table cellpadding="0" cellspacing="0" style="width:100%;background:#fff;border:3px solid ${ink};border-collapse:collapse;margin-bottom:20px"><tr>
+    ${stat("OUT", formatUSD(ar))}
+    ${stat("OVERDUE", formatUSD(totalOverdue), totalOverdue > 0n ? red : teal)}
+    ${stat("IN FLIGHT", formatUSD(inFlight)).replace(`border-right:3px solid ${ink}`, "border-right:none")}
+  </tr></table>
+
+  <div style="font-size:11px;font-weight:900;letter-spacing:2px;margin:0 0 6px">CLIENTS</div>
+  <table cellpadding="0" cellspacing="0" style="width:100%;background:#fff;border:3px solid ${ink};border-collapse:collapse;margin-bottom:20px">
+    <tr style="border-bottom:3px solid ${ink}">
+      <th style="padding:8px 12px;text-align:left;font-size:10px;letter-spacing:1.5px;color:${grey}">CLIENT</th>
+      <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:1.5px;color:${grey}">OWES</th>
+      <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:1.5px;color:${grey}">OVERDUE</th>
+      <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:1.5px;color:${grey}">OLDEST</th>
+    </tr>
+    ${clientRows || `<tr><td colspan="4" style="padding:12px;font-size:12px;color:${grey}">Nothing outstanding</td></tr>`}
+  </table>
+
+  <div style="font-size:11px;font-weight:900;letter-spacing:2px;margin:0 0 6px">PRODUCTION</div>
+  <div style="background:#fff;border:3px solid ${ink};padding:10px 12px;font-size:12px;line-height:1.9;margin-bottom:20px">
+    ${(runs ?? []).map(r => `<b>${r.run_number}</b> — ${r.status.replace("_"," ")}`).join("<br/>") || "No open runs"}
+  </div>
+
+  <div style="font-size:11px;color:${grey}">Full picture: <a href="https://hub.seshsure.com/admin" style="color:${teal}">hub.seshsure.com/admin</a><br/>
+  SeshSure · Vido Manufacturing and Distribution Corp · 10940 S. Parker Road, Suite 788, Parker, CO 80134<br/>
+  Operational report for the account owner.</div>
+</div></div>`;
 
   const { Resend } = await import("resend");
   const resend = new Resend(process.env.RESEND_API_KEY);
   await resend.emails.send({
     from: "SeshSure Hub <hub@seshsure.com>", to: "rob@seshsure.com",
-    subject: `☀️ Brief — ${formatUSD(ar)} out · ${overdue.length} overdue · ${(tasks ?? []).length} in queue`,
+    subject: `☀️ Brief — ${formatUSD(ar)} out · ${formatUSD(totalOverdue)} overdue`,
     html,
   });
   await sb.from("activity_log").insert({ actor_label: "system", action: marker, after: { ar: ar.toString() } });
