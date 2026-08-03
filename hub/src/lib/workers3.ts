@@ -86,7 +86,7 @@ export async function dailyBrief(sb: SupabaseClient) {
   if (dup) return;
 
   const [{ data: openInv }, { data: pays }, { data: runs }] = await Promise.all([
-    sb.from("invoices").select("total_cents, paid_cents, due_date, status, client_id, clients(dba)").in("status", ["sent","viewed","partially_paid","overdue"]),
+    sb.from("invoices").select("total_cents, paid_cents, due_date, status, client_id, clients(dba, legal_name)").in("status", ["sent","viewed","partially_paid","overdue"]),
     sb.from("payments").select("amount_cents, status").in("status", ["authorized","scheduled","submitted","settled"]),
     sb.from("production_runs").select("run_number, status").not("status", "in", '("closed")').limit(8),
   ]);
@@ -97,7 +97,8 @@ export async function dailyBrief(sb: SupabaseClient) {
   type Row = { name: string; owed: bigint; overdue: bigint; days: number };
   const byClient = new Map<string, Row>();
   for (const i of openInv ?? []) {
-    const name = ((i as unknown as { clients?: { dba?: string } }).clients?.dba) ?? "—";
+    const cl = (i as unknown as { clients?: { dba?: string | null; legal_name?: string | null } }).clients;
+    const name = cl?.dba ?? cl?.legal_name ?? "—";
     const key = String(i.client_id ?? name);
     const bal = BigInt(i.total_cents) - BigInt(i.paid_cents);
     const row = byClient.get(key) ?? { name, owed: 0n, overdue: 0n, days: 0 };
