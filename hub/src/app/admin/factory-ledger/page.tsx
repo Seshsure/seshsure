@@ -10,7 +10,7 @@ export default async function FactoryLedger() {
   const sb = supabaseServer();
   const { data: realFactory } = await sb.from("factories").select("id, name").not("name", "ilike", "%test%").limit(1).single();
   const { data: soaLines } = await sb.from("factory_statement_lines")
-    .select("id, entry_date, kind, billing_entity, ref_no, description, total_cents, factory_confirmed_at, dispute_note, attachment_path")
+    .select("id, entry_date, kind, billing_entity, ref_no, description, total_cents, factory_confirmed_at, dispute_note, attachment_path, status, reject_note")
     .eq("factory_id", realFactory?.id ?? "")
     .order("entry_date").order("created_at");
   const [{ data: lines }, { data: allLines }, { data: ourInvoices }] = await Promise.all([

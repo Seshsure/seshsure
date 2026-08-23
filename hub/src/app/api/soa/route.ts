@@ -26,6 +26,18 @@ const Body = z.discriminatedUnion("action", [
     entryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     attachmentPath: z.string().max(300).optional(),
   }),
+  z.object({
+    action: z.literal("submit"),                    // factory submits a charge
+    kind: z.enum(CHARGE_KINDS),
+    billingEntity: z.enum(ENTITIES),
+    refNo: z.string().min(1).max(60),
+    description: z.string().min(3).max(300),
+    amountCents: z.number().int().positive().max(100_000_000_00),
+    entryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    attachmentPath: z.string().min(3).max(300),     // doc REQUIRED on factory submissions
+  }),
+  z.object({ action: z.literal("approve"), lineId: z.string().uuid() }),
+  z.object({ action: z.literal("reject"), lineId: z.string().uuid(), note: z.string().min(4).max(400) }),
   z.object({ action: z.literal("confirm"), lineId: z.string().uuid() }),
   z.object({ action: z.literal("dispute"), lineId: z.string().uuid(), note: z.string().min(4).max(400) }),
   z.object({ action: z.literal("remove"), lineId: z.string().uuid() }),   // owner, unconfirmed lines only
@@ -41,6 +53,56 @@ export async function POST(req: NextRequest) {
   const b = parsed.data;
   const svc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
+  const cogsOf = (kind: string) =>
+    kind === "charge_goods" ? "goods" : kind === "charge_services" ? "services" :
+    kind === "charge_freight" ? "freight" : kind.startsWith("charge") ? "other" : null;
+
+  // ————— FACTORY: submit a charge for owner approval —————
+  if (b.action === "submit") {
+    if (!me?.factory_id || !String(me.role).startsWith("factory"))
+      return NextResponse.json({ error: "factory members only" }, { status: 403 });
+    const { error } = await svc.from("factory_statement_lines").insert({
+      factory_id: me.factory_id, kind: b.kind, billing_entity: b.billingEntity,
+      ref_no: b.refNo, description: b.description, total_cents: b.amountCents,
+      entry_date: b.entryDate, attachment_path: b.attachmentPath,
+      status: "pending", submitted_by: user.id,
+      factory_confirmed_at: new Date().toISOString(), factory_confirmed_by: user.id, // submitting IS their signature
+      cogs_category: cogsOf(b.kind),
+      company_label: b.billingEntity, quantity: 0, rate_per_cone_microcents: 0, fees_cents: 0,
+      added_by: user.id,
+    });
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    await svc.from("activity_log").insert({
+      actor_profile_id: user.id, actor_label: "factory", action: "soa.submitted",
+      entity_table: "factory_statement_lines",
+      after: { kind: b.kind, amount: b.amountCents, ref: b.refNo, entity: b.billingEntity },
+    });
+    return NextResponse.json({ ok: true, note: "Submitted — appears in the statement once SeshSure approves." });
+  }
+
+  // ————— OWNER: approve / reject factory submissions —————
+  if (b.action === "approve" || b.action === "reject") {
+    if (me?.role !== "owner") return NextResponse.json({ error: "owner only" }, { status: 403 });
+    const { data: line } = await svc.from("factory_statement_lines")
+      .select("id, status").eq("id", b.lineId).single();
+    if (!line || line.status !== "pending") return NextResponse.json({ error: "not a pending line" }, { status: 400 });
+    if (b.action === "approve") {
+      await svc.from("factory_statement_lines").update({
+        status: "live", owner_approved_at: new Date().toISOString(),
+      }).eq("id", b.lineId);
+    } else {
+      await svc.from("factory_statement_lines").update({
+        status: "rejected", reject_note: b.note,
+      }).eq("id", b.lineId);
+    }
+    await svc.from("activity_log").insert({
+      actor_profile_id: user.id, actor_label: "owner", action: `soa.${b.action}d`,
+      entity_table: "factory_statement_lines", entity_id: b.lineId,
+      after: b.action === "reject" ? { note: b.note } : {},
+    });
+    return NextResponse.json({ ok: true });
+  }
+
   // ————— OWNER: add / remove —————
   if (b.action === "add" || b.action === "remove") {
     if (me?.role !== "owner") return NextResponse.json({ error: "owner only" }, { status: 403 });
@@ -55,7 +117,7 @@ export async function POST(req: NextRequest) {
         ref_no: b.refNo ?? null, description: b.description, total_cents: signed,
         entry_date: b.entryDate, attachment_path: b.attachmentPath ?? null,
         company_label: b.billingEntity ?? "—", quantity: 0, rate_per_cone_microcents: 0, fees_cents: 0,
-        added_by: user.id,
+        cogs_category: cogsOf(b.kind), added_by: user.id,
       });
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     } else {
