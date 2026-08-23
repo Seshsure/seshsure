@@ -24,6 +24,7 @@ export default async function FactoryLayout({ children }: { children: React.Reac
           <Link href="/factory/runs">RUNS</Link>
           <Link href="/factory/board">BOARD</Link>
           <Link href="/factory/claims">CLAIMS</Link>
+          <Link href="/factory/soa">SOA</Link>
           <Link href="/factory/statement">STATEMENT</Link>
           <Link href="/factory/onboarding">ONBOARDING</Link>
         </nav>

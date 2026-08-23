@@ -1,11 +1,18 @@
 // Rob's live Excel-style mirror of the factory statement
 import { supabaseServer } from "@/lib/supabase-server";
 import { formatUSD, formatPerCone } from "@/lib/money";
+import { SoaStatement, type SoaLine } from "@/components/SoaStatement";
+import { SoaAdd } from "@/components/SoaAdd";
 
 export const dynamic = "force-dynamic";
 
 export default async function FactoryLedger() {
   const sb = supabaseServer();
+  const { data: realFactory } = await sb.from("factories").select("id, name").not("name", "ilike", "%test%").limit(1).single();
+  const { data: soaLines } = await sb.from("factory_statement_lines")
+    .select("id, entry_date, kind, billing_entity, ref_no, description, total_cents, factory_confirmed_at, dispute_note, attachment_path")
+    .eq("factory_id", realFactory?.id ?? "")
+    .order("entry_date").order("created_at");
   const [{ data: lines }, { data: allLines }, { data: ourInvoices }] = await Promise.all([
     sb.from("factory_statement_lines").select("*, factories(name)").is("settled_at", null).order("created_at"),
     sb.from("factory_statement_lines").select("total_cents, created_at"),
@@ -32,8 +39,15 @@ export default async function FactoryLedger() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-8">
-      <div className="mt-4 flex items-center justify-between">
-        <h1 className="text-[15px] font-bold" style={{ color: "#181818" }}>Factory statement — live mirror</h1>
+      <h1 className="display text-[22px] mt-4" style={{ color: "#181818" }}>LIVE SOA — {realFactory?.name ?? "FACTORY"}</h1>
+      <p className="font-mono text-[10px] mt-1 mb-3" style={{ color: "#5C574A" }}>
+        SAME STATEMENT THE FACTORY SEES · THEY CONFIRM OR DISPUTE EACH LINE · FULLY CONFIRMED = RECONCILED
+      </p>
+      {realFactory && <SoaAdd factoryId={realFactory.id} />}
+      <SoaStatement lines={(soaLines ?? []) as SoaLine[]} side="owner" />
+
+      <div className="mt-6 flex items-center justify-between">
+        <h1 className="text-[15px] font-bold" style={{ color: "#181818" }}>Run charges — live mirror</h1>
         <span className="font-mono text-[10px] px-2 py-1 rounded border" style={{ color: "#3E3A30", borderColor: "#E7DFCE" }}>XLSX EXPORT</span>
       </div>
       <div className="mt-3 rounded-lg punch-sm overflow-hidden" style={{ background: "#FFFFFF" }}>
