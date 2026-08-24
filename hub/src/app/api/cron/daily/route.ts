@@ -5,7 +5,7 @@ import { settleAndClear, applyClearedToInvoices, placeRuns, expireStaleDeposits,
 import { deliveryClock, reorderRadar, expireQuotes, complianceAlerts } from "@/lib/workers2";
 import { flushNotifications, dailyBrief } from "@/lib/workers3";
 import { reportError } from "@/lib/report-error";
-import { achPrenoteVerifier } from "@/lib/workers";
+import { achPrenoteVerifier, storageVault } from "@/lib/workers";
 import { runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements, planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits, demandLetterDrafts, bidChase, autoRfq } from "@/lib/workers4";
 
 export const maxDuration = 60;
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
   const jobs = [
-    achPrenoteVerifier,settleAndClear, applyClearedToInvoices, placeRuns, deliveryClock, expireStaleDeposits,
+    achPrenoteVerifier, storageVault,settleAndClear, applyClearedToInvoices, placeRuns, deliveryClock, expireStaleDeposits,
     reminderLadder, accrueInterest, reorderRadar, expireQuotes, complianceAlerts,
     runWatchdog, documentExpiry, taskEscalation, returnsProcessor, monthlyStatements,
     planWatchdog, freightExceptions, winBack, sampleFollowups, referralCredits, demandLetterDrafts, bidChase, autoRfq,

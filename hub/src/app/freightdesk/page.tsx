@@ -4,6 +4,7 @@
 // identities, no factory internals — identifiers, dates, and status.
 import { supabaseServer } from "@/lib/supabase-server";
 import { ShipmentUpdate } from "@/components/ShipmentUpdate";
+import { EvidencePhotos } from "@/components/EvidencePhotos";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,8 @@ export default async function FreightDesk() {
               {s.carrier ? ` · ${s.carrier}` : ""}{s.eta ? ` · ETA ${s.eta}` : ""}
             </p>
             <ShipmentUpdate shipmentId={s.id} currentEta={s.eta} />
+            <EvidencePhotos entityTable="shipments" entityId={s.id} kind="pod" canUpload label="DELIVERY / POD PHOTOS" />
+            <EvidencePhotos entityTable="shipments" entityId={s.id} kind="damage" canUpload label="DAMAGE PHOTOS (IF ANY)" />
           </div>
         ))}
         {!shipments?.length && <p className="text-[13px] py-4" style={{ color: "#5C574A" }}>No active shipments assigned.</p>}

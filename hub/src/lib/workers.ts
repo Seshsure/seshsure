@@ -1,6 +1,7 @@
 // ————— THE WORKERS: jobs the machine runs on itself —————
 import { SupabaseClient } from "@supabase/supabase-js";
 import { pctOf } from "./money";
+import { reportError } from "./report-error";
 
 const log = async (sb: SupabaseClient, action: string, detail: Record<string, unknown>) =>
   sb.from("activity_log").insert({ actor_label: "system", action, after: detail });
@@ -17,6 +18,45 @@ function addBusinessDays(d: Date, n: number) {
 // (returns are marked failed manually from the FCB portal for now). On
 // verification the client learns bank pay is live — with the 1% discount
 // as the headline, because that's the message that moves them off cards.
+// ————— STORAGE VAULT — evidence survives deletion —————
+// Nightly mirror of every evidence-bearing bucket into evidence-vault.
+// Copies only objects not yet in backup_log (path-keyed), so each pass is
+// cheap. Honest scope: same-project mirror protects against the realistic
+// loss (deletion/overwrite of a signed agreement, a destruction log, a
+// POD) — not account-level loss; external mirror when off-platform
+// storage exists. Database itself: Supabase Pro daily backups.
+export async function storageVault(sb: SupabaseClient) {
+  const BUCKETS = ["art", "dispute-media", "factory-docs", "evidence"];
+  let copied = 0, failed = 0;
+  for (const bucket of BUCKETS) {
+    // walk top-level folders then files (two levels covers our path scheme)
+    const { data: top } = await sb.storage.from(bucket).list("", { limit: 200 });
+    const paths: string[] = [];
+    for (const item of top ?? []) {
+      if (item.id) { paths.push(item.name); continue; }   // file at root
+      const { data: inner } = await sb.storage.from(bucket).list(item.name, { limit: 500 });
+      for (const f of inner ?? []) if (f.id) paths.push(`${item.name}/${f.name}`);
+    }
+    for (const path of paths) {
+      const { data: seen } = await sb.from("backup_log").select("id")
+        .eq("bucket", bucket).eq("object_path", path).maybeSingle();
+      if (seen) continue;
+      const { data: file, error: dlErr } = await sb.storage.from(bucket).download(path);
+      if (dlErr || !file) { failed++; continue; }
+      const vaultPath = `${bucket}/${path}`;
+      const { error: upErr } = await sb.storage.from("evidence-vault")
+        .upload(vaultPath, file, { upsert: false });
+      if (upErr && !upErr.message?.includes("already exists")) { failed++; continue; }
+      await sb.from("backup_log").insert({
+        bucket, object_path: path, vault_path: vaultPath, bytes: file.size,
+      });
+      copied++;
+    }
+  }
+  if (failed > 0) await reportError(sb, "storageVault", `${failed} objects failed to mirror`);
+  return { copied, failed };
+}
+
 export async function achPrenoteVerifier(sb: SupabaseClient) {
   const now = new Date();
   const { data: sent } = await sb.from("client_bank_accounts")

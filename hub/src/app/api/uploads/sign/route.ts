@@ -11,6 +11,10 @@ const LIMITS: Record<string, { types: string[]; maxBytes: number }> = {
     types: ["image/png", "image/jpeg", "image/svg+xml", "application/pdf", "application/postscript"],
     maxBytes: 50 * 1024 * 1024,
   },
+  evidence: {
+    types: ["image/png", "image/jpeg", "image/heic", "image/webp", "application/pdf"],
+    maxBytes: 15 * 1024 * 1024,
+  },
   "dispute-media": {
     types: ["image/png", "image/jpeg", "image/heic", "video/mp4", "video/quicktime"],
     maxBytes: 100 * 1024 * 1024,
@@ -22,7 +26,7 @@ const LIMITS: Record<string, { types: string[]; maxBytes: number }> = {
 };
 
 const Body = z.object({
-  bucket: z.enum(["art", "dispute-media", "factory-docs"]),
+  bucket: z.enum(["art", "dispute-media", "factory-docs", "evidence"]),
   filename: z.string().min(1).max(180),
   contentType: z.string(),
   sizeBytes: z.number().int().positive(),
@@ -32,8 +36,8 @@ export async function POST(req: NextRequest) {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: "auth" }, { status: 401 });
-  const { data: prof } = await sb.from("profiles").select("client_id, factory_id, role").eq("id", user.id).single();
-  if (!prof?.client_id && !prof?.factory_id && prof?.role !== "owner")
+  const { data: prof } = await sb.from("profiles").select("client_id, factory_id, forwarder_id, role").eq("id", user.id).single();
+  if (!prof?.client_id && !prof?.factory_id && !prof?.forwarder_id && prof?.role !== "owner")
     return NextResponse.json({ error: "account required" }, { status: 403 });
 
   const parsed = Body.safeParse(await req.json());
@@ -48,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   // path lives inside the caller's own client folder — the storage RLS wall
   const safe = b.filename.replace(/[^\w.\-]/g, "_").slice(-120);
-  const owner_folder = b.bucket === "factory-docs" ? (prof.factory_id ?? "internal") : (prof.client_id ?? "internal");
+  const owner_folder = b.bucket === "factory-docs" ? (prof.factory_id ?? "internal") : b.bucket === "evidence" ? (prof.factory_id ?? prof.forwarder_id ?? "internal") : (prof.client_id ?? "internal");
   const path = `${owner_folder}/${Date.now()}-${safe}`;
 
   const { data, error } = await sb.storage.from(b.bucket).createSignedUploadUrl(path);

@@ -2,7 +2,7 @@
 // Browser-side helper: sign → direct upload → return storage path
 import { supabaseBrowser } from "./supabase-browser";
 
-export async function uploadDirect(bucket: "art" | "dispute-media" | "factory-docs", file: File):
+export async function uploadDirect(bucket: "art" | "dispute-media" | "factory-docs" | "evidence", file: File):
   Promise<{ ok: true; path: string } | { ok: false; error: string }> {
   const signRes = await fetch("/api/uploads/sign", {
     method: "POST", headers: { "content-type": "application/json" },
