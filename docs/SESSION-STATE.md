@@ -25,7 +25,13 @@ Single source of truth for cross-chat handoff. Any Claude session: read this aft
   activity_log marker. INV-TEST-100 deliberately live.
 - Supabase Pro active, daily backups confirmed. PITR held until first
   paying client. Storage buckets still unbacked (queued).
-- ship.sh at repo root: tsc+lint+build must pass before push. USE IT.
+- ship.sh at repo root (NOW COMMITTED): GH_TOKEN=<t> bash ship.sh "msg" —
+  tsc+build must pass or nothing pushes. FRESH CONTAINER RITUAL: write
+  hub/.env.local first (NEXT_PUBLIC_SUPABASE_URL + anon key from mgmt API
+  /api-keys?reveal=true) or /login prerender fails the local build — Vercel
+  builds always pass because env lives there. Forwarder profile form and
+  factory 5-step wizard (company/banking/documents/agreements/spec) exist —
+  audits should check the tree before claiming gaps.
 
 ## BUILD QUEUE (order)
 1. Landed-cost engine (per-shipment: SOA charges + duties + FET + broker
