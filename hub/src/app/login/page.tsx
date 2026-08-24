@@ -73,6 +73,9 @@ export default function Login() {
           <OtpEntry onSubmit={verifyOtp} busy={busy} />
         )}
         {msg && <p className="font-mono mt-3 text-[12px]" style={{ color: "#C77800" }}>{msg}</p>}
+      <p className="font-mono text-[9px] text-center mt-6" style={{ color: "#8B857A" }}>
+        <a href="/privacy">PRIVACY</a> · <a href="/terms">TERMS</a> · SESHSURE HUB
+      </p>
       </div>
       <p className="font-mono text-[11px] mt-6" style={{ color: "#5C574A" }}>SUPPORT@SESHSURE.COM</p>
       <p className="font-mono text-[9px] text-center mt-6" style={{ color: "#8B857A" }}>

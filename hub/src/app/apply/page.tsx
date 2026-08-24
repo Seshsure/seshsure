@@ -64,7 +64,7 @@ function ApplyForm() {
         {busy ? "…" : "REQUEST ACCESS →"}
       </button>
       <p className="font-mono text-[9px] mt-3 text-center" style={{ color: "#8B857A" }}>
-        VERIFIED WHOLESALE ACCOUNTS ONLY · WE REVIEW EVERY APPLICATION · <a href="/privacy" style={{ color: "#8B857A" }}>PRIVACY</a>
+        VERIFIED WHOLESALE ACCOUNTS ONLY · WE REVIEW EVERY APPLICATION · <a href="/privacy" style={{ color: "#8B857A" }}>PRIVACY</a> · <a href="/terms" style={{ color: "#8B857A" }}>TERMS</a>
       </p>
     </>
   );
